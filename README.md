@@ -15,7 +15,8 @@ Documentation: https://spohnbook.readthedocs.io
 
 ## Status
 
-Pre-alpha. The package on PyPI reserves the name and carries no code.
+Pre-alpha. The documentation site is the product; the package on PyPI carries
+no code.
 
 ## License
 

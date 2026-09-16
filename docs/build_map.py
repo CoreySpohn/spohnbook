@@ -35,7 +35,7 @@ def write_map_table(docs_dir: Path) -> Path:
         rows = [lib for lib in libraries if lib["layer"] == layer]
         if not rows:
             continue
-        lines.append(f"### {title}\n")
+        lines.append(f"## {title}\n")
         lines.append("| Library | Stage | What it owns | Depends on | Links |")
         lines.append("|---|---|---|---|---|")
         for lib in rows:
