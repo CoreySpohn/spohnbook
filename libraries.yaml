@@ -1,0 +1,190 @@
+libraries:
+  - name: orbix
+    layer: geometry
+    stage: beta
+    summary: Keplerian orbit propagation and geometry
+    repo: https://github.com/CoreySpohn/orbix
+    docs: https://orbix.readthedocs.io/
+    pypi: https://pypi.org/project/orbix/
+    pypi_version: "1.2.0"
+    depends_on: [hwoutils]
+  - name: hwoutils
+    layer: foundation
+    stage: beta
+    summary: Shared constants, unit conversions and image transforms
+    repo: https://github.com/CoreySpohn/hwoutils
+    docs: https://hwoutils.readthedocs.io/
+    pypi: https://pypi.org/project/hwoutils/
+    pypi_version: "1.10.0"
+    depends_on: []
+  - name: ineedvalidation
+    layer: foundation
+    stage: beta
+    summary: Test evidence declarations and the validation hierarchy ledger
+    repo: https://github.com/CoreySpohn/ineedvalidation
+    docs: https://ineedvalidation.readthedocs.io/
+    pypi: https://pypi.org/project/ineedvalidation/
+    pypi_version: "1.0.0"
+    depends_on: []
+  - name: optixstuff
+    layer: foundation
+    stage: beta
+    summary: Optical system and detector building blocks
+    repo: https://github.com/CoreySpohn/optixstuff
+    docs: https://optixstuff.readthedocs.io/
+    pypi: https://pypi.org/project/optixstuff/
+    pypi_version: "3.0.0"
+    depends_on: [hwoutils, yippy]
+  - name: skyscapes
+    layer: scene
+    stage: beta
+    summary: Astrophysical scenes (stars, planets, disks)
+    repo: https://github.com/CoreySpohn/skyscapes
+    docs: https://skyscapes.readthedocs.io/
+    pypi: https://pypi.org/project/skyscapes/
+    pypi_version: "1.4.0"
+    depends_on: [hwoutils, optixstuff, orbix]
+  - name: zodi
+    layer: scene
+    stage: beta
+    summary: Zodiacal light brightness models
+    repo: https://github.com/CoreySpohn/zodi
+    docs: https://zodi.readthedocs.io/
+    pypi: https://pypi.org/project/zodi/
+    pypi_version: "1.0.0"
+    depends_on: []
+  - name: yippy
+    layer: data
+    stage: beta
+    summary: Coronagraph yield input packages
+    repo: https://github.com/HabitableWorldsObservatory/yippy
+    docs: https://yippy.readthedocs.io/
+    pypi: https://pypi.org/project/yippy/
+    pypi_version: "2.10.6"
+    depends_on: [hwoutils]
+  - name: coronachrome
+    layer: simulation
+    stage: alpha
+    summary: Integral field spectrograph simulation and extraction
+    repo: https://github.com/CoreySpohn/coronachrome
+    docs: null
+    pypi: https://pypi.org/project/coronachrome/
+    pypi_version: "0.3.0"
+    depends_on: [optixstuff]
+  - name: coronagraphoto
+    layer: simulation
+    stage: beta
+    summary: Coronagraphic image simulation over skyscapes scenes
+    repo: https://github.com/CoreySpohn/coronagraphoto
+    docs: https://coronagraphoto.readthedocs.io/
+    pypi: https://pypi.org/project/coronagraphoto/
+    pypi_version: "4.0.0"
+    depends_on: [hwoutils, optixstuff, orbix, skyscapes, yippy]
+  - name: physicaloptix
+    layer: simulation
+    stage: beta
+    summary: Physical optics (PSFs and diffraction)
+    repo: https://github.com/CoreySpohn/physicaloptix
+    docs: https://physicaloptix.readthedocs.io/
+    pypi: https://pypi.org/project/physicaloptix/
+    pypi_version: "1.2.0"
+    depends_on: [hwoutils, optixstuff]
+  - name: tiptilt
+    layer: wavefront
+    stage: alpha
+    summary: Wavefront error statistics and wavefront-control residuals
+    repo: https://github.com/CoreySpohn/tiptilt
+    docs: https://tiptilt.readthedocs.io/
+    pypi: https://pypi.org/project/tiptilt/
+    pypi_version: "0.2.0"
+    depends_on: [hwoutils, optixstuff, physicaloptix]
+  - name: exosims-plugins
+    layer: exposure-time
+    stage: pre-alpha
+    summary: EXOSIMS plugin modules
+    repo: https://github.com/CoreySpohn/exosims-plugins
+    docs: null
+    pypi: https://pypi.org/project/exosims-plugins/
+    pypi_version: "1.1.0"
+    depends_on: [orbix]
+  - name: jaxedith
+    layer: exposure-time
+    stage: beta
+    summary: JAX exposure-time calculator
+    repo: https://github.com/CoreySpohn/jaxEDITH
+    docs: https://jaxedith.readthedocs.io/
+    pypi: https://pypi.org/project/jaxedith/
+    pypi_version: "1.0.1"
+    depends_on: [hwoutils, orbix, skyscapes]
+  - name: coronalyze
+    layer: analysis
+    stage: beta
+    summary: Post-processing and detection statistics
+    repo: https://github.com/CoreySpohn/coronalyze
+    docs: https://coronalyze.readthedocs.io/
+    pypi: https://pypi.org/project/coronalyze/
+    pypi_version: "1.1.1"
+    depends_on: [hwoutils]
+  - name: photomancy
+    layer: inference
+    stage: beta
+    summary: Bayesian inference and experimental design
+    repo: https://github.com/CoreySpohn/photomancy
+    docs: https://photomancy.readthedocs.io/
+    pypi: https://pypi.org/project/photomancy/
+    pypi_version: "0.2.0"
+    depends_on: [hwoutils, orbix, skyscapes]
+  - name: planit-py
+    layer: planning
+    stage: pre-alpha
+    summary: Observation planning
+    repo: https://github.com/CoreySpohn/planit-py
+    docs: null
+    pypi: https://pypi.org/project/planit-py/
+    pypi_version: "0.0.1"
+    depends_on: []
+  - name: spaceodyssey
+    layer: orchestration
+    stage: pre-alpha
+    summary: Astronomical analysis and observing campaigns
+    repo: https://github.com/CoreySpohn/spaceodyssey
+    docs: https://spaceodyssey.readthedocs.io/
+    pypi: https://pypi.org/project/spaceodyssey/
+    pypi_version: "0.0.1"
+    depends_on: []
+  - name: eyepiece
+    layer: visualization
+    stage: beta
+    summary: Visualization of simulation outputs
+    repo: https://github.com/CoreySpohn/eyepiece
+    docs: https://eyepiece.readthedocs.io/
+    pypi: https://pypi.org/project/eyepiece/
+    pypi_version: "0.4.0"
+    depends_on: [hwostyle]
+  - name: hwostyle
+    layer: visualization
+    stage: beta
+    summary: Plot style
+    repo: https://github.com/HabitableWorldsObservatory/hwostyle
+    docs: null
+    pypi: https://pypi.org/project/hwostyle/
+    pypi_version: "1.5.0"
+    depends_on: []
+  - name: pleaserender
+    layer: visualization
+    stage: pre-alpha
+    summary: Exoplanet rendering
+    repo: https://github.com/CoreySpohn/pleaserender
+    docs: null
+    pypi: https://pypi.org/project/pleaserender/
+    pypi_version: "1.0.1"
+    depends_on: []
+  - name: yieldplotlib
+    layer: visualization
+    stage: alpha
+    summary: Yield plot helpers (external AYO and EXOSIMS comparison tool)
+    repo: https://github.com/HWO-Yield-Visualizations/yieldplotlib
+    docs: https://yieldplotlib.readthedocs.io/
+    pypi: https://pypi.org/project/yieldplotlib/
+    pypi_version: "1.2.0"
+    depends_on: [yippy]
