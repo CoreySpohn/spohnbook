@@ -7,4 +7,5 @@ is built. The code shown is the code that ran.
 :maxdepth: 1
 
 orbit-astrometry
+psf-and-speckles
 ```
