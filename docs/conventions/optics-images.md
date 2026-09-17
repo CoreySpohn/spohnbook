@@ -4,7 +4,7 @@
 
 An image needs more than a shape and a pixel scale. A consumer must know where its optical origin lies, which physical direction each axis represents, what measure each value carries, and which optical losses have already been applied. A complex field additionally needs a phase convention. A spectrum extracted from that image needs an axis order and a covariance that describes the actual estimator.
 
-This chapter proposes a common profile under decisions **D01** (geometry basis) and **D06** (optical grids, pixel meaning, and IFS products). It does **not** claim every package already implements it. The current implementations disagree in the ways the coverage table at the end of this chapter lists. Imported instrument data keep their authoritative calibration metadata; adapters transform that data explicitly into the common profile.
+This chapter proposes a common profile under the **observer basis and node decision** (geometry basis) and the **image coordinates and PSFlet origin decision** (optical grids, pixel meaning, and IFS products). It does **not** claim every package already implements it. The current implementations disagree in the ways the coverage table at the end of this chapter lists. Imported instrument data keep their authoritative calibration metadata; adapters transform that data explicitly into the common profile.
 
 ## Symbols and product metadata
 
@@ -61,7 +61,7 @@ Pixel centers, orientation, and pixel integrals. The 4-by-4 grid has centers 0 t
 
 ## East/north, telescope roll, and active image rotation
 
-D01 should record the matrix taking `(E,N)` into the chosen sky chart. For the worked examples here, choose
+The observer basis and node decision should record the matrix taking `(E,N)` into the chosen sky chart. For the worked examples here, choose
 
 $$
 \mathbf{s}=(x_{\rm sky},y_{\rm sky})=(E,N),\qquad
@@ -124,7 +124,7 @@ DM **mechanical surface displacement** and OPD are separate lengths. At normal r
 
 An adjoint is defined by an inner product, not by conjugation alone. For uniform grids, the physical inner products include pupil and focal cell areas. On a fixed angular chromatic grid, let `s=lambda_ref/lambda`; the forward transform scales its coordinates and amplitude by s. Its adjoint under the **stored fixed-grid area** must use that same measure. A backward routine integrating over native coordinates `s u` introduces an additional `s^2` area factor unless its amplitude conversion compensates for it.
 
-physicaloptix's current broadband test checks an adjoint identity using the wavelength-native focal measure. That identity can pass while the fixed-grid identity differs by `s^2`. D06 must distinguish those operators before backward propagation is used as a physical return path. Forward-only energy agreement does not settle this choice.
+physicaloptix's current broadband test checks an adjoint identity using the wavelength-native focal measure. That identity can pass while the fixed-grid identity differs by `s^2`. The image coordinates and PSFlet origin decision must distinguish those operators before backward propagation is used as a physical return path. Forward-only energy agreement does not settle this choice.
 
 ## Signed intensity changes and absolute light
 
@@ -164,30 +164,30 @@ coronachrome's current renderer and extractor agree on this flattening. Selected
 
 ## Independent acceptance fixtures and adoption stages
 
-A shared asymmetric fixture, **O-ASYM-GRID**, should supply independently calculated expected pixels, energies, and covariance entries. Include odd and even grids, a non-geometric imported center, signed x/y tilts, three wavelengths, a destructive-interference case, and two overlapping lenslets. Check the same declared source through both optical producers and every consumer. Agreement between two paths calling the same conversion is useful regression evidence but cannot establish the conversion's correctness. Deliberate axis swaps, conjugations, omitted area factors, and duplicated centroid shifts must make the fixture fail.
+A shared **Asymmetric grid fixture** should supply independently calculated expected pixels, energies, and covariance entries. Include odd and even grids, a non-geometric imported center, signed x/y tilts, three wavelengths, a destructive-interference case, and two overlapping lenslets. Check the same declared source through both optical producers and every consumer. Agreement between two paths calling the same conversion is useful regression evidence but cannot establish the conversion's correctness. Deliberate axis swaps, conjugations, omitted area factors, and duplicated centroid shifts must make the fixture fail.
 
-Use **S0** for decisions and vocabulary, **S1** for boundary repairs/import, **S2** for a fixed campaign, **S3** for adaptive use, **S4** for image/IFS products, and **S5** for ensembles and external comparisons. The table assigns each finding to implementation owners and the stage that needs their contract established.
+Use the **conventions stage** for decisions and vocabulary, the **boundary-anchor stage** for boundary repairs/import, the **fixed-campaign stage** for a fixed campaign, the **adaptive-choice stage** for adaptive use, the **images-and-IFS stage** for image/IFS products, and the **ensembles-and-references stage** for ensembles and external comparisons. The table assigns each finding to implementation owners and the stage that needs their contract established.
 
 | Finding | Contract owner | Adoption gate |
 |---|---|---|
-| OPT-01: signed coherent residual is clipped before adding its compatible floor | coronagraphoto; physicaloptix and optixstuff (floor metadata) | S1 composition before S4 coherent imaging; **O-ASYM-GRID** |
-| OPT-02: the scalar stellar-leakage seam still mixes per-pixel intensity with density | optixstuff (scalar contract); yippy and jaxedith (adapters) | S1 absolute leakage anchor before S2 |
-| OPT-03: YIP centers are not honored uniformly across emission, lookup and symmetry | yippy; optixstuff (center transport) | S1 imported-center authority; S4 astrometry; **O-ASYM-GRID** |
-| OPT-04: chromatic Fraunhofer backward is an adjoint under a different measure | physicaloptix | S0 D06 measure; S1 backward operator before S4 |
-| OPT-05: chromatic speckle products lose the distinction between native and reference-wavelength grids | physicaloptix and optixstuff; coronagraphoto | S1 wavelength-grid metadata before S4 |
-| OPT-06: maintenance export still defaults the focal sampling to 0.25 | tiptilt (maintenance export) | S1 derive sampling before S4 controlled residuals |
-| OPT-07: target-sampled image APIs still promise conservation that center interpolation does not supply | hwoutils; optixstuff and coronagraphoto (consumers) | S0 D06 pixel meaning; S4 integration convergence |
-| OPT-08: IFS origin and lenslet indexing are not the common geometric-center convention | coronachrome | S0 D01/D06 origins; S4 entrance-to-detector anchor |
-| OPT-09: hexagonal lenslet centers are paired with square collection cells | coronachrome | S4 physical cell geometry or explicit hex restriction |
-| OPT-10: PSFlet normalization erases window and detector-edge losses | coronachrome; physicaloptix (PSFlet pack emitter) | S1 loss ownership; S4 capture and sensitivity |
-| OPT-11: physical PSFlet packs double-apply an aberration centroid | physicaloptix (PSFlet pack emitter); coronachrome | S1 centroid-relative format; S4 signed placement; **O-ASYM-GRID** |
-| OPT-12: alternate science pixel scale changes template location but not template sampling | coronalyze (template provider) | S1 grid compatibility; S4 flux recovery |
-| OPT-13: rectangular crops with mixed parity move the PathCoronagraph origin | physicaloptix (PathCoronagraph) | S1 mixed-parity grid support or restriction; **O-ASYM-GRID** |
-| OPT-14: telescope roll is applied by the simulator but ignored by the coadd detection arms | coronalyze (FrameSet builder) | S1 frame declaration; S4 roll-aware detection; **O-ASYM-GRID** |
-| OPT-15: DM APIs use OPD coefficients while several hardware names suggest surface displacement | tiptilt; hardware and STOP (structural-thermal-optical performance) adapters | S0 OPD vocabulary; S1 conversion; S5 hardware comparison |
-| OPT-16: coherent sign and rotation conventions have useful consistent anchors | physicaloptix and hwoutils; external adapters | S0 preserve coherent profile; S1 signed fixtures (**O-ASYM-GRID**); S5 |
-| OPT-17: the Eqx pixel-scale name is repaired, but legacy image entry points remain unsafe | yippy and optixstuff (public APIs) | S1 sampling-explicit methods and legacy restrictions |
-| OPT-18: IFS flattening is internally consistent, but returned covariance is only selected within-spaxel blocks | coronachrome; spaceodyssey (campaign library) product and inference adapters | S4 covariance contract before S3 adaptive spectral use; **O-ASYM-GRID** |
-| OPT-19: external optical parity and STOP orientation corrections live in scripts, not a shared adapter contract | physicaloptix (external adapters); the STOP replay adapter | S1 frame manifest; S5 complex-field comparison |
+| Signed coherent residual is clipped before adding its compatible floor | coronagraphoto; physicaloptix and optixstuff (floor metadata) | boundary anchors: composition before coherent imaging (images and IFS); **Asymmetric grid fixture** |
+| The scalar stellar-leakage seam still mixes per-pixel intensity with density | optixstuff (scalar contract); yippy and jaxedith (adapters) | boundary anchors: absolute leakage anchor before the fixed campaign |
+| YIP centers are not honored uniformly across emission, lookup and symmetry | yippy; optixstuff (center transport) | boundary anchors: imported-center authority; images and IFS: astrometry; **Asymmetric grid fixture** |
+| Chromatic Fraunhofer backward is an adjoint under a different measure | physicaloptix | conventions: the measure under the image coordinates and PSFlet origin decision; boundary anchors: backward operator before images and IFS |
+| Chromatic speckle products lose the distinction between native and reference-wavelength grids | physicaloptix and optixstuff; coronagraphoto | boundary anchors: wavelength-grid metadata before images and IFS |
+| Maintenance export still defaults the focal sampling to 0.25 | tiptilt (maintenance export) | boundary anchors: derive sampling before controlled residuals (images and IFS) |
+| Target-sampled image APIs still promise conservation that center interpolation does not supply | hwoutils; optixstuff and coronagraphoto (consumers) | conventions: pixel meaning under the image coordinates and PSFlet origin decision; images and IFS: integration convergence |
+| IFS origin and lenslet indexing are not the common geometric-center convention | coronachrome | conventions: origins under the observer basis and node decision and the image coordinates and PSFlet origin decision; images and IFS: entrance-to-detector anchor |
+| Hexagonal lenslet centers are paired with square collection cells | coronachrome | images and IFS: physical cell geometry or explicit hex restriction |
+| PSFlet normalization erases window and detector-edge losses | coronachrome; physicaloptix (PSFlet pack emitter) | boundary anchors: loss ownership; images and IFS: capture and sensitivity |
+| Physical PSFlet packs double-apply an aberration centroid | physicaloptix (PSFlet pack emitter); coronachrome | boundary anchors: centroid-relative format; images and IFS: signed placement; **Asymmetric grid fixture** |
+| Alternate science pixel scale changes template location but not template sampling | coronalyze (template provider) | boundary anchors: grid compatibility; images and IFS: flux recovery |
+| Rectangular crops with mixed parity move the PathCoronagraph origin | physicaloptix (PathCoronagraph) | boundary anchors: mixed-parity grid support or restriction; **Asymmetric grid fixture** |
+| Telescope roll is applied by the simulator but ignored by the coadd detection arms | coronalyze (FrameSet builder) | boundary anchors: frame declaration; images and IFS: roll-aware detection; **Asymmetric grid fixture** |
+| DM APIs use OPD coefficients while several hardware names suggest surface displacement | tiptilt; hardware and STOP (structural-thermal-optical performance) adapters | conventions: OPD vocabulary; boundary anchors: conversion; ensembles and external references: hardware comparison |
+| Coherent sign and rotation conventions have useful consistent anchors | physicaloptix and hwoutils; external adapters | conventions: preserve coherent profile; boundary anchors: signed fixtures (**Asymmetric grid fixture**); ensembles and external references |
+| The Eqx pixel-scale name is repaired, but legacy image entry points remain unsafe | yippy and optixstuff (public APIs) | boundary anchors: sampling-explicit methods and legacy restrictions |
+| IFS flattening is internally consistent, but returned covariance is only selected within-spaxel blocks | coronachrome; spaceodyssey (campaign library) product and inference adapters | images and IFS: covariance contract before adaptive spectral use (adaptive choice); **Asymmetric grid fixture** |
+| External optical parity and STOP orientation corrections live in scripts, not a shared adapter contract | physicaloptix (external adapters); the STOP replay adapter | boundary anchors: frame manifest; ensembles and external references: complex-field comparison |
 
-An S2 scalar campaign need not wait for every S4 capability. It must declare that boundary and avoid claiming image-level evidence. Any adaptive policy or ensemble that later consumes an optical product inherits that product's unresolved convention and numerical-error limits.
+A scalar campaign at the fixed-campaign stage need not wait for every capability of the images-and-IFS stage. It must declare that boundary and avoid claiming image-level evidence. Any adaptive policy or ensemble that later consumes an optical product inherits that product's unresolved convention and numerical-error limits.

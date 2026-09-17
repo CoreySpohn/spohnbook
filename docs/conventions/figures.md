@@ -17,7 +17,7 @@ library's current behavior.
 | 3. Quantity flow | What changes between a source spectrum, photons, electrons and a reported measurement? | `hwo-conventions-pipeline-light.pdf` | `docs/conventions/figures/source/pipeline.d2` |
 | 4. Pixels and roll | Where is zero, which way does a rolled source move, and what should refinement conserve? | `hwo-conventions-pixels-light.pdf` | `pixels()` in `tools/build_conventions_figures.py` |
 | 5. Reporting and information | What is observed on a nondetection, and which likelihood/information belongs to it? | `hwo-conventions-measurement-light.pdf` | `docs/conventions/figures/source/measurement.d2` |
-| 6. Integration stages | Which gates precede the fixed campaign, and which extensions can proceed separately? | `hwo-conventions-roadmap-light.pdf` | `docs/conventions/figures/source/roadmap.d2` |
+| 6. Integration stages | Which stages (conventions and boundary anchors) gate the fixed campaign, and which extensions (adaptive choice, images and IFS, and ensembles and external references) can proceed separately? | `hwo-conventions-roadmap-light.pdf` | `docs/conventions/figures/source/roadmap.d2` |
 | 7. Color roles | Which colormap encodes which image quantity, and which palette hue and second channel belong to which plotted entity? | `hwo-conventions-color-light.pdf` | `color_roles()` in `tools/build_conventions_figures.py` |
 
 ### Figure 1: direction before formula
@@ -135,13 +135,13 @@ value, including any retained response metadata.
 :class: only-light
 :name: fig-atlas-roadmap
 
-The adoption stages S0 to S5: which gates precede the fixed campaign, and which extensions can proceed separately.
+The six adoption stages (conventions, boundary anchors, fixed campaign, adaptive choice, images and IFS, and ensembles and external references): which gates precede the fixed campaign, and which extensions can proceed separately.
 ```
 
 ```{figure} figures/hwo-conventions-roadmap-dark.svg
 :class: only-dark
 
-The adoption stages S0 to S5: which gates precede the fixed campaign, and which extensions can proceed separately.
+The six adoption stages (conventions, boundary anchors, fixed campaign, adaptive choice, images and IFS, and ensembles and external references): which gates precede the fixed campaign, and which extensions can proceed separately.
 ```
 
 The first fixed campaign needs certified conventions and the boundaries it

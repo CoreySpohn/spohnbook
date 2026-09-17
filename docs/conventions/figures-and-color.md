@@ -164,22 +164,22 @@ does not verify the science of any figure.
 
 | Fixture | Required discriminator |
 |---|---|
-| **C-ROLE-SWATCH** | Every image role and every curve role renders in both modes; within one mode no two image roles resolve to the same map and no two curve roles resolve to the same color. The swatch figure in this chapter is the reference rendering. |
-| **C-GRAY-PAIR** | Every pair of curve roles that can share a panel is distinguishable after conversion to grayscale by its second channel alone: marker, linestyle or direct label. A pair separated only by hue fails. |
-| **C-DEFAULT-FREE** | No figure in the suite's documentation calls a matplotlib map or a default color by name: no map name in a `cmap` argument, no cycle color such as `C0`, no bare hex value. Every color in figure code is a role. |
+| **Role swatch in both modes** | Every image role and every curve role renders in both modes; within one mode no two image roles resolve to the same map and no two curve roles resolve to the same color. The swatch figure in this chapter is the reference rendering. |
+| **Grayscale pair distinction** | Every pair of curve roles that can share a panel is distinguishable after conversion to grayscale by its second channel alone: marker, linestyle or direct label. A pair separated only by hue fails. |
+| **No map names or bare colors in figure code** | No figure in the suite's documentation calls a matplotlib map or a default color by name: no map name in a `cmap` argument, no cycle color such as `C0`, no bare hex value. Every color in figure code is a role. |
 
 ## Coverage
 
-Gates are **S0** convention decisions and **S1** boundary repairs, as the
-handbook index defines them. Listed owners and gates are proposed, not completed
-work.
+Gates are **the conventions stage** (convention decisions) and **the
+boundary-anchor stage** (boundary repairs), as the handbook index defines them.
+Listed owners and gates are proposed, not completed work.
 
 | Finding | Proposed owner | Gate |
 |---|---|---|
-| COL-01: hwostyle `intensity` and `readouts` share magma in dark mode | hwostyle | S0 |
-| COL-02: hwostyle `opd` and `residual` share one map | hwostyle | S0 |
-| COL-03: hwostyle planet and data, disk and envelope, model and highlight share colors | hwostyle | S0 |
-| COL-04: hwostyle has no `pupil` or `statistic` role | hwostyle | S0 |
-| COL-05: eyepiece corner plots hardcode the truth color and the density map | eyepiece | S1 |
-| COL-06: eyepiece image functions take map names, not roles, as their override | eyepiece | S1 |
-| COL-07: documentation pages call maps by name where a role should exist | this handbook | S1 |
+| hwostyle `intensity` and `readouts` share magma in dark mode | hwostyle | conventions |
+| hwostyle `opd` and `residual` share one map | hwostyle | conventions |
+| hwostyle planet and data, disk and envelope, model and highlight share colors | hwostyle | conventions |
+| hwostyle has no `pupil` or `statistic` role | hwostyle | conventions |
+| eyepiece corner plots hardcode the truth color and the density map | eyepiece | boundary anchors |
+| eyepiece image functions take map names, not roles, as their override | eyepiece | boundary anchors |
+| documentation pages call maps by name where a role should exist | this handbook | boundary anchors |

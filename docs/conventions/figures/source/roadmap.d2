@@ -1,11 +1,11 @@
 # Arrows are prerequisite gates, not an imposed order between the three extensions.
 direction: down
-foundation: "S0  Define the contracts\nHandbook + decisions + independent fixtures\nDocumentation is part of acceptance" {class: stage}
-boundaries: "S1  Repair and certify boundaries\nGeometry / import / radiometry / detector\nNamed source and consumer agree with an anchor" {class: stage}
-fixed: "S2  One fixed physical campaign\nKnown companion, few visits, explicit reporting\nRefit, persist, resume, account once" {class: stage}
-adaptive: "S3  Adaptive choice\nResponse support + cache identity\nInformation agrees with reported data" {class: model}
-images: "S4  Images and IFS\nCenters + coherent light + response losses\nCorrelated measurement calibration" {class: model}
-ensemble: "S5  Ensembles and external references\nEstimator uncertainty + matched experiments\nBroader workflows carry their own gates" {class: model}
+foundation: "Conventions\nDefine the contracts\nHandbook + decisions + independent fixtures\nDocumentation is part of acceptance" {class: stage}
+boundaries: "Boundary anchors\nRepair and certify boundaries\nGeometry / import / radiometry / detector\nNamed source and consumer agree with an anchor" {class: stage}
+fixed: "Fixed campaign\nOne fixed physical campaign\nKnown companion, few visits, explicit reporting\nRefit, persist, resume, account once" {class: stage}
+adaptive: "Adaptive choice\nResponse support + cache identity\nInformation agrees with reported data" {class: model}
+images: "Images and IFS\nCenters + coherent light + response losses\nCorrelated measurement calibration" {class: model}
+ensemble: "Ensembles and external references\nEstimator uncertainty + matched experiments\nBroader workflows carry their own gates" {class: model}
 foundation -> boundaries: {style.stroke: ${edge}}
 boundaries -> fixed: {style.stroke: ${edge}}
 fixed -> adaptive: {style.stroke: ${edge}}

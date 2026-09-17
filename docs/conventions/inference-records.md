@@ -8,7 +8,8 @@ It therefore depends on the reporting rule, the calibration and reduction, and
 which other records share the same underlying noise or evidence.
 
 This chapter defines the intended statistical boundaries. The proposed profiles
-remain pending decisions D04 and D07 in [the handbook](index.md). The current
+remain pending the reporting law decision and the evidence and parameter
+chart decision in [the handbook](index.md). The current
 implementations disagree in the ways the coverage table at the end of this
 chapter lists. Nothing here asserts that a generic joint imaging likelihood or
 portable posterior already exists.
@@ -82,7 +83,8 @@ both always produce the same null record, posterior weights remain $(1/2,1/2)$
 and information is zero. If the record identifies the hypothesis perfectly,
 information is $\ln 2$ nats. The current scheduler implementation in planit-py
 fails the first limit by adding an alias term for measurements that are never
-reported (INF-03).
+reported (the finding on an information score that counts never-reported
+measurements).
 
 A response also has a domain. Below an inner working angle, beyond a tabulated
 outer boundary, or outside a calibrated wavelength range, record an explicit
@@ -90,7 +92,9 @@ unsupported or physically unobservable result according to the response's
 contract. These states are not an infinite sensitivity. Prediction, sampling,
 likelihood and candidate scoring must use the same boundary policy. When an
 exposure or calibration changes the response, its cache identity changes too,
-or the changed arrays must remain dynamic function inputs (INF-01/02).
+or the changed arrays must remain dynamic function inputs (the findings on
+contrast-curve support meaning opposite things in scheduling and inference, and
+on a changed response curve reusing the old compiled experiment).
 
 ## Covariance describes an ordered, dimensional vector
 
@@ -124,7 +128,9 @@ The same principle applies to IFS extraction: within-spaxel spectral blocks do
 not imply zero covariance between overlapping spaxels. A full extracted
 covariance is useful only if its consumer preserves the axes, calibration and
 estimator meaning. Current diagonal interfaces remain explicit capability
-limitations (INF-05 and OPT-18).
+limitations (the finding on full covariance having producers while several
+consumers accept only diagonals, and the optics chapter's finding on IFS
+covariance returned only as selected within-spaxel blocks).
 
 ## A posterior needs coordinates and a normalization history
 
@@ -145,20 +151,26 @@ likelihood and proper prior. A normalized mixture weight is not $Z$. An ELBO is 
 lower bound on log evidence under its assumptions, not an interchangeable
 estimate. A log posterior potential that omits constants can be sufficient for a
 fixed-noise parameter fit while being insufficient for model evidence or fitting
-the noise scale (INF-06/07).
+the noise scale (the findings on evidence, ELBO and cluster mass sharing one
+public field, and on posterior-only Gaussian helpers feeding an
+evidence-capable backend interface).
 
-**Proposed D07 contract:** posterior component weights, evidence value, estimator
-kind and error are separate fields. An unavailable quantity is typed unavailable;
-the claim layer (the record type that carries a scientific claim and its
-evidence) rejects an evidence-based comparison requiring it. Compression
-preserves evidence with its provenance or declares it unavailable. It never
-relabels component mass as evidence.
+**Proposed contract for the evidence and parameter chart decision:** posterior
+component weights, evidence value, estimator kind and error are separate
+fields. An unavailable quantity is typed unavailable; the claim layer (the
+record type that carries a scientific claim and its evidence) rejects an
+evidence-based comparison requiring it. Compression preserves evidence with its
+provenance or declares it unavailable. It never relabels component mass as
+evidence.
 
 Clustering and covariance floors operate in a declared dimensionless chart.
 Adding $10^{-6}$ to a variance in meters squared and to the same variance in
 kilometers squared implements different approximations. Test unit changes and
 angle-wrap boundaries; label any display-only covariance cap as a visualization
-product rather than posterior samples for scientific analysis (INF-08/09).
+product rather than posterior samples for scientific analysis (the findings on
+a posterior's coordinate system being mostly implicit and possibly
+process-local, and on clustering and regularization depending on arbitrary
+parameter units).
 
 ## Records distinguish acquisition, interpretation and use
 
@@ -190,7 +202,8 @@ Missing data, an unsuccessful acquisition, a masked value, an upper limit, and a
 successful nondetection are distinct states. Unsupported modalities must raise a
 named capability error. They cannot be silently omitted because a particular
 multi-planet model lacks a branch. Capacity overflow must name the limit before
-array padding fails (INF-15).
+array padding fails (the finding on supported channels and capacity being part
+of the data contract).
 
 ## A reproducible campaign preserves causality
 
@@ -211,7 +224,15 @@ versions and calibration identity; reject unintended overwrite of an immutable
 run. Checkpoint both acquired-but-unassimilated records and completed charges so
 resume neither resimulates the observation nor double counts it. Keep truth out
 of every policy/update/claim input; independent structural checks complement
-behavioral tests (INF-10..16).
+behavioral tests. These requirements answer seven findings in the coverage
+table: the ones on acquisition, product, target and planet identities not being
+interchangeable; on stable random identity being claimed while the loop keys
+draws by global step; on science time, occupied time and budget time being
+conflated; on SNR, significance, false-alarm probability and sequential
+evidence needing distinct types; on precision and artifact identity not yet
+pinning the scientific interpretation; on supported channels and capacity being
+part of the data contract; and on the truth/model firewall being a convention
+without full structural enforcement.
 
 An SNR, a detection statistic, a false-alarm probability, a posterior probability,
 and a sequential evidence process are different quantities. Name the statistic
@@ -220,35 +241,38 @@ does not inherit the error guarantee of one prespecified exposure.
 
 ## Named fixtures and coverage
 
-**I-REPORT** normalizes the scalar threshold example and checks detection
-frequency plus the selected distribution. **I-NULL** checks zero and $\ln2$
-information limits. **I-RESPONSE** checks response support and that a warm cache
-and a fresh cache give the same answer for the same facility switched A to B to
-A. **I-COV** compares the explicit-offset and marginalized correlated Gaussian.
-**I-EVIDENCE** uses a proper conjugate model with analytic evidence. **I-CHART**
-checks unit/column/epoch changes and serialization. **I-REPLAY** inserts an
+**Reported-measurement distribution** normalizes the scalar threshold example
+and checks detection frequency plus the selected distribution. **Null-outcome
+information** checks zero and $\ln2$ information limits. **Response support and
+cache identity** checks response support and that a warm cache and a fresh cache
+give the same answer for the same facility switched A to B to A.
+**Shared-calibration covariance** compares the explicit-offset and marginalized
+correlated Gaussian. **Evidence normalization** uses a proper conjugate model
+with analytic evidence. **Parameter chart and units** checks unit/column/epoch
+changes and serialization. **Replay and exactly-once charge** inserts an
 unrelated visit and resumes after acquisition, requiring exactly-once
 charge/assimilation with matched physical history.
 
-These are fixture definitions, not new passing tests. S0 selects their
-contracts; later stages implement them with independently derived expectations.
+These are fixture definitions, not new passing tests. The conventions stage
+selects their contracts; later stages implement them with independently derived
+expectations.
 
 | Finding | Proposed owner and disposition | Fixture | First gate |
 |---|---|---|---|
-| INF-01: Contrast-curve support has opposite meanings in scheduling and inference | photomancy: one response-support policy | I-RESPONSE | S1; required by S3 |
-| INF-02: Changing the response curve can reuse the old compiled experiment | photomancy: immutable response/cache identity or dynamic inputs | I-RESPONSE | S3 |
-| INF-03: The information score can count measurements that are never reported | photomancy: information about the reported record | I-NULL | S3 |
-| INF-04: Hard detection, probit nondetection, and Gaussian magnitude errors are different experiments | measurement adapter + photomancy: D04 joint reporting law | I-REPORT | S0 -> S2 |
-| INF-05: Full covariance has producers but several consumers only accept diagonals | product owners + photomancy: covariance axes and shared nuisances | I-COV | S0 -> S2; S4 spectra |
-| INF-06: Evidence, ELBO, and cluster mass share one public field | photomancy: evidence distinct from ELBO/component mass | I-EVIDENCE | S0; before model comparison |
-| INF-07: Posterior-only Gaussian helpers feed an evidence-capable backend interface | photomancy: normalized likelihood/proper prior for evidence | I-EVIDENCE | S1; before model comparison |
-| INF-08: A posterior's coordinate system is mostly implicit and may be process-local | photomancy: persist reconstructible parameter chart | I-CHART | S1 -> S2 |
-| INF-09: Clustering and regularization depend on arbitrary parameter units | photomancy: scale-aware regularization and periodic metrics | I-CHART | S1; before new charts |
-| INF-10: Acquisition, product, target, and planet identities are not interchangeable | spaceodyssey (campaign library)/import adapters: stable acquisition/product/association IDs | | S0 -> S2 |
-| INF-11: Stable random identity is claimed, but the loop keys draws by global step | spaceodyssey: meaning-keyed RNG and explicit coupling | I-REPLAY | S2 |
-| INF-12: Science time, occupied time, and budget time are conflated | spaceodyssey + planit-py: interval and resource ownership | I-REPLAY | S0 -> S2 |
-| INF-13: SNR, significance, false-alarm probability, and sequential evidence need distinct types | coronalyze/spaceodyssey claim adapters: statistic and calibration semantics | | S2; sequential extension separately gated |
-| INF-14: Precision and artifact identity do not yet pin the scientific interpretation | spaceodyssey: fixed precision, complete run identity, collision behavior | | S2 |
-| INF-15: Supported channels and capacity are part of the data contract | photomancy/import adapters: explicit supported data and capacity | | S1 -> S2 |
-| INF-16: The truth/model firewall is a convention without full structural enforcement | spaceodyssey: private truth and model-side signatures/checks | | S2 |
-| INF-17: Point values, intervals, distributions, and nuisance parameters need different semantics | configuration owners: typed point/distribution/interval meaning | | S0; interval execution deferred |
+| Contrast-curve support has opposite meanings in scheduling and inference | photomancy: one response-support policy | Response support and cache identity | boundary anchors; required by adaptive choice |
+| Changing the response curve can reuse the old compiled experiment | photomancy: immutable response/cache identity or dynamic inputs | Response support and cache identity | adaptive choice |
+| The information score can count measurements that are never reported | photomancy: information about the reported record | Null-outcome information | adaptive choice |
+| Hard detection, probit nondetection, and Gaussian magnitude errors are different experiments | measurement adapter + photomancy: the joint reporting law of the reporting law decision | Reported-measurement distribution | conventions -> fixed campaign |
+| Full covariance has producers but several consumers only accept diagonals | product owners + photomancy: covariance axes and shared nuisances | Shared-calibration covariance | conventions -> fixed campaign; spectra at images and IFS |
+| Evidence, ELBO, and cluster mass share one public field | photomancy: evidence distinct from ELBO/component mass | Evidence normalization | conventions; before model comparison |
+| Posterior-only Gaussian helpers feed an evidence-capable backend interface | photomancy: normalized likelihood/proper prior for evidence | Evidence normalization | boundary anchors; before model comparison |
+| A posterior's coordinate system is mostly implicit and may be process-local | photomancy: persist reconstructible parameter chart | Parameter chart and units | boundary anchors -> fixed campaign |
+| Clustering and regularization depend on arbitrary parameter units | photomancy: scale-aware regularization and periodic metrics | Parameter chart and units | boundary anchors; before new charts |
+| Acquisition, product, target, and planet identities are not interchangeable | spaceodyssey (campaign library)/import adapters: stable acquisition/product/association IDs | | conventions -> fixed campaign |
+| Stable random identity is claimed, but the loop keys draws by global step | spaceodyssey: meaning-keyed RNG and explicit coupling | Replay and exactly-once charge | fixed campaign |
+| Science time, occupied time, and budget time are conflated | spaceodyssey + planit-py: interval and resource ownership | Replay and exactly-once charge | conventions -> fixed campaign |
+| SNR, significance, false-alarm probability, and sequential evidence need distinct types | coronalyze/spaceodyssey claim adapters: statistic and calibration semantics | | fixed campaign; sequential extension separately gated |
+| Precision and artifact identity do not yet pin the scientific interpretation | spaceodyssey: fixed precision, complete run identity, collision behavior | | fixed campaign |
+| Supported channels and capacity are part of the data contract | photomancy/import adapters: explicit supported data and capacity | | boundary anchors -> fixed campaign |
+| The truth/model firewall is a convention without full structural enforcement | spaceodyssey: private truth and model-side signatures/checks | | fixed campaign |
+| Point values, intervals, distributions, and nuisance parameters need different semantics | configuration owners: typed point/distribution/interval meaning | | conventions; interval execution deferred |

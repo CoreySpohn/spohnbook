@@ -4,7 +4,7 @@
 
 An orbit predicts a relationship between bodies. An observation adds an observer, a coordinate system, a clock, and a reporting rule. Most failures at this boundary leave the orbit looking plausible: its separation stays positive, its period remains reasonable, and a synthetic fit can recover parameters generated with the same mistake. Signed positions, illumination and velocity distinguish the physical interpretations.
 
-This chapter separates three kinds of statements. **Physical identities** follow from the stated geometry or dynamical approximation. **Proposed choices** define a candidate public contract and remain pending at gate S0. **Current defects** describe the current implementations; the coverage table at the end of this chapter lists them.
+This chapter separates three kinds of statements. **Physical identities** follow from the stated geometry or dynamical approximation. **Proposed choices** define a candidate public contract and remain pending at the conventions stage gate. **Current defects** describe the current implementations; the coverage table at the end of this chapter lists them.
 
 ## Start with the observer
 
@@ -53,11 +53,11 @@ $$
 
 The limiting phase-function values are zero, $1/\pi$, and one at new phase, quadrature, and full phase. At finite observer distance, use the actual planet-to-observer vector: $\cos\alpha=(-\mathbf r)\cdot(\mathbf R_{\rm obs}-\mathbf r)/(r\lVert\mathbf R_{\rm obs}-\mathbf r\rVert)$. The supplement identity is the distant-observer limit.
 
-**Proposed choice:** physical-model inputs carry `illumination_angle_rad`; an observer-axis angle has a different name. A grid must say whether it stores intrinsic reflection or apparent contrast. The latter includes $r^{-2}$ and cannot generally be indexed by phase alone: an eccentric face-on orbit with $e=0.5$ has identical phase at periapsis and apoapsis but a 9:1 brightness ratio. Current skyscapes analytic models receive the supplementary angle, while imported grids encode that old dialect. Both sides require migration (GEO-01/02).
+**Proposed choice:** physical-model inputs carry `illumination_angle_rad`; an observer-axis angle has a different name. A grid must say whether it stores intrinsic reflection or apparent contrast. The latter includes $r^{-2}$ and cannot generally be indexed by phase alone: an eccentric face-on orbit with $e=0.5$ has identical phase at periapsis and apoapsis but a 9:1 brightness ratio. Current skyscapes analytic models receive the supplementary angle, while imported grids encode that old dialect. Both sides require migration (the findings on observer-axis angles entering illumination models unchanged and on ExoVista contrast grids in a private phase dialect).
 
 ## Choose a basis before interpreting orbital angles
 
-**Candidate D01, pending S0:** retain $+Z$ toward the observer and use a right-handed dynamical basis
+**Candidate for the observer basis and node decision, pending the conventions stage:** retain $+Z$ toward the observer and use a right-handed dynamical basis
 
 $$
 (\hat{\mathbf X},\hat{\mathbf Y},\hat{\mathbf Z})
@@ -88,7 +88,7 @@ The direct-imaging community's statement of this geometry is section 2.1 of Savr
 | phase angle $\beta$, $\cos\beta=-z/r$ | illumination angle $\alpha$, $\cos\alpha=(-\mathbf r)\cdot\hat{\mathbf o}/r$ |
 | $s=\lVert\mathbf r_{P/O}-(\mathbf r_{P/O}\cdot\hat{\mathbf e}_3)\hat{\mathbf e}_3\rVert$ | projected separation; $(\xi,\eta)\simeq(Y/d,X/d)$ |
 
-The observer direction, rotation order, node, phase angle and projected separation agree exactly. One sentence differs: the paper states that with the observer on $+\hat{\mathbf e}_3$ and $\hat{\mathbf e}_1$ chosen north, $\hat{\mathbf e}_2$ "becomes West-pointing", with east only for an observer on $-\hat{\mathbf e}_3$. For a right-handed frame viewed from $+\hat{\mathbf e}_3$ with $\hat{\mathbf e}_1$ up, $\hat{\mathbf e}_2$ lies to the viewer's left, which on the sky with north up is east, and $\mathrm{north}\times\mathrm{east}$ points toward the observer. The two statements cannot both hold. This chapter keeps $\hat{\mathbf Y}=\mathrm{east}$ and does not inherit the sentence; **G-BASIS-3** must certify the handedness before the D01 profile is accepted. EXOSIMS never names $\hat{\mathbf e}_1$ and $\hat{\mathbf e}_2$, so no code depends on it.
+The observer direction, rotation order, node, phase angle and projected separation agree exactly. One sentence differs: the paper states that with the observer on $+\hat{\mathbf e}_3$ and $\hat{\mathbf e}_1$ chosen north, $\hat{\mathbf e}_2$ "becomes West-pointing", with east only for an observer on $-\hat{\mathbf e}_3$. For a right-handed frame viewed from $+\hat{\mathbf e}_3$ with $\hat{\mathbf e}_1$ up, $\hat{\mathbf e}_2$ lies to the viewer's left, which on the sky with north up is east, and $\mathrm{north}\times\mathrm{east}$ points toward the observer. The two statements cannot both hold. This chapter keeps $\hat{\mathbf Y}=\mathrm{east}$ and does not inherit the sentence; **Three-axis basis transform** must certify the handedness before the observer basis and node profile is accepted. EXOSIMS never names $\hat{\mathbf e}_1$ and $\hat{\mathbf e}_2$, so no code depends on it.
 
 **Migration rule:** preserve the existing orbix profile under a distinct identifier until its meaning and adapters are certified. Its current first/second projected components are labeled RA/Dec; the candidate above must not replace those labels in place. Transform Cartesian states and covariance through a declared basis matrix, then derive or transform elements with independent anchors. Do not assume that swapping two output labels alone is a valid migration of fitted elements, angular momentum, and RV. For an orthogonal transform $Q$, polar vectors transform as $Q\mathbf r$; if $\det Q=-1$, cross products have the additional determinant factor. A reflection is not a rotation.
 
@@ -114,7 +114,7 @@ $$
 
 $t_p$ is defined modulo a period when only a wrapped mean anomaly is supplied. A fractional periastron parameter $\tau$ additionally requires its reference epoch: $M(t)=2\pi[(t-t_{\rm ref})/P-\tau]$. Reanchoring an ensemble requires each draw's own $n$; applying the nominal mean motion to every draw changes the prior's meaning.
 
-At circular or exactly face-on states, some element angles are non-unique. Acceptance checks compare reconstructed Cartesian states and observables. They must not invent a small physical inclination to avoid a singular derivative, as the current clipping behavior does (GEO-17).
+At circular or exactly face-on states, some element angles are non-unique. Acceptance checks compare reconstructed Cartesian states and observables. They must not invent a small physical inclination to avoid a singular derivative, as the current clipping behavior does (the finding on state-to-elements conversion inventing a small inclination at exactly equatorial states).
 
 ## Derive radial velocity from motion, then choose its units
 
@@ -141,7 +141,7 @@ If the same node convention and orbital phase are retained, the stellar periapsi
 
 Take a circular relative orbit with $a=1$ AU, $i=90$ deg, $\Omega=\omega_p=M_0=0$, and $t=t_0$. In the candidate basis, the planet is north of its star: $(X,Y,Z)=(a,0,0)$. It moves toward the observer, $\dot Z=na>0$. The star moves away, $\dot Z_\star<0$, so its recession RV is **positive**. An Earth/Sun mass pair gives about **+0.08946 m/s**. The illumination is quadrature, $\Phi=1/\pi$.
 
-A quarter period later the planet is at $+Z$: it is dark and the stellar reflex RV is zero. Three quarters of a period later it is at $-Z$: it is full and the RV is again zero. Brightness cannot determine the sign of RV by itself. The current photomancy formula gives the opposite signed stellar RV at the initial epoch and returns AU/day to a container declaring m/s (GEO-06/07).
+A quarter period later the planet is at $+Z$: it is dark and the stellar reflex RV is zero. Three quarters of a period later it is at $-Z$: it is full and the RV is again zero. Brightness cannot determine the sign of RV by itself. The current photomancy formula gives the opposite signed stellar RV at the initial epoch and returns AU/day to a container declaring m/s (the findings on RVData's m/s declaration reaching an AU/day likelihood without conversion and on the stellar RV sign conflicting with the documented observer direction).
 
 ## Public quantities and uncertainty transforms
 
@@ -183,7 +183,7 @@ Time origin, numerical format, time scale, timestamp location, and elapsed durat
 
 An exchanged epoch needs its **format** (JD, MJD, or relative days), **scale** (for example TAI, UTC or TDB), **reference epoch** for relative values, and **timestamp location/correction** (for example reception at a named observatory or a specified barycentric correction). It also needs an acquisition meaning: start, end, midpoint, or a defined effective epoch. Those labels remain distinct from when data become available to an inference engine.
 
-**Inherited choice:** the first physical profile uses TDB. That is a design baseline, not evidence that current adapters implement it. **Proposed completion at S0:** retain original timestamp metadata; convert at the adapter; evaluate orbits in TDB days relative to an explicit high-precision reference; charge exposure durations in SI seconds on a continuous clock. This does not identify TAI elapsed seconds with TDB coordinate intervals or prescribe barycentric light-time correction for every simulated image. Each measurement model declares the required event convention and accuracy.
+**Inherited choice:** the first physical profile uses TDB. That is a design baseline, not evidence that current adapters implement it. **Proposed completion at the conventions stage:** retain original timestamp metadata; convert at the adapter; evaluate orbits in TDB days relative to an explicit high-precision reference; charge exposure durations in SI seconds on a continuous clock. This does not identify TAI elapsed seconds with TDB coordinate intervals or prescribe barycentric light-time correction for every simulated image. Each measurement model declares the required event convention and accuracy.
 
 On one scale, $\mathrm{MJD}=\mathrm{JD}-2400000.5$. A scale conversion is different: at numeric MJD 60000, default UTC and TAI represent instants 37 seconds apart. Rebuilding a `Time` from `.jd` without its scale can therefore change the event. A float32 JD near J2000 has six-hour spacing; use adequate precision and a nearby reference or split epoch before converting to numerical arrays.
 
@@ -193,41 +193,41 @@ For an exposure interval, evaluate the time-dependent prediction over that inter
 
 ## Named acceptance fixtures
 
-These proposed fixtures become executable only after S0 selects the profile. Expected answers come from primitives or independent state geometry, not the producer's own conversion. Passing them verifies the boundary mathematics; it is not measured-data validation.
+These proposed fixtures become executable only after the conventions stage selects the profile. Expected answers come from primitives or independent state geometry, not the producer's own conversion. Passing them verifies the boundary mathematics; it is not measured-data validation.
 
 | Fixture | Required discriminator |
 |---|---|
-| **G-PHASE-3** | Equal-radius near, quadrature and far positions give $\Phi=0,1/\pi,1$; phase labels survive grid import. |
-| **G-ECCENTRIC-9** | Face-on $e=0.5$ peri/apo samples share phase but have a 9:1 contrast ratio. |
-| **G-STATE-ORIGIN** | Nonzero stellar barycentric position and velocity; reconstruct a complete eccentric relative state and quantify later Kepler/N-body divergence separately. |
-| **G-RV-SIGNED** | Finite-difference the stellar Cartesian position and verify $v_r=-\dot Z_\star$ in m/s, with a non-negligible-mass case and omega-body round-trip. |
-| **G-BASIS-3** | Transform all three basis vectors and an inclined eccentric orbit; certify node, handedness and signed east/north outputs. |
-| **G-ASTROM-COV** | Declination 60 deg, correlated errors, proper-motion unit conversion and uncertain reference propagation. |
-| **G-TIME-EVENT** | One event in JD/MJD/relative-day and UTC/TAI/TDB encodings; preserve one-second differences and 10-day elapsed-year sampling across a leap year. |
-| **G-ROLL-PAIR** | One asymmetric source at two unequal rolls returns one signed sky location with certified flux and uncertainty. |
-| **G-ENSEMBLE-EPOCH** | Distinct semi-major axes retain their own phase advance; storage precision preserves supported threshold decisions. |
+| **Phase at three positions** | Equal-radius near, quadrature and far positions give $\Phi=0,1/\pi,1$; phase labels survive grid import. |
+| **Eccentric periastron and apoastron contrast** | Face-on $e=0.5$ peri/apo samples share phase but have a 9:1 contrast ratio. |
+| **Barycentric state origin** | Nonzero stellar barycentric position and velocity; reconstruct a complete eccentric relative state and quantify later Kepler/N-body divergence separately. |
+| **Signed stellar radial velocity** | Finite-difference the stellar Cartesian position and verify $v_r=-\dot Z_\star$ in m/s, with a non-negligible-mass case and omega-body round-trip. |
+| **Three-axis basis transform** | Transform all three basis vectors and an inclined eccentric orbit; certify node, handedness and signed east/north outputs. |
+| **Astrometric covariance transform** | Declination 60 deg, correlated errors, proper-motion unit conversion and uncertain reference propagation. |
+| **One event in every time encoding** | One event in JD/MJD/relative-day and UTC/TAI/TDB encodings; preserve one-second differences and 10-day elapsed-year sampling across a leap year. |
+| **Two-roll source recovery** | One asymmetric source at two unequal rolls returns one signed sky location with certified flux and uncertainty. |
+| **Ensemble epoch and precision** | Distinct semi-major axes retain their own phase advance; storage precision preserves supported threshold decisions. |
 
 ## Coverage and disposition
 
-The table accounts for every geometry finding. Gates are **S0** convention decisions, **S1** boundary repairs/import, **S2** fixed physical campaign, **S3** adaptive choice, **S4** image/IFS, and **S5** ensembles/external comparison. S3 inherits the certified geometry and time profile; it must not introduce a second convention for predictions used by policy. Listed owners and gates are proposed, not completed work.
+The table accounts for every geometry finding. Gates are the **conventions** stage (convention decisions), the **boundary anchors** stage (boundary repairs/import), the **fixed campaign** stage (a fixed physical campaign), the **adaptive choice** stage, the **images and IFS** stage (image/IFS), and the **ensembles and external references** stage (ensembles/external comparison). The adaptive-choice stage inherits the certified geometry and time profile; it must not introduce a second convention for predictions used by policy. Listed owners and gates are proposed, not completed work.
 
 | Finding | Disposition in this chapter | Proposed owner | Gate |
 |---|---|---|---|
-| GEO-01: Observer-axis angles enter illumination models unchanged | Name illumination separately; repair supplement transfer | orbix + skyscapes | S0 -> S1 |
-| GEO-02: ExoVista contrast grids are in a private phase dialect and lose distance information | Version grid dialect; preserve distance/time dependence | skyscapes import/physical models | S0 -> S1 |
-| GEO-03: Barycentric ExoVista vectors are used as star-relative vectors, then mixed with header elements | Subtract full stellar state; use one coherent element authority | skyscapes + exoverses | S1 |
-| GEO-04: Total-mass import and stellar-mass propagation are not the same two-body model | Declare total-mass dynamics or bounded approximation | orbix + photomancy | S0 -> S1 |
-| GEO-05: Elapsed Julian years are interpreted as calendar decimal years | Separate elapsed Julian duration from calendar year and absolute origin | hwoutils + scene adapters | S0 -> S1 |
-| GEO-06: RVData's m/s declaration reaches an AU/day likelihood without conversion | Convert RV values, errors, jitter and covariance together | photomancy + observation import | S1 |
-| GEO-07: Stellar RV sign conflicts with the documented observer direction and shared planet omega | Anchor stellar recession to Cartesian reflex derivative | orbix + photomancy | S0 -> S1 |
-| GEO-08: Orbix's RA/Dec projection is an axis-swapped literature element convention | Resolve D01 basis/node profile; retain explicit legacy adapter | orbix + astrometry import | S0 -> S1 |
-| GEO-09: The inherited ExoVista frame helper differs from the current generator off the system plane | Version ExoVista transform; test off-plane vectors | exoverses + skyscapes | S1 |
-| GEO-10: RA offsets and proper motions need the tangent-plane cos(dec) convention | Declare tangent offsets and PM convention; transform covariance | observation/catalog adapters | S0 -> S1 |
-| GEO-11: Exoverses exports and imports sqrt(e) omega coordinates with opposite body ownership | Name stellar/planet omega ownership in exchanged parameters | exoverses + RV adapters | S1 |
-| GEO-12: Mission days, J2000-relative days, JD and MJD meet without an implemented epoch bridge | Bridge absolute/relative epochs with certified precision | observation adapters + spaceodyssey (campaign library)/planit-py | S0 -> S1 -> S2 |
-| GEO-13: EXOSIMS TAI epochs are recreated as default UTC in exoverses adapters | Preserve scale/location/correction through time conversion | EXOSIMS/exoverses + observation adapters | S1; S5 external replay |
-| GEO-14: Observatory keepout defaults define two different observable sets | One platform-owned keepout configuration and endpoint policy | orbix Observatory + spaceodyssey | S0 -> S2 |
-| GEO-15: Fixed RA/Dec catalog metadata lacks epoch and motion when consumed for future observatory geometry | Propagate catalog solution to the observing epoch | catalog adapters + observatory context | S1 -> S2 |
-| GEO-16: Roll is applied by the simulator but ignored when current detection arms coadd | Certify detector-to-sky alignment before multi-roll coadds | coronagraphoto + coronalyze | S4 |
-| GEO-17: State-to-elements conversion invents a small inclination at exactly equatorial states | Preserve exact state while handling singular element derivatives | orbix | S1 |
-| GEO-18: Legacy EXOSIMS orbital ensembles are not currently executable, and their epoch anchor is ambiguous | Restore executable external adapter; declare ensemble epoch and precision | exosims-plugins | S5 |
+| Observer-axis angles enter illumination models unchanged | Name illumination separately; repair supplement transfer | orbix + skyscapes | conventions -> boundary anchors |
+| ExoVista contrast grids are in a private phase dialect and lose distance information | Version grid dialect; preserve distance/time dependence | skyscapes import/physical models | conventions -> boundary anchors |
+| Barycentric ExoVista vectors are used as star-relative vectors, then mixed with header elements | Subtract full stellar state; use one coherent element authority | skyscapes + exoverses | boundary anchors |
+| Total-mass import and stellar-mass propagation are not the same two-body model | Declare total-mass dynamics or bounded approximation | orbix + photomancy | conventions -> boundary anchors |
+| Elapsed Julian years are interpreted as calendar decimal years | Separate elapsed Julian duration from calendar year and absolute origin | hwoutils + scene adapters | conventions -> boundary anchors |
+| RVData's m/s declaration reaches an AU/day likelihood without conversion | Convert RV values, errors, jitter and covariance together | photomancy + observation import | boundary anchors |
+| Stellar RV sign conflicts with the documented observer direction and shared planet omega | Anchor stellar recession to Cartesian reflex derivative | orbix + photomancy | conventions -> boundary anchors |
+| Orbix's RA/Dec projection is an axis-swapped literature element convention | Resolve the observer basis and node profile; retain explicit legacy adapter | orbix + astrometry import | conventions -> boundary anchors |
+| The inherited ExoVista frame helper differs from the current generator off the system plane | Version ExoVista transform; test off-plane vectors | exoverses + skyscapes | boundary anchors |
+| RA offsets and proper motions need the tangent-plane cos(dec) convention | Declare tangent offsets and PM convention; transform covariance | observation/catalog adapters | conventions -> boundary anchors |
+| Exoverses exports and imports sqrt(e) omega coordinates with opposite body ownership | Name stellar/planet omega ownership in exchanged parameters | exoverses + RV adapters | boundary anchors |
+| Mission days, J2000-relative days, JD and MJD meet without an implemented epoch bridge | Bridge absolute/relative epochs with certified precision | observation adapters + spaceodyssey (campaign library)/planit-py | conventions -> boundary anchors -> fixed campaign |
+| EXOSIMS TAI epochs are recreated as default UTC in exoverses adapters | Preserve scale/location/correction through time conversion | EXOSIMS/exoverses + observation adapters | boundary anchors; ensembles and external references (external replay) |
+| Observatory keepout defaults define two different observable sets | One platform-owned keepout configuration and endpoint policy | orbix Observatory + spaceodyssey | conventions -> fixed campaign |
+| Fixed RA/Dec catalog metadata lacks epoch and motion when consumed for future observatory geometry | Propagate catalog solution to the observing epoch | catalog adapters + observatory context | boundary anchors -> fixed campaign |
+| Roll is applied by the simulator but ignored when current detection arms coadd | Certify detector-to-sky alignment before multi-roll coadds | coronagraphoto + coronalyze | images and IFS |
+| State-to-elements conversion invents a small inclination at exactly equatorial states | Preserve exact state while handling singular element derivatives | orbix | boundary anchors |
+| Legacy EXOSIMS orbital ensembles are not currently executable, and their epoch anchor is ambiguous | Restore executable external adapter; declare ensemble epoch and precision | exosims-plugins | ensembles and external references |

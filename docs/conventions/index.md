@@ -20,13 +20,20 @@ measures, the detector experiment, and the reporting law. Each chapter has
 definitions, public reference tables, an independent worked example, named
 acceptance fixtures, and a coverage table of findings with owners.
 
-The chapters refer to adoption stages. S0: the conventions and the independent
-fixtures with their tolerances are written down (this handbook). S1: each
-boundary anchor is implemented and passing in the library that owns it. S2: one
-fixed observing campaign runs end to end on those boundaries. S3: adaptive
-scheduling. S4: the image and integral-field paths. S5: ensembles and
-comparisons against external reference codes. A finding's stage is the earliest
-stage at which its repair is required.
+The chapters refer to six adoption stages, in order:
+
+- **The conventions stage**: the conventions and the independent fixtures with
+  their tolerances are written down (this handbook).
+- **The boundary-anchor stage**: each boundary anchor is implemented and
+  passing in the library that owns it.
+- **The fixed-campaign stage**: one fixed observing campaign runs end to end on
+  those boundaries.
+- **The adaptive-choice stage**: adaptive scheduling.
+- **The images-and-IFS stage**: the image and integral-field paths.
+- **The ensembles-and-references stage**: ensembles and comparisons against
+  external reference codes.
+
+A finding's stage is the earliest stage at which its repair is required.
 
 | Reader's question | Start here |
 |---|---|
@@ -78,10 +85,11 @@ Use these labels consistently in documentation, products and reviews:
 | Unsupported | Rejected before numerical execution; not silently approximated or omitted |
 
 A convention profile is a small, versioned declaration of related meanings.
-Suggested names such as `observer-toward-v1` are illustrative until S0 freezes the
-identifier and fields. Keep convention versions separate from package versions,
-data-schema versions and calibration revisions. A deprecation or conversion may
-span several package releases without changing the underlying physical meaning.
+Suggested names such as `observer-toward-v1` are illustrative until the
+conventions stage freezes the identifier and fields. Keep convention versions
+separate from package versions, data-schema versions and calibration revisions.
+A deprecation or conversion may span several package releases without changing
+the underlying physical meaning.
 
 ## Decision register
 
@@ -89,26 +97,27 @@ span several package releases without changing the underlying physical meaning.
 the contract has not been frozen and implementation must not assume agreement.
 Decided items are not reopened without new evidence.
 
-**Profile selection and implementation certification are separate gates.** S0
-freezes definitions, mathematical expectations, the migration rule and the
-acceptance design. The table's implementation-evidence column is then discharged
-at S1-S5, as each chapter's coverage table assigns. In particular, choosing
-D04's reporting law does not require an already calibrated campaign or adaptive
-scheduler.
+**Profile selection and implementation certification are separate gates.** The
+conventions stage freezes definitions, mathematical expectations, the migration
+rule and the acceptance design. The table's implementation-evidence column is
+then discharged from boundary anchors through ensembles and external
+references, as each chapter's coverage table assigns. In particular, the
+reporting law decision does not require an already calibrated campaign or
+adaptive scheduler.
 
-| ID | Decision and recommendation | State / owner | Required implementation evidence after profile selection |
+| Decision | Recommendation | State / owner | Required implementation evidence after profile selection |
 |---|---|---|---|
-| D01 | Retain +z toward observer; candidate right-handed dynamics use (north,east,toward), public astrometry uses (east,north). Preserve an explicitly identified legacy orbix profile during migration. External reference: Savransky 2019, section 2.1 (see the geometry chapter). | Pending; orbix + photomancy + scene adapters | Signed 3D basis/state/RV/illumination examples; external element transform; saved-posterior migration policy |
-| D02 | Replace the ambiguous meaning of dQE (the detector's quantum-efficiency degradation factor) with an explicit survival fraction (neutral 1), or an explicit fractional loss (neutral 0); never reinterpret old values silently. | Pending; optixstuff + jaxedith | Neutral/degraded cases across all adapters; serialized configuration mapping |
-| D03 | Define scalar stellar leakage as a density plus a precisely named averaging/aperture rule; every backend exports that meaning. | Pending; optixstuff + yippy + physicaloptix + jaxedith | Absolute image-aperture sum at two samplings and on both backends |
-| D04 | Choose the first campaign's actual reporting law, including joint position/flux, selection, nulls, nuisance treatment and covariance. | Pending; measurement adapter + coronalyze + photomancy | Normalization, detection frequencies, selected distributions, posterior calibration and always-null information limit |
-| D05 | Define the first acquisition experiment: actual read frames, parallel paths, rolls, background/reference estimation, live/occupied/charged time. | Pending; optixstuff + jaxedith + spaceodyssey (campaign library) / planit-py | Analytic count/variance budget and independently assembled time/resource ledger |
-| D06 | Name optical center, axis order, pixel measure, native/reference-wavelength grid, PSFlet origin, capture losses and covariance scope. Default generated images to geometric center; honor explicit imported calibration metadata. | Pending by enabled capability; optics/IFS owners | Odd/even/rectangular grids, signed rotations, refinement, centroid-once and edge-capture anchors |
-| D07 | Distinguish component mass, ELBO and evidence; persist an explicit parameter chart; evidence-based claims reject unavailable/invalid normalization. | Proposed contract; photomancy | Analytic evidence, compression/serialization and unit-change fixtures; backend capability table |
-| D08 | Keep the initial record envelope in spaceodyssey with domain-owned payloads; extract a separate distribution only after two working consumers demonstrate reuse. | Decided | Standalone export/import-to-photomancy plus spaceodyssey reuse of the same records, with dependency isolation |
-| D09 | Build the sampled fixed campaign first; do not require unused moments/integration methods on its adapters. Revisit an analytic/integrate engine with the matched external-reference deliverable. | Decided; spaceodyssey | One executable sampled path; unsupported engines reject explicitly; later reference engine has its own capability/evidence gate |
-| D10 | Allocate tolerances to observables before tests; use independent primitives, numerical refinement and calibrated Monte Carlo uncertainty; name external reference profiles. | Method required; domain and verification owners set budgets | Recorded error allocation, reference/configuration/source identity, positive and deliberately failing controls |
-| D11 | Encode each quantity with one colormap role and each plot entity with one palette role; retire map names from figure code. | Proposed; hwostyle + eyepiece | The swatch, grayscale-pair and default-free fixtures |
+| **Observer basis and node** | Retain +z toward observer; candidate right-handed dynamics use (north,east,toward), public astrometry uses (east,north). Preserve an explicitly identified legacy orbix profile during migration. External reference: Savransky 2019, section 2.1 (see the geometry chapter). | Pending; orbix + photomancy + scene adapters | Signed 3D basis/state/RV/illumination examples; external element transform; saved-posterior migration policy |
+| **Meaning of dQE** | Replace the ambiguous meaning of dQE (the detector's quantum-efficiency degradation factor) with an explicit survival fraction (neutral 1), or an explicit fractional loss (neutral 0); never reinterpret old values silently. | Pending; optixstuff + jaxedith | Neutral/degraded cases across all adapters; serialized configuration mapping |
+| **Stellar leakage measure** | Define scalar stellar leakage as a density plus a precisely named averaging/aperture rule; every backend exports that meaning. | Pending; optixstuff + yippy + physicaloptix + jaxedith | Absolute image-aperture sum at two samplings and on both backends |
+| **Reporting law** | Choose the first campaign's actual reporting law, including joint position/flux, selection, nulls, nuisance treatment and covariance. | Pending; measurement adapter + coronalyze + photomancy | Normalization, detection frequencies, selected distributions, posterior calibration and always-null information limit |
+| **Acquisition experiment** | Define the first acquisition experiment: actual read frames, parallel paths, rolls, background/reference estimation, live/occupied/charged time. | Pending; optixstuff + jaxedith + spaceodyssey (campaign library) / planit-py | Analytic count/variance budget and independently assembled time/resource ledger |
+| **Image coordinates and PSFlet origin** | Name optical center, axis order, pixel measure, native/reference-wavelength grid, PSFlet origin, capture losses and covariance scope. Default generated images to geometric center; honor explicit imported calibration metadata. | Pending by enabled capability; optics/IFS owners | Odd/even/rectangular grids, signed rotations, refinement, centroid-once and edge-capture anchors |
+| **Evidence and parameter chart** | Distinguish component mass, ELBO and evidence; persist an explicit parameter chart; evidence-based claims reject unavailable/invalid normalization. | Proposed contract; photomancy | Analytic evidence, compression/serialization and unit-change fixtures; backend capability table |
+| **Record envelope home** | Keep the initial record envelope in spaceodyssey with domain-owned payloads; extract a separate distribution only after two working consumers demonstrate reuse. | Decided | Standalone export/import-to-photomancy plus spaceodyssey reuse of the same records, with dependency isolation |
+| **Sampled campaign first** | Build the sampled fixed campaign first; do not require unused moments/integration methods on its adapters. Revisit an analytic/integrate engine with the matched external-reference deliverable. | Decided; spaceodyssey | One executable sampled path; unsupported engines reject explicitly; later reference engine has its own capability/evidence gate |
+| **Tolerances before tests** | Allocate tolerances to observables before tests; use independent primitives, numerical refinement and calibrated Monte Carlo uncertainty; name external reference profiles. | Method required; domain and verification owners set budgets | Recorded error allocation, reference/configuration/source identity, positive and deliberately failing controls |
+| **One encoding per quantity** | Encode each quantity with one colormap role and each plot entity with one palette role; retire map names from figure code. | Proposed; hwostyle + eyepiece | The swatch, grayscale-pair and default-free fixtures |
 
 Other inherited choices include separate truth and model access, a
 refit-from-original-prior baseline, causal availability, exactly-once
