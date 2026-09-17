@@ -184,6 +184,19 @@ verification evidence at the required level). The classifier and the map agree.
 
 ## Release and CI
 
+```{figure} figures/release-flow-light.svg
+:class: only-light
+:name: fig-release-flow
+
+How a commit becomes a release: the tests workflow and ReadTheDocs run on every push; release-please turns feat and fix commits into a release pull request; merging it tags the commit, and the tag publishes to PyPI through trusted publishing.
+```
+
+```{figure} figures/release-flow-dark.svg
+:class: only-dark
+
+How a commit becomes a release: the tests workflow and ReadTheDocs run on every push; release-please turns feat and fix commits into a release pull request; merging it tags the commit, and the tag publishes to PyPI through trusted publishing.
+```
+
 - Commit messages follow Conventional Commits on one line, `type(scope): message`:
   imperative mood, lowercase start, no trailing period, at most 72 characters, no
   body and no co-author trailer; the scope is the package or submodule. The one

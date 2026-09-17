@@ -3,6 +3,19 @@
 Pick the library by the question you are asking. Each one installs on its own
 from PyPI and has its own documentation; the [map](map.md) shows how they fit.
 
+```{figure} conventions/figures/hwo-conventions-pipeline-light.svg
+:class: only-light
+:name: fig-start-pipeline
+
+One scene through the stack: the quantities that cross each boundary from an astrophysical scene to a reported measurement, and the library that owns each step. The conventions chapters state what each arrow means.
+```
+
+```{figure} conventions/figures/hwo-conventions-pipeline-dark.svg
+:class: only-dark
+
+One scene through the stack: the quantities that cross each boundary from an astrophysical scene to a reported measurement, and the library that owns each step. The conventions chapters state what each arrow means.
+```
+
 | I want ... | Library | Install |
 |---|---|---|
 | an orbit propagated to positions, velocities and sky-plane offsets | [orbix](https://orbix.readthedocs.io/) | `pip install orbix` |
