@@ -26,7 +26,24 @@ Documentation = "https://spohnbook.readthedocs.io"
 [project.optional-dependencies]
 dev = ["pre-commit"]
 test = ["pytest"]
-docs = ["myst-nb", "sphinx-book-theme", "pyyaml", "orbix", "eyepiece"]
+docs = [
+    "myst-nb",
+    "sphinx-book-theme",
+    "pyyaml",
+    "hwoutils",
+    "hwostyle",
+    "eyepiece",
+    "orbix",
+    "skyscapes",
+    "optixstuff",
+    "yippy",
+    "physicaloptix",
+    "tiptilt",
+    "coronagraphoto",
+    "coronalyze",
+    "jaxedith",
+    "photomancy",
+]
 
 [tool.ruff.lint]
 select = ["B", "D", "E", "F", "I", "UP", "RUF"]
@@ -37,7 +54,7 @@ convention = "google"
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["D"]
 "docs/**" = ["D"]
-"tools/build_conventions_figures.py" = ["D", "E501"]
+"tools/build_*.py" = ["D", "E501"]
 
 [tool.hatch.version]
 source = "vcs"

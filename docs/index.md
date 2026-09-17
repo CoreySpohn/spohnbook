@@ -9,6 +9,19 @@ inference, observation planning and observing campaigns. Each is developed and
 released on its own, with its own documentation. This site is where they are
 laid out together.
 
+```{figure} figures/library-graph-light.svg
+:class: only-light
+:name: fig-library-graph
+
+Every public library in the suite and what it imports. Arrows point from a library to the library it depends on; color separates the science libraries from the visualization libraries. hwoutils (constants and conversions) and hwostyle (the plot style) are imported by nearly everything, so their edges are left out.
+```
+
+```{figure} figures/library-graph-dark.svg
+:class: only-dark
+
+Every public library in the suite and what it imports. Arrows point from a library to the library it depends on; color separates the science libraries from the visualization libraries. hwoutils (constants and conversions) and hwostyle (the plot style) are imported by nearly everything, so their edges are left out.
+```
+
 - [Start here](start-here.md) picks the library for the question you are
   asking and lists what every library assumes.
 - The [map](map.md) lists every library by layer, what it owns, what it depends

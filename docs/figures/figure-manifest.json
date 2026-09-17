@@ -1,0 +1,14 @@
+{
+  "build_command": "python tools/build_map_figures.py",
+  "generated_from": "libraries.yaml and docs/figures/source/*.d2",
+  "outputs": [
+    "library-graph-dark.png",
+    "library-graph-dark.svg",
+    "library-graph-light.png",
+    "library-graph-light.svg",
+    "release-flow-dark.png",
+    "release-flow-dark.svg",
+    "release-flow-light.png",
+    "release-flow-light.svg"
+  ]
+}

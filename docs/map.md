@@ -33,5 +33,18 @@ Stages are the declared maturity of each library: pre-alpha (scaffold or
 skeleton), alpha (tagged releases and tests in continuous integration), beta
 (documentation site, changelog and at least one dependent library).
 
+```{figure} figures/library-graph-light.svg
+:class: only-light
+:name: fig-map-graph
+
+Every public library in the suite and what it imports. Arrows point from a library to the library it depends on; color separates the science libraries from the visualization libraries. hwoutils (constants and conversions) and hwostyle (the plot style) are imported by nearly everything, so their edges are left out.
+```
+
+```{figure} figures/library-graph-dark.svg
+:class: only-dark
+
+Every public library in the suite and what it imports. Arrows point from a library to the library it depends on; color separates the science libraries from the visualization libraries. hwoutils (constants and conversions) and hwostyle (the plot style) are imported by nearly everything, so their edges are left out.
+```
+
 ```{include} _generated/map-table.md
 ```

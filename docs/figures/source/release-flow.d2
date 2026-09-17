@@ -1,0 +1,37 @@
+direction: right
+
+commit: {
+  label: "commit on main\ntype(scope): message"
+  class: step
+}
+tests: {
+  label: "Tests workflow\npytest and the docs build"
+  class: step
+}
+rtd: {
+  label: "ReadTheDocs\nbuilds the site from the docs extra"
+  class: external
+}
+releasepr: {
+  label: "release-please\nrelease pull request:\nversion bump and CHANGELOG"
+  class: step
+}
+tag: {
+  label: "merge creates the tag\nvX.Y.Z and the GitHub release"
+  class: step
+}
+build: {
+  label: "publish workflow\nsdist and wheel"
+  class: step
+}
+pypi: {
+  label: "PyPI\ntrusted publishing, no stored token"
+  class: external
+}
+
+commit -> tests: {class: dep}
+commit -> rtd: {class: dep}
+commit -> releasepr: {label: "feat and fix commits"; class: dep}
+releasepr -> tag: {class: dep}
+tag -> build: {class: dep}
+build -> pypi: {class: dep}
