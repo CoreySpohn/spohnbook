@@ -265,7 +265,7 @@ ep.imshow_diverging(
     opd_nm,
     ax=axes[1, 0],
     extent=pupil_extent,
-    cmap=hwostyle.cmaps.opd,
+    cmap="BrBG",  # the opd role of the conventions; hwostyle 1.5.0 still maps opd to RdBu_r
     cbar_label="OPD [nm]",
 )
 axes[1, 0].set_title("Wavefront error")

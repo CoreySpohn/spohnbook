@@ -17,6 +17,7 @@ import numpy as np
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 from matplotlib.patches import Arc, Circle
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -297,6 +298,159 @@ def pixels(mode):
     save(fig, "pixels", mode)
 
 
+def color_roles(mode):
+    """Swatches: the proposed colormap role per image quantity and palette role per curve entity."""
+    colors = hwostyle.palette
+    background = plt.rcParams["figure.facecolor"]
+    text = plt.rcParams["text.color"]
+    neutral = "#777777" if mode == "light" else "#8A8A8A"
+    darker = "#4A4A4A" if mode == "light" else "#5E5E5E"
+    furniture = "#D6D6D6" if mode == "light" else "#353535"
+    # The proposed maps are defined here, not read from hwostyle: the pupil and
+    # statistic roles and the retuned opd, probability, intensity and mask maps
+    # are the contract this figure documents, not the registry that ships today.
+    image_roles = [
+        (
+            "pupil",
+            "transmission or amplitude, 0 to 1",
+            [background, colors.cyan],
+            "linear",
+        ),
+        ("opd", "optical path difference, signed, nm", "BrBG", "symmetric about 0"),
+        ("phase", "pupil-plane phase, cyclic", "twilight", "periodic"),
+        ("intensity", "focal-plane intensity, PSF, contrast (model)", "viridis", "log"),
+        ("readouts", "detector electrons (measured, noisy)", "magma", "log or linear"),
+        (
+            "residual",
+            "difference or ratio against a reference",
+            "RdBu_r",
+            "symmetric about 0 or 1",
+        ),
+        ("statistic", "detection statistic, SNR map", "PuOr", "symmetric about 0"),
+        (
+            "probability",
+            "density, posterior, likelihood",
+            [background, colors.cyan, text],
+            "linear",
+        ),
+        (
+            "mask",
+            "boolean mask, validity",
+            ListedColormap([furniture, neutral]),
+            "none",
+        ),
+    ]
+    fig, (images, curves) = plt.subplots(1, 2, figsize=(14, 7), layout="constrained")
+    images.set_title("(a) Images: one colormap role per quantity", loc="left")
+    ramp = np.linspace(0, 1, 256)[None, :]
+    for row, (role, quantity, cmap, norm) in enumerate(image_roles):
+        if isinstance(cmap, list):
+            cmap = LinearSegmentedColormap.from_list(f"proposed_{role}", cmap, N=256)
+        images.imshow(
+            ramp,
+            cmap=cmap,
+            aspect="auto",
+            interpolation="nearest",
+            extent=(0, 1, row + 0.18, row - 0.18),
+        )
+        images.text(-0.05, row, role, ha="right", va="center", fontweight="bold")
+        images.text(0, row - 0.27, quantity, ha="left", va="bottom", color=neutral)
+        images.text(1.05, row, norm, ha="left", va="center", color=neutral)
+    images.text(
+        -0.05,
+        len(image_roles) + 0.1,
+        "Maps and hues are the proposed contract, not the registry that ships today.",
+        ha="left",
+        va="center",
+        color=neutral,
+    )
+    images.set(xlim=(-0.75, 1.95), ylim=(len(image_roles) + 0.6, -0.6))
+    images.axis("off")
+
+    curves.set_title("(b) Curves and markers: one palette role per entity", loc="left")
+    x = np.linspace(0, 1, 200)
+    wave = 0.15 * np.sin(2 * np.pi * x)
+    labels = []
+
+    row = 0
+    curves.plot(x, row + wave, color=colors.cyan)
+    sample = np.linspace(0.1, 0.9, 5)
+    curves.errorbar(
+        sample,
+        row + 0.15 * np.sin(2 * np.pi * sample),
+        yerr=0.07,
+        fmt="o",
+        color=colors.cyan,
+        markersize=5,
+        capsize=3,
+    )
+    labels.append(("planet", "markers with error bars"))
+
+    row = 1
+    curves.scatter([0.08], [row], marker="*", s=220, color=colors.yellow, zorder=4)
+    curves.plot(x[x > 0.18], row + 0.12 * np.exp(-3 * x[x > 0.18]), color=colors.yellow)
+    labels.append(("star", "star glyph"))
+
+    row = 2
+    curves.plot(x, row + wave, color=colors.purple)
+    labels.append(("disk", "hue only"))
+
+    row = 3
+    curves.plot(x, row + 0.05 * np.cos(2 * np.pi * x), color=colors.green)
+    labels.append(("zodi, sky", "hue only"))
+
+    row = 4
+    draws = 12
+    alpha = min(0.6, 3.0 / draws) / (2 if mode == "dark" else 1)
+    rng = np.random.default_rng(0)
+    for phase, gain in zip(
+        rng.normal(0, 0.7, draws), rng.normal(1, 0.35, draws), strict=True
+    ):
+        curves.plot(
+            x,
+            row + gain * 0.15 * np.sin(2 * np.pi * x + phase),
+            color=colors.pink,
+            alpha=alpha,
+            lw=1.2,
+        )
+    curves.plot(x, row + wave, color=colors.pink)
+    labels.append(("model", f"solid; {draws} draws at alpha from the count"))
+
+    row = 5
+    curves.plot(x, np.full_like(x, row), color=neutral)
+    labels.append(("truth, reference", "solid, scenery gray"))
+
+    row = 6
+    curves.plot(x, np.full_like(x, row), color=darker, ls="--")
+    labels.append(("instrument", "dashed, darker gray"))
+
+    row = 7
+    center = row + 0.6 * wave
+    curves.fill_between(
+        x, center - 0.1, center + 0.1, color=colors.cyan, alpha=0.2, lw=0
+    )
+    curves.plot(x, center - 0.1, color=colors.cyan, alpha=0.6, lw=1)
+    curves.plot(x, center + 0.1, color=colors.cyan, alpha=0.6, lw=1)
+    labels.append(("envelope", "parent hue at low alpha, outlined"))
+
+    row = 8
+    curves.plot(x, np.full_like(x, row), color=colors.red)
+    curves.scatter([0.5], [row], marker="X", s=90, color=colors.red, zorder=4)
+    curves.text(0.5, row - 0.22, "flagged", ha="center", va="bottom", color=colors.red)
+    labels.append(("alert", "icon or label, never color alone"))
+
+    row = 9
+    curves.scatter([0.5], [row], marker="s", s=60, color=text, zorder=4)
+    labels.append(("answer", "text color, at most one per panel"))
+
+    for row, (role, channel) in enumerate(labels):
+        curves.text(-0.05, row, role, ha="right", va="center", fontweight="bold")
+        curves.text(1.05, row, channel, ha="left", va="center", color=neutral)
+    curves.set(xlim=(-0.75, 1.95), ylim=(len(labels) - 0.4, -0.6))
+    curves.axis("off")
+    save(fig, "color", mode)
+
+
 def diagrams(mode):
     colors = hwostyle.palette
     bg, fg, fill, edge = (
@@ -369,6 +523,7 @@ def main():
         geometry(mode)
         anchors = time_coordinates(mode)
         pixels(mode)
+        color_roles(mode)
         diagrams(mode)
     manifest = {
         "purpose": "Independent explanatory schematics; not evidence of repaired library behavior",

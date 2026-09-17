@@ -30,7 +30,7 @@ html_theme_options = {
 html_context = {"default_mode": "light"}
 
 nb_execution_mode = "auto"
-nb_execution_timeout = 300
+nb_execution_timeout = 900
 nb_execution_raise_on_error = True
 
 write_map_table(Path(__file__).parent)

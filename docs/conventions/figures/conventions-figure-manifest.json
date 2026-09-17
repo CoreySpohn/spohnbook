@@ -2,7 +2,7 @@
   "purpose": "Independent explanatory schematics; not evidence of repaired library behavior",
   "build_command": "python tools/build_conventions_figures.py",
   "source_sha256": {
-    "tools/build_conventions_figures.py": "83e28f52837e6d1d3fee6e8873d0fdedfdb27eb7446e594adca80e8bc7f49c62",
+    "tools/build_conventions_figures.py": "a849358bebcb56baaeb0b65e175f281a52239b96820c702a2199aac4c9129bd0",
     "docs/conventions/figures/source/measurement.d2": "031f75ffc83f5433930e6bda592a9cf583436857ca68954c37f733be6a5a29ae",
     "docs/conventions/figures/source/pipeline.d2": "3c57ad22597cf34d901d53791da43917cfd3563f978e38c38c30fca774bc1dd7",
     "docs/conventions/figures/source/roadmap.d2": "051092338f337fb1c898c8049caceee6f7e258dec09426202fe9326f2db62816"
@@ -22,6 +22,12 @@
     "calendar_duration_error_at_one_year_d": 0.75
   },
   "outputs": [
+    "hwo-conventions-color-dark.pdf",
+    "hwo-conventions-color-dark.png",
+    "hwo-conventions-color-dark.svg",
+    "hwo-conventions-color-light.pdf",
+    "hwo-conventions-color-light.png",
+    "hwo-conventions-color-light.svg",
     "hwo-conventions-geometry-dark.pdf",
     "hwo-conventions-geometry-dark.png",
     "hwo-conventions-geometry-dark.svg",

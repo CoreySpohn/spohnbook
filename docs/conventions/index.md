@@ -35,13 +35,14 @@ stage at which its repair is required.
 | Where is a pixel, how does roll act, and what does a PSFlet (the detector image of one lenslet's pupil) contain? | [Optical fields, image coordinates, and IFS products](optics-images.md) |
 | What data were actually reported, and what probability model interprets them? | [Measurements, probability, and records](inference-records.md) |
 | What do we build first, and what closes each gate? | The adoption stages above, the integration-stages figure in [the figure atlas](figures.md), and the coverage table that closes each chapter |
+| Which colormap encodes this quantity, and which hue belongs to this plotted entity? | [Figures and color](figures-and-color.md) |
 | Which figures can I reuse or regenerate? | [the figure atlas](figures.md) |
 | Where is the source evidence for a current failure? | The coverage table that closes each chapter: every finding, its owner and the stage that requires its repair |
 
 Every chapter starts with physical meaning, then equations and units, worked
 examples, adapter obligations, and acceptance fixtures. Its closing table assigns
-every relevant finding to an owner and a gate. The 74 findings include
-overlaps, positive anchors and future gaps; they are not 74 independent bugs.
+every relevant finding to an owner and a gate. The 81 findings include
+overlaps, positive anchors and future gaps; they are not 81 independent bugs.
 
 ## Three distinctions to preserve
 
@@ -107,6 +108,7 @@ scheduler.
 | D08 | Keep the initial record envelope in spaceodyssey with domain-owned payloads; extract a separate distribution only after two working consumers demonstrate reuse. | Decided | Standalone export/import-to-photomancy plus spaceodyssey reuse of the same records, with dependency isolation |
 | D09 | Build the sampled fixed campaign first; do not require unused moments/integration methods on its adapters. Revisit an analytic/integrate engine with the matched external-reference deliverable. | Decided; spaceodyssey | One executable sampled path; unsupported engines reject explicitly; later reference engine has its own capability/evidence gate |
 | D10 | Allocate tolerances to observables before tests; use independent primitives, numerical refinement and calibrated Monte Carlo uncertainty; name external reference profiles. | Method required; domain and verification owners set budgets | Recorded error allocation, reference/configuration/source identity, positive and deliberately failing controls |
+| D11 | Encode each quantity with one colormap role and each plot entity with one palette role; retire map names from figure code. | Proposed; hwostyle + eyepiece | The swatch, grayscale-pair and default-free fixtures |
 
 Other inherited choices include separate truth and model access, a
 refit-from-original-prior baseline, causal availability, exactly-once
@@ -175,5 +177,6 @@ geometry-time
 optics-images
 radiometry-detectors
 inference-records
+figures-and-color
 figures
 ```

@@ -8,4 +8,7 @@ is built. The code shown is the code that ran.
 
 orbit-astrometry
 psf-and-speckles
+exposure-time-and-contrast
+scene-to-detection
+fit-and-forecast
 ```

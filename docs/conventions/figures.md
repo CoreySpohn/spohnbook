@@ -2,7 +2,7 @@
 
 *Draft contract: the choices marked pending or proposed are open.*
 
-The first six figures explain the contracts independently of the current library
+The first seven figures explain the contracts independently of the current library
 implementations. Each is available in light and dark styles as PNG, SVG and PDF.
 The plots come from Python; the quantity-flow and stage diagrams come from D2
 (the D2 diagram language). They are teaching figures, not evidence about any
@@ -18,6 +18,7 @@ library's current behavior.
 | 4. Pixels and roll | Where is zero, which way does a rolled source move, and what should refinement conserve? | `hwo-conventions-pixels-light.pdf` | `pixels()` in `tools/build_conventions_figures.py` |
 | 5. Reporting and information | What is observed on a nondetection, and which likelihood/information belongs to it? | `hwo-conventions-measurement-light.pdf` | `docs/conventions/figures/source/measurement.d2` |
 | 6. Integration stages | Which gates precede the fixed campaign, and which extensions can proceed separately? | `hwo-conventions-roadmap-light.pdf` | `docs/conventions/figures/source/roadmap.d2` |
+| 7. Color roles | Which colormap encodes which image quantity, and which palette hue and second channel belong to which plotted entity? | `hwo-conventions-color-light.pdf` | `color_roles()` in `tools/build_conventions_figures.py` |
 
 ### Figure 1: direction before formula
 
@@ -164,7 +165,7 @@ matplotlib figures and the D2 diagrams in `docs/conventions/figures/source/`
 into `docs/conventions/figures/` and writes `conventions-figure-manifest.json`.
 It needs NumPy, Matplotlib, hwostyle, D2 with ELK layout, and rsvg-convert. The
 command does not download instrument data or execute expensive physical
-simulations. It writes all 36 exports, and the manifest records source hashes,
+simulations. It writes all 42 exports, and the manifest records source hashes,
 renderer versions, numeric time/precision anchors and the output inventory.
 Plain D2 labels permit vector PDF export through rsvg-convert without losing
 text to unsupported SVG foreign objects.
