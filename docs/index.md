@@ -1,6 +1,6 @@
-# spohnbook
+# The Spohn Book
 
-The map of a suite of JAX libraries for exoplanet direct imaging, the
+`spohnbook`: the map of a suite of JAX libraries for exoplanet direct imaging, the
 scientific conventions they share, and examples assembled across them.
 
 The libraries cover orbits, astrophysical scenes, optics and coronagraphs,

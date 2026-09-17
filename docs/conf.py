@@ -8,7 +8,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from build_map import write_map_table
 
-project = "spohnbook"
+project = "The Spohn Book"
 release = get_version("spohnbook")
 version = ".".join(release.split(".")[:2])
 
@@ -22,7 +22,7 @@ source_suffix = {".rst": "restructuredtext", ".md": "myst-nb"}
 exclude_patterns = ["_build", "_generated/*.md"]
 
 html_theme = "sphinx_book_theme"
-html_title = "spohnbook"
+html_title = "The Spohn Book"
 html_theme_options = {
     "repository_url": "https://github.com/CoreySpohn/spohnbook",
     "use_repository_button": True,
