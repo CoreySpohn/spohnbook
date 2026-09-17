@@ -1,0 +1,14 @@
+# This figure describes the report-only-on-detection profile, not forced photometry.
+direction: down
+experiment: "Parameter theta + resolved experiment\nResponse, exposure, noise and selection are specified" {class: stage}
+latent: "Joint measurement and reporting law\nGenerate Y and the reporting event D" {class: stage}
+null: "D = 0: successful nondetection\nRecord the flag and response\nLikelihood: P(D = 0 | theta)" {class: stage}
+detected: "D = 1: retained measurement y\nRecord values and covariance semantics\nLikelihood: p(y, D = 1 | theta)" {class: stage}
+inference: "Use exactly the acquired record\nDo not add unreported astrometry or count selection twice\nForced photometry requires a different record contract" {class: model}
+anchor: "Information anchor\nIf every theta always produces the same retained record,\nI(theta; record) = 0" {class: model}
+experiment -> latent: {style.stroke: ${edge}}
+latent -> null: {style.stroke: ${edge}}
+latent -> detected: {style.stroke: ${edge}}
+null -> inference: {style.stroke: ${edge}}
+detected -> inference: {style.stroke: ${edge}}
+inference -> anchor: {style.stroke: ${edge}}

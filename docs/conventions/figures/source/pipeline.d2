@@ -1,0 +1,11 @@
+# Arrows are transformations of scientific quantities, not Python imports.
+direction: down
+source: "Source and geometry\norbix + skyscapes + zodi\n\nframe, epoch, spectral density" {class: stage}
+optics: "Optical response per wavelength\nyippy / physicaloptix + optixstuff\n\narea, throughput, spatial / dispersion response" {class: stage}
+counts: "Electron expectation and variance\njaxedith forecasts / detector models\n\nQE before spectral sum; actual frame cadence" {class: stage}
+record: "Realized data and reporting\nobservation sampler + reduction adapters\ncoronagraphoto / coronachrome / coronalyze\n\nvalues or null; covariance; response identity" {class: stage}
+fit: "Assumed-model inference\nphotomancy\n\nnormalized likelihood; posterior coordinates" {class: model}
+source -> optics: "spectral light" {style.stroke: ${edge}}
+optics -> counts: "wavelength-resolved photon rates" {style.stroke: ${edge}}
+counts -> record: "resolved count / noise model" {style.stroke: ${edge}}
+record -> fit: "public evidence" {style.stroke: ${edge}}
