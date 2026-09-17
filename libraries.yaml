@@ -7,7 +7,7 @@ libraries:
     docs: https://orbix.readthedocs.io/
     pypi: https://pypi.org/project/orbix/
     pypi_version: "1.2.0"
-    depends_on: [hwoutils]
+    depends_on: [eyepiece, hwoutils]
   - name: hwoutils
     layer: foundation
     stage: beta
@@ -88,7 +88,7 @@ libraries:
     docs: https://physicaloptix.readthedocs.io/
     pypi: https://pypi.org/project/physicaloptix/
     pypi_version: "1.2.0"
-    depends_on: [hwoutils, optixstuff]
+    depends_on: [eyepiece, hwostyle, hwoutils, optixstuff]
   - name: tiptilt
     layer: wavefront
     stage: alpha
@@ -106,7 +106,7 @@ libraries:
     docs: null
     pypi: https://pypi.org/project/exosims-plugins/
     pypi_version: "1.1.0"
-    depends_on: [orbix]
+    depends_on: [EXOSIMS, orbix]
   - name: jaxedith
     layer: exposure-time
     stage: beta
@@ -115,7 +115,7 @@ libraries:
     docs: https://jaxedith.readthedocs.io/
     pypi: https://pypi.org/project/jaxedith/
     pypi_version: "1.0.1"
-    depends_on: [hwoutils, orbix, skyscapes]
+    depends_on: [hwoutils, optixstuff, orbix, skyscapes]
   - name: coronalyze
     layer: analysis
     stage: beta
@@ -124,7 +124,7 @@ libraries:
     docs: https://coronalyze.readthedocs.io/
     pypi: https://pypi.org/project/coronalyze/
     pypi_version: "1.1.1"
-    depends_on: [hwoutils]
+    depends_on: [coronagraphoto, hwoutils, yippy]
   - name: photomancy
     layer: inference
     stage: beta
@@ -133,7 +133,7 @@ libraries:
     docs: https://photomancy.readthedocs.io/
     pypi: https://pypi.org/project/photomancy/
     pypi_version: "0.2.0"
-    depends_on: [hwoutils, orbix, skyscapes]
+    depends_on: [coronalyze, eyepiece, hwoutils, orbix, skyscapes]
   - name: planit-py
     layer: planning
     stage: pre-alpha
@@ -160,7 +160,7 @@ libraries:
     docs: https://eyepiece.readthedocs.io/
     pypi: https://pypi.org/project/eyepiece/
     pypi_version: "0.4.0"
-    depends_on: [hwostyle]
+    depends_on: [hwostyle, hwoutils]
   - name: hwostyle
     layer: visualization
     stage: beta
@@ -187,4 +187,4 @@ libraries:
     docs: https://yieldplotlib.readthedocs.io/
     pypi: https://pypi.org/project/yieldplotlib/
     pypi_version: "1.2.0"
-    depends_on: [yippy]
+    depends_on: [EXOSIMS, yippy]
