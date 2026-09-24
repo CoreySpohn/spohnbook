@@ -28,34 +28,17 @@ on the {ref}`citing page <citing-this-build>` and states that it is not an
 edition. It is never cited as one.
 
 (releases-bundle)=
-## The release bundle
-
-An edition's archival bundle is assembled by `tools/make_release_bundle.py` from a
-clean checkout of its tag and the artifacts of its locked build. It contains:
-
-- the source tree at the tag, as `git archive` produces it;
-- the rendered HTML;
-- the source catalog and `CITATION.cff`;
-- the dependency lock;
-- the evidence ledger and the build manifest;
-- the build and execution logs;
-- `inputs.json`, the identity of every input data file with its upstream
-  address and SHA-256, stating that the bytes are not included;
-- `SHA256SUMS`, the checksum of every file in the bundle.
-
-The bundle is a directory and a `.tar.gz` of it, and it can be inspected with
-ordinary tools and without the author's workspace.
-
 (releases-archival)=
-## Archival and DOI
+## What an edition consists of
 
-No DOI has been minted for any edition. To archive an edition, a maintainer with
-the necessary account access enables the repository in the Zenodo GitHub
-integration before the release is published, so that Zenodo archives the tagged
-source and reads `CITATION.cff`; uploads the release bundle to the resulting
-record as an additional file; and adds the DOI to this page and to
-`CITATION.cff` in a following commit. Minting a DOI is a separate, deliberate
-act, and nothing in the build or the tests performs it.
+An edition is its git tag and its ReadTheDocs version. The tag holds the source,
+the source catalog, `CITATION.cff` and the dependency lock. The ReadTheDocs
+version of the tag is built with that lock and records its own evidence ledger
+and build manifest while it builds, so the case states it shows come from that
+build. The artifacts of the tag's locked continuous-integration build (rendered
+HTML, logs, ledger and manifest) are kept for the platform's retention period and
+are not archived beyond it; a rebuild from the tag with its lock reproduces them,
+provided the input data remain available. Editions have no DOI.
 
 (releases-review-records)=
 ## Review records
@@ -68,7 +51,7 @@ scientific review says so in its record.
 ## Editions
 
 (releases-0-0-1)=
-### 0.0.1 (release candidate, not yet published)
+### 0.0.1 (2026-09-24)
 
 The first edition is a draft. Every convention in it that is marked pending or
 proposed remains so.
@@ -108,8 +91,8 @@ text before any edition existed, so they are not errata:
 | Field | Record |
 |---|---|
 | Scientific scope | Conventions chapters, decision register, profile, reference case, evidence and limitation pages of this edition |
-| Tested platform | The locked continuous-integration build of the release commit is the record. The locked builds of the release pull request passed on Linux x86_64 with Python 3.12.3 in an environment identical to the lock; the pages were also executed on macOS arm64 with Python 3.12.12 against unlocked PyPI releases during preparation |
-| Reproducibility result | Recorded by the locked build of the release pull request; see its build manifest |
+| Tested platform | Linux x86_64 with Python 3.12.3 and the locked dependencies; the pages were also executed on macOS arm64 with Python 3.12.12 against unlocked PyPI releases during preparation |
+| Reproducibility result | The locked build of the tag commit `e9b23cf` passed (continuous-integration run 36071397378): its environment matched the lock exactly, every page executed, the reference case passed and the input data were recorded with their SHA-256 |
 | Resolved findings | None of the 81 audit findings is closed; five of them, and two further records, are reproduced at stated versions |
 | Unresolved concerns | The source gaps listed on the {ref}`references page <references-source-gaps>`; every finding marked "historical report; reproduction unavailable"; all pending decisions |
 | Author | Corey Spohn |

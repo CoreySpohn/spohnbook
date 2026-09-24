@@ -23,9 +23,8 @@ library, dataset or calibration the text describes. Cite an edition as
 
 The repository's `CITATION.cff` carries the same author, title and license
 metadata, and GitHub offers it in APA and BibTeX form through "Cite this
-repository". No DOI has been minted for any edition. An edition archived with a
-DOI lists it on the [releases page](releases.md), and a citation should then use
-it. A development build, such as one rendered from the default branch, is not an
+repository". Editions have no DOI; the tag and its rendered version identify
+them. A development build, such as one rendered from the default branch, is not an
 edition: cite its commit as shown above and say that it is a draft.
 
 Every edition published so far is a draft edition. Its proposed conventions are

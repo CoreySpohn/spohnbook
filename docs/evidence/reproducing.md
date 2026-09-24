@@ -15,7 +15,7 @@ releases.
 (`manylinux_2_28`). It is compiled from PyPI with no workspace or local sources.
 One pin is a nightly pre-release, `tfp-nightly`, which a
 dependency of the inference library requires; PyPI has kept that project's
-nightly releases since 2018, but the bundle does not archive wheels, so its
+nightly releases since 2018, but this repository does not archive wheels, so its
 availability is an external dependency of exact restoration. The lock does not
 cover macOS or Windows; see
 [other platforms](#reproducing-other-platforms). From a clean checkout of the
@@ -82,8 +82,8 @@ The manifest records the SHA-256 of the bytes actually read. This repository doe
 not archive the file: recording its address and hash identifies it but does not
 preserve it, and its redistribution terms are not recorded here. Exact
 restoration of an edition therefore depends on the owning library's data release
-remaining available. An edition's archival bundle lists the identity of every
-input and states whether the bytes are included.
+remaining available. The build manifest of an edition's locked build lists the
+identity of every input.
 
 (reproducing-compatibility)=
 ## The compatibility build
@@ -107,6 +107,6 @@ tested environment of the edition.
 
 Every continuous-integration run uploads the rendered HTML, the execution logs,
 the ledger, the build manifest and the lock, including runs that fail. Those
-artifacts expire. The durable record of an edition is its release bundle,
-described on the [releases page](../releases.md), which keeps the source, the
-lock, the manifests and the input identities with the tag.
+artifacts expire. The durable record of an edition is its tag, which keeps the
+source and the lock, and its ReadTheDocs version, which is rebuilt from them and
+records its own evidence ({ref}`releases <releases-bundle>`).

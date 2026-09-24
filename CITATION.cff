@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: >-
   Cite the edition (version and tag) you used. A development build is not an
-  edition; cite its commit and state that it is a draft. No DOI has been minted.
+  edition; cite its commit and state that it is a draft. Editions have no DOI.
 title: "The Spohn Book"
 abstract: >-
   The map, shared conventions and assembled examples of a suite of JAX
