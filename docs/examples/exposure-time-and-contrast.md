@@ -21,6 +21,19 @@ the light hwostyle mode. Float64 is enabled before any array exists, because
 the contrast values on this page span twenty decades. yippy logs each loading
 step at info level; the page silences everything below an error.
 
+
+| Scope | This page |
+|---|---|
+| Purpose | Read a coronagraph from a yield input package with yippy, describe the hardware with optixstuff, and compute exposure times with jaxedith |
+| Model restrictions | One coronagraph design; the finite-star curve is computed from the native tables because the direct path is slow at the recorded versions (`examples-yippy-finite-star-curve`); the exposure-time model is jaxedith's, whose QE and leakage conventions carry recorded limitations ({ref}`limitations-radiometry`) |
+| Evidence kind | Executable tutorial, with one bound check: the fraction of planet light in each off-axis image lies between zero and one |
+| Data sources | The `eac1_optimal_order_6_1d` yield input package ({ref}`reproducing-inputs`) |
+| Applicable profile | None adopted; the {ref}`stellar leakage measure <decision-stellar-leakage-measure>` and {ref}`meaning of dQE <decision-meaning-of-dqe>` decisions are pending |
+| Not evidence of | Scientific correctness of the results shown, or measured-data validation |
+
+```{include} ../_generated/environment.md
+```
+
 ```{code-cell} python
 import eyepiece as ep
 import hwostyle
@@ -201,6 +214,9 @@ for ax, crop in zip(axes, crops, strict=True):
 axes[0].set_ylabel(r"$y$ [$\lambda/D$]")
 axes[0].plot(-seps_psf[0], 0.0, marker="*", color=GRAY, ms=9)
 print("fraction of planet light in each image:", psfs.sum(axis=(1, 2)).round(3))
+# Bound check: an image cannot hold a negative or more-than-total share of the light.
+fractions = np.asarray(psfs.sum(axis=(1, 2)))
+assert np.all((fractions >= 0.0) & (fractions <= 1.0 + 1e-9))
 ```
 
 Figure 2: the off-axis PSF just inside the inner working angle, in the dark

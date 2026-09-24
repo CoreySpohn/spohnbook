@@ -22,6 +22,19 @@ image against the coronagraph's declared contrast. Every figure is drawn with
 eyepiece under the light hwostyle mode. Float64 is enabled before any array
 exists, because the stellar leakage sits more than ten decades below the star.
 
+
+| Scope | This page |
+|---|---|
+| Purpose | Chain the scene, orbit, hardware, imaging and post-processing libraries once, end to end |
+| Model restrictions | The epoch is the ascending node crossing, where the observer-axis angle and the illumination angle coincide ({ref}`geometry-illumination`), because the current composition inverts the phase curve elsewhere (`geometry-observer-axis-angles-enter-illumination` on the [limitations page](../evidence/limitations.md)). This restriction means the page cannot test the phase convention. The star is a `Star` with an explicit diameter because `FlatStar` has none (`examples-flatstar-diameter`) |
+| Evidence kind | Executable tutorial. The closing comparison reads the rendered image against the same coronagraph tables that produced it, so it is a consistency view, not an independent check |
+| Data sources | The `eac1_optimal_order_6_1d` yield input package ({ref}`reproducing-inputs`) |
+| Applicable profile | None adopted; the {ref}`observer basis <decision-observer-basis-and-node>`, {ref}`stellar leakage <decision-stellar-leakage-measure>` and {ref}`image coordinate <decision-image-coordinates-and-psflet-origin>` decisions are pending |
+| Not evidence of | Scientific correctness of the results shown, or measured-data validation |
+
+```{include} ../_generated/environment.md
+```
+
 ```{code-cell} python
 import coronagraphoto as cp
 import coronalyze as cl
