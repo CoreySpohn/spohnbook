@@ -16,8 +16,10 @@ releases.
 One pin is a nightly pre-release, `tfp-nightly`, which a
 dependency of the inference library requires; PyPI has kept that project's
 nightly releases since 2018, but this repository does not archive wheels, so its
-availability is an external dependency of exact restoration. The lock does not
-cover macOS or Windows; see
+availability is an external dependency of exact restoration. The figures use the
+Inter font, which the lock cannot install; on Debian or Ubuntu install the
+`fonts-inter` package first, or matplotlib substitutes another font and warns on
+every label. The lock does not cover macOS or Windows; see
 [other platforms](#reproducing-other-platforms). From a clean checkout of the
 edition's tag, on that platform and with [uv](https://docs.astral.sh/uv/):
 
