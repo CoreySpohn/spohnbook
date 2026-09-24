@@ -12,13 +12,13 @@ A dust model outputs radiance. Everything after that (pixel flux, contrast, coun
 
 | Symbol | Meaning | Unit or measure |
 |---|---|---|
-| $I_\lambda$ | Photon spectral radiance (surface brightness) along one sightline | photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ sr$^{-1}$, or explicitly per arcsec$^2$ |
+| $I_\lambda$ | Photon spectral radiance (surface brightness) along one sightline, at the observer's entrance aperture before any optics | photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ sr$^{-1}$, or explicitly per arcsec$^2$ |
 | $B_\lambda$ | Energy spectral radiance | W m$^{-2}$ nm$^{-1}$ sr$^{-1}$ (or per $\mu$m, stated) |
 | $j_\lambda$ | Photon emissivity per unit path length | $I_\lambda$ units per AU (or per m, stated) |
-| $\alpha_{\rm sca}$ | Scattering cross-section density, $n\,\sigma_{\rm sca}$ summed over grains | AU$^{-1}$ or m$^{-1}$ |
+| $\kappa_{\rm sca}$ | Scattering cross-section density, $n\,\sigma_{\rm sca}$ summed over grains | AU$^{-1}$ or m$^{-1}$ |
 | $\Phi_{{\rm inc},\lambda}$ | Incident stellar photon flux density at the grain | photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ |
 | $p_\lambda(\Theta)$ | Scattering phase function, $\int_{4\pi}p\,d\Omega=1$ | sr$^{-1}$ |
-| $\Phi_{\lambda,p}$ | Pixel-integrated photon flux density, $\int_{\Omega_p}I_\lambda\,d\Omega$ | photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ per pixel |
+| $\Phi_{\lambda,p}$ | Pixel-integrated photon flux density at the same plane, $\int_{\Omega_p}I_\lambda\,d\Omega$ | photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ per pixel |
 | $c_p$ | Host-relative contrast of one pixel, $\Phi_{\lambda,p}/\Phi_{\star,\lambda}$ | dimensionless, host star as the named denominator |
 
 Three measure changes cause most dust-scale errors:
@@ -35,7 +35,7 @@ The exchange default proposed in the radiometry chapter applies here: **exchange
 :class: only-light
 :name: fig-dust-geometry
 
-Ray geometry for one constant-emissivity sphere (radius 2 AU, emissivity 3 photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ sr$^{-1}$ AU$^{-1}$), an analytic fixture, not a dust model. (a) Each fixture ray on its own track: only the portion with $s\ge0$ inside the sphere contributes, so an observer inside sees 1 or 3 AU of path depending on direction, an outside observer sees the full 4 AU chord or nothing, and a grazing ray sees nothing. (b) The scattering angle $\Theta$ is measured between the incident propagation direction (star to grain) and the direction toward the observer, $-\hat n$; the planetary illumination angle at the same point is $\alpha=\pi-\Theta$. (c) Cumulative radiance along the $-x$ rays of the inside and outside observers.
+Ray geometry for one constant-emissivity sphere (radius 2 AU, emissivity 3 photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ sr$^{-1}$ AU$^{-1}$), an analytic fixture, not a dust model. (a) Each fixture ray on its own track, radiance $I$ in photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ sr$^{-1}$: only the portion with $s\ge0$ inside the sphere contributes, so an observer inside sees 1 or 3 AU of path depending on direction, an outside observer sees the full 4 AU chord or nothing, and a grazing ray sees nothing. (b) The scattering angle $\Theta$ is measured between the incident propagation direction (star to grain) and the direction toward the observer, $-\hat n$; the planetary illumination angle at the same point is $\alpha=\pi-\Theta$. (c) Cumulative radiance along the $-x$ rays of the inside and outside observers.
 ```
 
 ```{figure} figures/dust-geometry-dark.svg
@@ -60,7 +60,7 @@ $$
 
 so $\Theta=0$ is forward scattering (the grain lies between the star and the observer) and $\Theta=\pi$ is backscattering. The planetary illumination angle at the same point is its supplement, $\alpha=\pi-\Theta$: full phase $\alpha=0$ is backscattering $\Theta=\pi$ (Cahoy et al. 2010, ApJ 724, 189, section 3.2, [doi:10.1088/0004-637X/724/1/189](https://doi.org/10.1088/0004-637X/724/1/189); Hedman & Stark 2015, ApJ 811, 67, section 1, [doi:10.1088/0004-637X/811/1/67](https://doi.org/10.1088/0004-637X/811/1/67)). Some sources call $\Theta$ a "phase angle" (Henyey & Greenstein 1941 define their $\alpha$ as the deviation from the forward direction; ExoVista calls $\theta$ the "scattering phase angle"). Record the angle by its definition, never by that name. Passing an illumination angle into a phase function that expects $\Theta$ inverts forward and back scattering; the geometry chapter tracks the same supplement error for planets.
 
-**Inclination and near side (proposed profile).** Inclination $i\in[0,\pi]$, with $i=0$ face-on. Under the observer-toward-$+z$ profile, the *near side* is the half of the disk with $z>0$; its grains have $\cos\Theta=z/|\boldsymbol x|>0$ and so scatter forward. For a thin layer, the path weight is $h/|\cos i|$, positive on both sides of $i=\pi/2$; $i$ and $\pi-i$ exchange which half is near. A weight that keeps the sign of $\cos i$ produces negative radiance above 90 degrees ({ref}`the sign-control figure <fig-dust-sign>`). Whether $i>\pi/2$ denotes retrograde rotation (the angular-momentum convention) is part of the pending observer basis decision; the path weight is positive under every choice.
+**Inclination and near side (proposed profile).** Inclination $i\in[0,\pi]$, with $i=0$ face-on. Under the observer-toward-$+z$ profile, the *near side* is the half of the disk with $z>0$; its grains have $\cos\Theta=z/|\boldsymbol x|>0$ and so scatter forward. For a thin layer of thickness $h$ and radius $R$, the path weight is $h/|\cos i|$ for $|\cos i|\gg h/R$ (near edge-on the chord bounds the path instead), positive on both sides of $i=\pi/2$; $i$ and $\pi-i$ exchange which half is near. A weight that keeps the sign of $\cos i$ produces negative radiance above 90 degrees ({ref}`the sign-control figure <fig-dust-sign>`). Whether $i>\pi/2$ denotes retrograde rotation (the angular-momentum convention) is part of the pending observer basis decision; the path weight is positive under every choice.
 
 ## The single-scattering integral
 
@@ -69,19 +69,19 @@ so $\Theta=0$ is forward scattering (the grain lies between the star and the obs
 $$
 I_\lambda(\hat{\boldsymbol n},\boldsymbol x_{\rm obs})
 =\int_{s_{\rm in}}^{s_{\rm out}}
-\alpha_{{\rm sca},\lambda}(\boldsymbol x)\,
+\kappa_{{\rm sca},\lambda}(\boldsymbol x)\,
 \Phi_{{\rm inc},\lambda}(\boldsymbol x)\,
 p_\lambda\big(\Theta(\boldsymbol x)\big)\,ds,
 \qquad
 \Phi_{{\rm inc},\lambda}(\boldsymbol x)=\frac{L_{\lambda}}{4\pi|\boldsymbol x|^2}.
 $$
 
-Here $L_\lambda$ is the intrinsic stellar photon luminosity (photon s$^{-1}$ nm$^{-1}$), so illumination falls off from the star, not from the observer. There is no extra inverse-square factor in observer distance: radiance is conserved along a ray in free space. Units check: AU$^{-1}\times$ photon s$^{-1}$ m$^{-2}$ nm$^{-1}\times$ sr$^{-1}\times$ AU gives photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ sr$^{-1}$.
+Here $L_\lambda$ is the intrinsic stellar photon luminosity (photon s$^{-1}$ nm$^{-1}$) and $|\boldsymbol x|$ enters $\Phi_{\rm inc}$ in meters, so illumination falls off from the star, not from the observer. There is no extra inverse-square factor in observer distance: radiance is conserved along a ray in free space. Units check: AU$^{-1}\times$ photon s$^{-1}$ m$^{-2}$ nm$^{-1}\times$ sr$^{-1}\times$ AU gives photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ sr$^{-1}$.
 
 Keep five factors separate, because each has a different owner and uncertainty:
 
 1. **Density** $n(\boldsymbol x)$: the spatial law (for example GRaTeR, below).
-2. **Cross section and albedo**: $\alpha_{\rm sca}=n\,\sigma_{\rm sca}$, equivalently single-scattering albedo times extinction density; a size distribution integrates $Q_{\rm sca}\pi a^2$.
+2. **Cross section and albedo**: $\kappa_{\rm sca}=n\,\sigma_{\rm sca}$, equivalently single-scattering albedo times extinction density; a size distribution integrates $Q_{\rm sca}\pi a^2$.
 3. **Phase function** $p_\lambda(\Theta)$, normalized to one over $4\pi$ sr.
 4. **Illumination** $\Phi_{\rm inc}$: stellar luminosity and the star-grain distance.
 5. **Quadrature**: the ray support $[s_{\rm in},s_{\rm out}]$ and the nodes inside it.
@@ -94,7 +94,7 @@ $$
 p_{\rm HG}(\Theta;g)=\frac{1}{4\pi}\,\frac{1-g^2}{(1+g^2-2g\cos\Theta)^{3/2}},
 $$
 
-integrates to one over $4\pi$ sr for every $|g|<1$. Henyey & Greenstein (1941, ApJ 93, 70, equation 2, [doi:10.1086/144246](https://doi.org/10.1086/144246)) write the same shape multiplied by the spherical albedo $\gamma$, so their function integrates to $\gamma$; do not carry an albedo in both the phase function and $\alpha_{\rm sca}$. A mixture $\sum_iw_ip_{\rm HG}(\Theta;g_i)$ is normalized only when $\sum_iw_i=1$, as in ExoVista's three-component fit (Stark et al. 2022, AJ 163, 105, section 2.3, equation 7, [doi:10.3847/1538-3881/ac45f5](https://doi.org/10.3847/1538-3881/ac45f5)). An unnormalized weight vector silently rescales the dust amplitude.
+integrates to one over $4\pi$ sr for every $|g|<1$. Henyey & Greenstein (1941, ApJ 93, 70, equation 2, [doi:10.1086/144246](https://doi.org/10.1086/144246)) write the same shape multiplied by the spherical albedo $\gamma$, so their function integrates to $\gamma$; do not carry an albedo in both the phase function and $\kappa_{\rm sca}$. A mixture $\sum_iw_ip_{\rm HG}(\Theta;g_i)$ is normalized only when $\sum_iw_i=1$, as in ExoVista's three-component fit (Stark et al. 2022, AJ 163, 105, section 2.3, equation 7, [doi:10.3847/1538-3881/ac45f5](https://doi.org/10.3847/1538-3881/ac45f5)). An unnormalized weight vector silently rescales the dust amplitude.
 
 ## Ray support and convergence
 
@@ -115,21 +115,21 @@ The profiles below are distinct model choices, not fidelity levels of one model.
 
 ### Leinert tabulated approximation
 
-- **What it is:** the empirical zodiacal-light brightness of Leinert et al. (1998, A&AS 127, 1, [doi:10.1051/aas:1998105](https://doi.org/10.1051/aas:1998105)): $I_{\rm ZL}=f_R\,I(\lambda-\lambda_\odot,\beta)\,f_{\rm abs}\,f_{\rm co}\,f_{\rm SP}$ (section 8.1, equation 14), with the helioecliptic table at 500 nm (Tables 16 and 17; 1 S10 = $1.28\times10^{-8}$ W m$^{-2}$ sr$^{-1}$ $\mu$m$^{-1}$ at 500 nm, section 8.3), color factors (section 8.4, Table 19) and a heliocentric distance factor $I(R)/I(1\,{\rm AU})=R^{-2.3\pm0.1}$ (section 8.2, equation 15).
-- **Inputs and outputs:** ecliptic longitude from the Sun, ecliptic latitude, wavelength, epoch through the geometry; returns radiance along one sightline from near Earth.
-- **Calibration and domain:** measured sky brightness from 1 AU observers, over the tabulated elongations and latitudes; the distance factor rests on Helios data for its stated elongation range. The table's color and distance factors are separate approximations with their own domains.
-- **Observer and time:** Earth-orbit observers; time enters through Sun-relative geometry. An out-of-domain policy (reject, clamp, or extrapolate) must be explicit on each axis.
-- **Unsupported:** an arbitrary observer position, three-dimensional density, or grain optics. A physical model fitted to these tables is calibrated, not validated by them.
-- **Status:** implemented (zodi, and skyscapes `LeinertZodi`); open color findings are in the radiometry chapter's coverage table.
+- **What it is:** the empirical zodiacal-light brightness seen by an observer, from Leinert et al. (1998, A&AS 127, 1, [doi:10.1051/aas:1998105](https://doi.org/10.1051/aas:1998105)): $I_{\rm ZL}=f_R\,I(\lambda-\lambda_\odot,\beta)\,f_{\rm abs}\,f_{\rm co}\,f_{\rm SP}$ (section 8.1, equation 14), with the helioecliptic table at 500 nm (Tables 16 and 17; 1 S10 = $1.28\times10^{-8}$ W m$^{-2}$ sr$^{-1}$ $\mu$m$^{-1}$ at 500 nm, section 8.3), color factors (section 8.4, Table 19) and an observer-distance factor $f_R$: $I(R)/I(1\,{\rm AU})=R^{-2.3\pm0.1}$ for observers at heliocentric distance $R$ from Helios (about 0.3 to 1 AU, elongations 16 to 160 degrees; section 8.2, equation 15), and $R^{-2.5\pm0.2}$ from Pioneer 10 at 1 to 3.3 AU (equation 17). $f_R$ describes the brightness seen from $R$, not the cloud's radial density profile.
+- **Inputs and outputs:** ecliptic longitude from the Sun, ecliptic latitude, wavelength, observer heliocentric distance, epoch through the geometry; returns radiance along one sightline.
+- **Calibration and domain:** measured sky brightness; the helioecliptic table is from 1 AU, and each distance law holds only over its measured range of $R$ and elongation. The color and distance factors are separate approximations with their own domains.
+- **Observer and time:** Solar-system observers near the ecliptic within the measured $R$ ranges; time enters through Sun-relative geometry. An out-of-domain policy (reject, clamp, or extrapolate) must be explicit on each axis.
+- **Unsupported:** observers outside the measured ranges (well out of the ecliptic, or beyond 3.3 AU), a view of the cloud from outside, three-dimensional density, or grain optics. A physical model fitted to these tables is calibrated, not validated by them.
+- **Status:** implemented in zodi 1.0.0 (commit 76d38ee) and skyscapes 1.4.0 (`LeinertZodi`); open color findings are in the radiometry chapter's coverage table.
 
 ### Analytic exozodi scaling law
 
-- **What it is:** a surface-brightness level at a reference radius scaled to other radii and stars, as in Stark et al. (2014, ApJ 795, 122, appendix C, equations C1 to C4, [doi:10.1088/0004-637X/795/2/122](https://doi.org/10.1088/0004-637X/795/2/122)): one zodi has V surface brightness 22 mag arcsec$^{-2}$ at the Earth-equivalent insolation distance (EEID), $r_{\rm EEID}=1\,{\rm AU}\sqrt{L_\star/L_\odot}$.
+- **What it is:** a scalar exozodi brightness from a zodi level, the host's luminosity and a radius. Stark et al. (2014, ApJ 795, 122, appendix C, [doi:10.1088/0004-637X/795/2/122](https://doi.org/10.1088/0004-637X/795/2/122)) define one zodi as "the optical depth of the zodiacal cloud at 1 AU", placed at the Earth-equivalent insolation distance (EEID), $r_{\rm EEID}=1\,{\rm AU}\sqrt{L_\star/L_\odot}$, and give its V surface brightness there (their equation C4) as $I=10^{-0.4(M_{V,\star}-M_{V,\odot})}(L_\odot/L_\star)\,I_{\rm zodi}$ with $I_{\rm zodi}$ = 22 mag arcsec$^{-2}$. The 22 mag arcsec$^{-2}$ value therefore holds at the EEID of a Solar twin only. Stark et al. (2014) evaluate every planet at the EEID value; the further $(r_{\rm EEID}/r)^2$ scaling to a planet's radius used by current yield and exposure-time codes (and by zodi `scale_jez`) is a consumer convention, not part of that appendix.
 - **Inputs and outputs:** zodi level, stellar V luminosity, radius, band color factor; returns a scalar brightness or a flux ratio per arcsec$^2$ at that radius.
 - **Calibration and domain:** a convention anchored to the Solar-system cloud viewed from outside; fast and reproducible for yield calculations; no spatial structure.
 - **Observer and time:** a distant observer; geometry enters only through a radius and an inclination factor.
 - **Unsupported:** morphology, forward-scattering asymmetry at a given position angle, and any value already evaluated at radius $r$ receiving a second $r^{-2}$ or inclination factor.
-- **Status:** implemented (zodi `exozodi_flux_ratio_v`, `jez0`, `scale_jez`); consumer dialects differ, see the boundary checklist.
+- **Status:** implemented in zodi 1.0.0 (commit 76d38ee: `exozodi_flux_ratio_v`, `jez0`, `scale_jez`); consumer dialects differ, see the boundary checklist.
 
 ### Parametric scattered-light disk
 
@@ -138,16 +138,17 @@ The profiles below are distinct model choices, not fidelity levels of one model.
 - **Calibration and domain:** optically thin; the amplitude is phenomenological until tied to a declared reference profile (see "one zodi" below).
 - **Observer and time:** a distant observer in current implementations; an embedded observer requires the ray support above, not a smaller distance.
 - **Unsupported:** absolute Solar-system calibration, thermal emission, and optically thick disks.
-- **Status:** implemented as skyscapes `GraterDisk` and `ExovistaParametricDisk`; their pixel measure, inclination domain, amplitude identifiability and support truncation are open (coverage table below).
+- **Status:** implemented in skyscapes 1.4.0 as `GraterDisk` and `ExovistaParametricDisk`; their pixel measure, inclination domain, amplitude identifiability and support truncation are open (coverage table below).
 
 ### Imported ExoVista raster
 
 - **What it is:** a precomputed image cube from ExoVista (Stark et al. 2022, section 2.4): "disk contrast per pixel (flux of disk per pixel divided by stellar flux)", with a default 2 mas pixel scale. Its normalization is a Solar-system twin at 60 degrees inclination with V surface brightness 22 mag arcsec$^{-2}$ at 1 AU and 90 degrees scattering angle (section 2.3).
 - **Inputs and outputs:** file, native pixel scale, wavelengths; returns pixel-integrated host contrast on the native grid.
-- **Calibration and domain:** the generator's calibration at generation time; geometry, orientation and distance are baked into the image.
+- **Calibration and domain:** the generator's calibration at generation time; geometry and orientation are baked into the image.
 - **Observer and time:** none; the viewpoint is fixed.
-- **Unsupported:** a different viewpoint, inclination or distance; a two-dimensional image cannot acquire them. Resampling to another grid must conserve pixel-integrated flux and record edge losses.
-- **Status:** implemented as skyscapes `ExovistaDisk`; flux-conserving resampling and native-sampling provenance are open.
+- **Supported with care:** a different distance in the distant-observer limit. Scaling the angular pixel by $D/D'$ keeps each pixel's physical area $D^2\Delta\Omega$, and so its contrast, unchanged (the raster distance fixture below). Resampling to another grid must then conserve pixel-integrated flux and record edge losses.
+- **Unsupported:** a different viewpoint or inclination; a two-dimensional image cannot acquire them.
+- **Status:** implemented in skyscapes 1.4.0 as `ExovistaDisk`; flux-conserving resampling and native-sampling provenance are open.
 
 ### Exploratory arbitrary-observer cloud
 
@@ -156,9 +157,10 @@ The profiles below are distinct model choices, not fidelity levels of one model.
 
 ## What "one zodi" means
 
-"Zodi" names at least two families of definitions:
+"Zodi" names at least three families of definitions:
 
-- **Surface-brightness based.** A reference Solar-system brightness at a reference radius and view: Roberge et al. (2012, PASP 124, 799, section 1.2, [doi:10.1086/667218](https://doi.org/10.1086/667218)) and Stark et al. (2014, appendix C) use about 22 mag arcsec$^{-2}$ in V at the EEID; ExoVista anchors 22 mag arcsec$^{-2}$ at 1 AU and 90 degrees scattering angle for a 60-degree view.
+- **Surface-brightness based.** A reference Solar-system brightness at a reference radius and view: Roberge et al. (2012, PASP 124, 799, section 1.2, [doi:10.1086/667218](https://doi.org/10.1086/667218)) adopt about 22 mag arcsec$^{-2}$ in V at the EEID as the reference for all stars.
+- **Hybrid.** An optical depth defined through a brightness: Stark et al. (2014, appendix C) define one zodi as the 1 AU optical depth placed at the EEID and calibrate it with 22 mag arcsec$^{-2}$ for a Solar twin, so the EEID brightness of other stars follows their equation C4. ExoVista draws disk levels from the HOSTS surface-density distribution and then normalizes brightness so that a Solar-system twin at 60 degrees inclination has 22 mag arcsec$^{-2}$ at 1 AU and 90 degrees scattering angle (Stark et al. 2022, section 2.3).
 - **Surface-density based.** A face-on geometrical optical depth: Kennedy et al. (2015, ApJS 216, 23, section 2.2.3, equation 3, [doi:10.1088/0067-0049/216/2/23](https://doi.org/10.1088/0067-0049/216/2/23)) set $\Sigma_m=z\,\Sigma_{m,0}(r/r_0)^{-\alpha}$ with $\Sigma_{m,0}=7.12\times10^{-8}$ at $r_0=\sqrt{L_\star/L_\odot}$ AU; Ertel et al. (2020, AJ 159, 177, section 3.2, [doi:10.3847/1538-3881/ab7817](https://doi.org/10.3847/1538-3881/ab7817)) call this "a unit of vertical geometrical optical depth (surface density)", independent of passband.
 
 These do not convert into each other without grain optics, a phase function and a viewing geometry. **Proposed profile:** a dust amplitude always travels with a specification that names
@@ -185,8 +187,10 @@ For the same star, cloud and view in the distant-observer limit, three identitie
 For one pixel of solid angle $\Delta\Omega$,
 
 $$
-c_p=\frac{I_\lambda\,\Delta\Omega}{L_\lambda/(4\pi D^2)}=\frac{4\pi\,I_\lambda\,(D^2\Delta\Omega)}{L_\lambda}.
+c_p=\frac{\int_{\Delta\Omega}I_\lambda\,d\Omega}{L_\lambda/(4\pi D^2)},
 $$
+
+which for radiance uniform over the pixel is $4\pi\,I_\lambda\,(D^2\Delta\Omega)/L_\lambda$.
 
 The physical area $D^2\Delta\Omega$ carries the distance dependence: a fixed angular pixel covers four times more cloud at twice the distance. Multiplying a sampled map by the angular pixel area alone therefore fixes the per-pixel measure (below) but does not establish an absolute dust normalization. Comparing the same angular pixel at two distances compares two different physical sightlines.
 
@@ -194,7 +198,7 @@ The physical area $D^2\Delta\Omega$ carries the distance dependence: a fixed ang
 :class: only-light
 :name: fig-dust-sampling
 
-Radiance versus pixel flux, an analytic fixture: a Gaussian clump of peak photon radiance 7 photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ sr$^{-1}$ and width 0.25 arcsec, integrated exactly over each pixel of a fixed 2 arcsec field. (a) to (c) share one logarithmic norm: each refinement divides the peak pixel by about four while the printed sum stays fixed. (d) The sum of pixel fluxes is invariant; the sum of radiance samples without a solid-angle weight grows as the square of the pixels per side. Small-angle pixel solid angles.
+Radiance versus pixel flux, an analytic fixture: a Gaussian clump of peak photon radiance 7 photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ sr$^{-1}$ and width 0.25 arcsec, integrated exactly over each pixel of a fixed 2 arcsec field. (a) to (c) share one logarithmic norm spanning three decades below the coarsest peak: each refinement divides the peak pixel by about four, visible as a color change, while the printed sum stays fixed. (d) The sum of pixel fluxes is invariant; the sum of radiance samples without a solid-angle weight grows as the square of the pixels per side. Small-angle pixel solid angles.
 ```
 
 ```{figure} figures/dust-sampling-dark.svg
@@ -211,7 +215,7 @@ Radiance versus pixel flux, an analytic fixture: a Gaussian clump integrated exa
 :class: only-light
 :name: fig-dust-radiometry
 
-Where the spectral and angular measures enter, a synthetic example. (a) Photon spectral radiance of three power-law energy spectra $B_\lambda\propto\lambda^k$ normalized at 550 nm, with a 500 to 600 nm box passband. (b) Relative error of integrating energy over the band and converting to photons once at the band center, against converting at every wavelength; exact only for $k=0$, where the photon density is linear in wavelength. (c) The order in which band response, pixel solid angle, collecting area and optics, and QE each enter once. A zero-point ratio is a receiving-adapter product, not the exchange quantity. No consumer implementation is represented.
+Where the spectral and angular measures enter, a synthetic example. (a) Photon spectral radiance of three power-law energy spectra $B_\lambda\propto\lambda^k$ normalized at 550 nm, with a 500 to 600 nm box passband. (b) Relative error of integrating energy over the band and converting to photons once at the band center, against converting at every wavelength. For a box band it is exact only for $k=0$, where the photon density is linear in wavelength; in general a single conversion is exact only at the response-and-spectrum-weighted mean wavelength. (c) The order in which pixel solid angle, the in-band response (band, optics and QE, inside the integral) and collecting area each enter once. A zero-point ratio is a receiving-adapter product, not the exchange quantity. No consumer implementation is represented.
 ```
 
 ```{figure} figures/dust-radiometry-dark.svg
@@ -220,7 +224,7 @@ Where the spectral and angular measures enter, a synthetic example. (a) Photon s
 Where the spectral and angular measures enter, a synthetic example: photon spectral radiance of three power-law energy spectra, the error of converting once at band center, and the order in which band, solid angle, area and optics, and QE each enter once.
 ```
 
-Band integration follows the radiometry chapter: $Q_b=\int R(\lambda)\,I_\lambda\,d\lambda$ in photon units, then the angular integral, then the response. The dust-specific additions are small: a Leinert color factor has an energy-density basis and needs one $\lambda/\lambda_{\rm ref}$ factor to become a photon-density ratio; an exozodi reference brightness in a flux-ratio dialect needs its zero point named; a band equivalent width appears once, never also as a multiplier on an already integrated quantity.
+Band integration follows the radiometry chapter: integrate the radiance over the pixel solid angle, then over wavelength with every wavelength-dependent factor (band response $R$, optical transmission $T_{\rm opt}$ and QE $q$) inside the integral, in photon units; only the collecting area stays outside. Applying transmission or QE to a band-integrated value is exact only when they are flat across the band. The dust-specific additions are small. A Leinert color factor $f_{\rm co}$ is a color relative to the Solar spectrum in S10 units, not an energy-density ratio: reaching photon radiance takes the Solar spectral shape at the target wavelength (Leinert section 8.4, Table 19 in W m$^{-2}$ sr$^{-1}$ $\mu$m$^{-1}$), then one $\lambda/hc$ conversion. An exozodi reference brightness in a flux-ratio dialect needs its zero point named. A band equivalent width appears once, never also as a multiplier on an already integrated quantity.
 
 ## Parameters and identifiability
 
@@ -228,7 +232,7 @@ Band integration follows the radiometry chapter: $Q_b=\int R(\lambda)\,I_\lambda
 :class: only-light
 :name: fig-dust-identifiability
 
-Amplitude identifiability, an analytic fixture. A normalized ring morphology multiplied by (a) nzodis = 2 and albedo = 0.15, and (b) nzodis = 1 and albedo = 0.3, shares one linear norm in arbitrary units. (c) Their difference is exactly zero everywhere; the signed display is pinned to a symmetric range rather than rescaled to the empty field. (d) Gaussian likelihood contours ($\Delta\chi^2=1,4,9$) for per-pixel noise chosen so the product is measured to $\pm0.02$: the data constrain only nzodis times albedo, along the dashed hyperbola.
+Amplitude identifiability, an analytic fixture. A normalized ring morphology multiplied by (a) nzodis = 2 and albedo = 0.15, and (b) nzodis = 1 and albedo = 0.3, shares one linear norm in arbitrary units. (c) Their difference is exactly zero everywhere; the signed display is pinned to a symmetric range rather than rescaled to the empty field. (d) Gaussian likelihood contours ($\Delta\chi^2=1,4,9$) for per-pixel noise chosen so the product is measured to $\pm0.02$: the data constrain only nzodis times albedo, along the dashed hyperbola. With one constrained combination, $\Delta\chi^2=1,4,9$ are its 1, 2 and 3 sigma limits. Markers (a) and (b) are the two parameter vectors.
 ```
 
 ```{figure} figures/dust-identifiability-dark.svg
@@ -269,22 +273,23 @@ The fixtures below are implemented in `tools/dust_reference_cases.py` and tested
 
 | Fixture | Setup | Expected (independently derived) | What a wrong kernel shows |
 |---|---|---|---|
-| **Positive half-ray sphere** | Sphere radius 2 AU at the origin, emissivity $j=3$ photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ sr$^{-1}$ AU$^{-1}$ | Observer $(1,0,0)$: toward $+x$ path 1 AU, $I=3$; toward $-x$ path 3 AU, $I=9$. Observer $(5,0,0)$: toward $-x$ path 4 AU, $I=12$; toward $+x$ $I=0$. Observer $(2,-3,0)$ toward $+y$: tangent, $I=0$ | Full-line integration gives 4 AU from inside; a sign error in $\boldsymbol x_{\rm obs}\cdot\hat{\boldsymbol n}$ fails five anchors |
+| **Positive half-ray sphere** | Sphere radius 2 AU at the origin, emissivity $j=3$ photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ sr$^{-1}$ AU$^{-1}$ | Observer $(1,0,0)$: toward $+x$ path 1 AU, $I=3$; toward $-x$ path 3 AU, $I=9$. Observer $(5,0,0)$: toward $-x$ path 4 AU, $I=12$; toward $+x$ $I=0$. Observer $(2,-3,0)$ toward $+y$: tangent, $I=0$ | Full-line integration gives 4 AU from inside; a sign error in $\boldsymbol x_{\rm obs}\cdot\hat{\boldsymbol n}$ fails the four non-tangent anchors |
 | **Scattering-angle sign** | Observer on $+x$ looking $-x$ | Grain at $(1,0,0)$: $\Theta=0$; at $(-1,0,0)$: $\Theta=\pi$; $\alpha=\pi-\Theta$ | Using $+\hat{\boldsymbol n}$ as the outgoing direction swaps forward and back |
-| **Radiance to pixels** | Uniform 7 photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ sr$^{-1}$ over 2 arcsec, grids 24, 48, 96 | Total $I\,(2\,{\rm arcsec})^2$ in sr on every grid; each pixel quarters per doubling | Unweighted sums grow by four per doubling |
+| **Radiance to pixels** | Uniform 7 photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ sr$^{-1}$ over 2 arcsec, grids 24, 48, 96; and the exactly pixel-integrated Gaussian clump of the sampling figure | Uniform: total $I\,(2\,{\rm arcsec})^2$ in sr on every grid, each pixel quarters per doubling. Clump: the pixel sum equals its closed-form field integral on every grid | Unweighted sums grow by four per doubling |
 | **Distance doubling** | Face-on uniform disk, radius 3 AU, $D=10$ and 20 pc | Radiance unchanged; solid angle and flux divided by four; contrast unchanged; fixed-angle pixel contrast multiplied by four | Treating a fixed angular pixel as a fixed sightline |
+| **Raster distance** | Contrast raster at 2 mas moved from 10 to 25 pc | Pixel scale 0.8 mas; every pixel contrast unchanged | Keeping the angular pixel and rescaling values |
 | **Amplitude product** | (2, 0.15) and (1, 0.30) | Identical images; Fisher rank one | A test of gradients alone passes |
 | **Phase normalization** | HG with $g\in\{-0.5,0,0.3,0.9\}$; mixture weights (0.7, 0.3) | $\int_{4\pi}p\,d\Omega=1$ | Weights (0.7, 0.7) are rejected |
 | **Inclination sign control** | Thin slab, 120 degrees | Radiance $2hj$ inside the projected ellipse on both sides of 90 degrees | Keeping the sign of $\cos i$ gives $-2hj$ |
-| **Band conversion** | $B_\lambda\propto\lambda^k$ over 500 to 600 nm | Closed-form photon integral agrees with quadrature | Center conversion is exact only for $k=0$ |
+| **Band conversion** | $B_\lambda\propto\lambda^k$, box passband 500 to 600 nm | Closed-form photon integral agrees with quadrature | Center conversion is exact only for $k=0$ in a box band |
 
-Tolerances for these fixtures are float64 fixture tolerances (relative and absolute $10^{-12}$), not production accuracy requirements. Production acceptance additionally needs the three-level support and node ladders above, recorded source revisions, and positive and deliberately failing controls, as the tolerances before tests decision in [the handbook](index.md) requires.
+Tolerances for these fixtures are float64 fixture tolerances, not production accuracy requirements: relative and absolute $10^{-12}$ for the exact geometric, pixel, distance and raster anchors; relative $10^{-10}$ for the quadrature-based phase-function checks; and an observed-order band of $2\pm0.05$ for the clump's center-pixel convergence. Production acceptance additionally needs the three-level support and node ladders above, recorded source revisions, and positive and deliberately failing controls, as the tolerances before tests decision in [the handbook](index.md) requires.
 
 ```{figure} figures/dust-sign-control-light.svg
 :class: only-light
 :name: fig-dust-sign
 
-A negative control: a thin uniform slab (radius 4 AU, thickness 0.1 AU, emissivity 5 per AU) at 120 degrees inclination. (a) The correct weight $h/|\cos i|$ on a logarithmic display. (b) The deliberately wrong weight $h/\cos i$ on the same display: a log display floors negative pixels, so a negative map looks like empty sky. (c) The same wrong map on a signed display exposes it. Physical radiance is checked for finite, nonnegative values before any logarithmic display.
+A negative control: a thin uniform slab (radius 4 AU, thickness 0.1 AU, emissivity 5 photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ sr$^{-1}$ AU$^{-1}$, isotropic, no phase function) at 120 degrees inclination, tilted about sky x. Without a phase function the 60 and 120 degree images are identical, so the figure tests the path-weight sign only, not which half is near. (a) The correct weight $h/|\cos i|$ on a logarithmic display. (b) The deliberately wrong weight $h/\cos i$ on the same display: a log display floors negative pixels, so a negative map looks like empty sky. (c) The same wrong map on a signed display exposes it. Physical radiance is checked for finite, nonnegative values before any logarithmic display.
 ```
 
 ```{figure} figures/dust-sign-control-dark.svg

@@ -158,7 +158,9 @@ def test_distance_doubling_invariants():
     np.testing.assert_allclose(far["radiance"], near["radiance"], rtol=RTOL)
     # The disk subtends a quarter of the solid angle and delivers a quarter
     # of the flux; the star dims by the same factor, so contrast holds.
-    np.testing.assert_allclose(far["solid_angle_sr"], near["solid_angle_sr"] / 4)
+    np.testing.assert_allclose(
+        far["solid_angle_sr"], near["solid_angle_sr"] / 4, rtol=RTOL
+    )
     np.testing.assert_allclose(far["disk_flux"], near["disk_flux"] / 4, rtol=RTOL)
     np.testing.assert_allclose(far["star_flux"], near["star_flux"] / 4, rtol=RTOL)
     np.testing.assert_allclose(far["contrast"], near["contrast"], rtol=RTOL)
@@ -170,13 +172,17 @@ def test_distant_disk_absolute_values():
     )
     au_m = 1.495978707e11  # IAU 2012 exact definition
     assert au_m == pytest.approx(AU2m, rel=1e-15)
+    # 1 pc = 648000 / pi AU by the IAU 2015 definition.
+    assert pc2m == pytest.approx(648000.0 / math.pi * au_m, rel=1e-12)
     distance_m = DISTANCE_PC * pc2m
     theta = DISK_RADIUS_AU * au_m / distance_m  # small-angle radius, rad
     solid_angle = math.pi * theta**2
     star_flux = STAR_PHOTON_LUMINOSITY / (4.0 * math.pi * distance_m**2)
     np.testing.assert_allclose(obs["solid_angle_sr"], solid_angle, rtol=1e-12)
-    np.testing.assert_allclose(obs["disk_flux"], RADIANCE_SR * solid_angle)
-    np.testing.assert_allclose(obs["contrast"], RADIANCE_SR * solid_angle / star_flux)
+    np.testing.assert_allclose(obs["disk_flux"], RADIANCE_SR * solid_angle, rtol=RTOL)
+    np.testing.assert_allclose(
+        obs["contrast"], RADIANCE_SR * solid_angle / star_flux, rtol=RTOL
+    )
 
 
 def test_pixel_contrast_needs_physical_area():
@@ -341,3 +347,17 @@ def test_gaussian_clump_center_pixel_approaches_radiance_times_area():
     # Smooth integrand, pixel-average error is second order in pixel size.
     observed_order = np.log2(errors[:-1] / errors[1:])
     np.testing.assert_allclose(observed_order, 2.0, atol=0.05)
+
+
+def test_raster_distance_rescale_keeps_contrast_per_pixel():
+    """A distant-observer contrast raster moves from D to D' exactly by
+    scaling the angular pixel by D / D': the physical pixel area D^2 dOmega,
+    and so each pixel's contrast, is unchanged. Basis: exact algebra."""
+    pixscale_mas = 2.0
+    new_scale = drc.raster_pixscale_at_distance(pixscale_mas, 10.0, 25.0)
+    np.testing.assert_allclose(new_scale, 0.8, rtol=RTOL)
+    d_old = (pixscale_mas * 1e-3 * ARCSEC_TO_RAD) ** 2
+    d_new = (new_scale * 1e-3 * ARCSEC_TO_RAD) ** 2
+    old = drc.pixel_host_contrast(RADIANCE_SR, d_old, 10.0, STAR_PHOTON_LUMINOSITY)
+    new = drc.pixel_host_contrast(RADIANCE_SR, d_new, 25.0, STAR_PHOTON_LUMINOSITY)
+    np.testing.assert_allclose(new, old, rtol=RTOL)

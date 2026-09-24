@@ -265,6 +265,25 @@ def pixel_host_contrast(radiance_sr, pixel_solid_angle_sr, distance_pc, luminosi
     return radiance_sr * pixel_solid_angle_sr / star_flux
 
 
+def raster_pixscale_at_distance(pixscale_mas, distance_pc, new_distance_pc):
+    """Angular pixel scale of a contrast raster moved to a new distance.
+
+    In the distant-observer limit a raster of contrast per pixel keeps every
+    pixel value when the angular pixel scales by D / D', because each pixel
+    then covers the same physical area D^2 d(Omega). Viewpoint and
+    inclination cannot change this way.
+
+    Args:
+        pixscale_mas: Native pixel scale, mas.
+        distance_pc: Distance the raster was generated for, pc.
+        new_distance_pc: Target distance, pc.
+
+    Returns:
+        Pixel scale at the new distance, mas.
+    """
+    return pixscale_mas * distance_pc / new_distance_pc
+
+
 def product_amplitude_image(nzodis, albedo, morphology):
     """Image whose brightness depends only on the product nzodis * albedo.
 

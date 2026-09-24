@@ -28,10 +28,15 @@ import numpy as np
 from hwoutils.constants import arcsec2rad, c, h, um2nm
 
 root = next(
-    p
-    for p in (Path.cwd(), *Path.cwd().parents)
-    if (p / "tools" / "dust_reference_cases.py").exists()
+    (
+        p
+        for p in (Path.cwd(), *Path.cwd().parents)
+        if (p / "tools" / "dust_reference_cases.py").exists()
+    ),
+    None,
 )
+if root is None:
+    raise FileNotFoundError("run this page from inside the spohnbook repository")
 spec = importlib.util.spec_from_file_location(
     "dust_reference_cases", root / "tools" / "dust_reference_cases.py"
 )
@@ -115,6 +120,8 @@ res = ep.compare_row(
     maps,
     titles=[f"{n} x {n}" for n in grids],
     norm="log",
+    vmax=maps[0].max(),
+    vmin=1e-3 * maps[0].max(),  # three decades below the coarsest peak
     extent=(-half, half, -half, half),
     cbar_label="photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ per pixel",
     panel_size=2.6,

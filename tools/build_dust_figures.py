@@ -51,7 +51,7 @@ CLUMP = {"peak_sr": 7.0, "sigma_arcsec": 0.25, "field_arcsec": 2.0}
 GRIDS = (24, 48, 96)
 BAND = {"b0": 1.0e-6, "lam0_nm": 550.0, "lo_nm": 500.0, "hi_nm": 600.0}
 SLOPES = (0.0, -4.0, 2.0)
-RING = {"radius_au": 3.0, "width_au": 0.6, "field_au": 10.0, "n_pix": 101}
+RING = {"radius_au": 3.0, "width_au": 0.6, "field_au": 10.0, "n_pix": 100}
 AMPLITUDES = [(2.0, 0.15), (1.0, 0.30)]
 SLAB = {
     "radius_au": 4.0,
@@ -59,7 +59,7 @@ SLAB = {
     "emissivity": 5.0,
     "inclination_deg": 120.0,
     "field_au": 10.0,
-    "n_pix": 121,
+    "n_pix": 120,
 }
 
 
@@ -77,18 +77,20 @@ def cast():
     return {
         "dust": {"color": roles.disk, "ls": "-", "marker": "o"},
         "dust_second": {
-            "color": adjust_lightness(roles.disk, 1.45 if light else 0.7),
+            "color": adjust_lightness(roles.disk, 1.45 if light else 1.35),
             "ls": "--",
             "marker": "s",
         },
         "dust_third": {
-            "color": adjust_lightness(roles.disk, 0.65 if light else 1.35),
+            "color": adjust_lightness(roles.disk, 0.65 if light else 1.7),
             "ls": "-.",
             "marker": "^",
         },
         "star": {"color": roles.star, "marker": "*"},
         "wrong": {"color": roles.model, "ls": ":", "marker": "x"},
         "scenery": {"color": neutral(0.45)},
+        "answer": {"color": plt.rcParams["text.color"]},
+        "shade_alpha": 0.15 if light else 0.35,
         "furniture": {"color": neutral(0.2)},
     }
 
@@ -140,10 +142,22 @@ def geometry(fig_cast):
         start = obs[k]
         if half > 0:
             tracks.fill_between(
-                [-half, half], y - 0.28, y + 0.28, color=dust["color"], alpha=0.15, lw=0
+                [-half, half],
+                y - 0.28,
+                y + 0.28,
+                color=dust["color"],
+                alpha=fig_cast["shade_alpha"],
+                lw=0,
             )
         else:
-            tracks.plot([0.0], [y], "|", color=dust["color"], ms=14)
+            tracks.plot([0.0], [y], "o", mfc="none", mec=dust["color"], ms=8)
+            tracks.text(
+                0.3,
+                y - 0.3,
+                "tangent point (line x = 2; axis is y)",
+                fontsize="small",
+                color=scenery,
+            )
         tracks.annotate(
             "",
             xy=(start + 2.0 * direc[k], y + 0.18),
@@ -165,7 +179,7 @@ def geometry(fig_cast):
             )
         tracks.plot(start, y, marker="D", color=scenery, ms=6, ls="none")
         value = drc.sphere_ray_radiance(obs, direc, radius, emis)
-        tracks.text(7.8, y, f"{label}:  L = {length:g} AU, I = {value:g}", va="center")
+        tracks.text(7.8, y, f"{label}:  path {length:g} AU, I = {value:g}", va="center")
     tracks.set(xlim=(-3.2, 14.5), ylim=(-4.6, 0.6), yticks=[])
     tracks.spines["bottom"].set_bounds(-3, 7)
     tracks.set_xticks([-2, 0, 2, 4, 6])
@@ -174,7 +188,7 @@ def geometry(fig_cast):
     tracks.text(
         -3.1,
         0.45,
-        "shaded: sphere, R = 2 AU; diamond: observer",
+        "shaded: sphere, R = 2 AU; diamond: observer; I in " + RADIANCE_UNIT,
         color=scenery,
         fontsize="small",
     )
@@ -216,7 +230,7 @@ def geometry(fig_cast):
             1.3,
             theta1=0,
             theta2=theta_deg,
-            color=fig_cast["wrong"]["color"],
+            color=fig_cast["answer"]["color"],
         )
     )
     angle.text(
@@ -284,6 +298,8 @@ def sampling(fig_cast):
         titles=[f"({t}) {n} x {n} pixels" for t, n in zip("abc", GRIDS, strict=True)],
         axes=axes[:3],
         norm="log",
+        vmax=float(images[0].max()),
+        vmin=1e-3 * float(images[0].max()),
         extent=(-half, half, -half, half),
         cbar_label="pixel-integrated flux\n[photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ per pixel]",
     )
@@ -301,7 +317,7 @@ def sampling(fig_cast):
         ax.set_ylabel("")
 
     ladder = axes[3]
-    panel_label(ladder, "(d) The integral holds; unweighted sums do not")
+    panel_label(ladder, "(d) Integral holds; plain sums grow")
     grids = np.array(GRIDS)
     totals = np.array([img.sum() for img in images])
     d_omega = (field / grids * arcsec2rad) ** 2
@@ -327,7 +343,7 @@ def sampling(fig_cast):
         ls=bad["ls"],
         marker=bad["marker"],
     )
-    ladder.text(96, 1.25, "sum of pixel fluxes", ha="right", color=ok["color"])
+    ladder.text(90, 1.3, "sum of pixel fluxes", ha="right", color=ok["color"])
     ladder.text(
         90,
         14.0,
@@ -376,7 +392,7 @@ def radiometry(fig_cast):
     quiet(spec)
 
     panel_label(err, "(b) Converting once at band center")
-    frac = np.linspace(0.05, 0.5, 46)
+    frac = np.linspace(0.005, 0.5, 100)
     for k, style in zip(SLOPES, styles, strict=True):
         rel = []
         for f in frac:
@@ -396,22 +412,21 @@ def radiometry(fig_cast):
     err.set_ylabel("relative error of the band integral [%]")
     quiet(err)
 
-    panel_label(chain, "(c) Each factor enters once")
+    panel_label(chain, "(c) Each factor enters once, in order")
     steps = [
         ("$I_\\lambda$ photon spectral radiance", RADIANCE_UNIT),
         (
-            "$\\int R(\\lambda)\\,I_\\lambda\\,d\\lambda$  (band, once)",
-            "photon s$^{-1}$ m$^{-2}$ sr$^{-1}$",
+            "$\\times\\,\\Delta\\Omega_{\\rm pix}$  (solid angle)",
+            "photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ per pixel",
         ),
         (
-            "$\\times\\,\\Delta\\Omega_{\\rm pix}$  (solid angle)",
-            "photon s$^{-1}$ m$^{-2}$ per pixel",
+            "$\\int R\\,T_{\\rm opt}\\,q\\,(\\cdot)\\,d\\lambda$  (band, optics, QE)",
+            "electron s$^{-1}$ m$^{-2}$ per pixel",
         ),
-        ("$\\times\\,A\\,T_{\\rm opt}$  (area, optics)", "photon s$^{-1}$ per pixel"),
-        ("$\\times\\,q$  (QE, once)", "electron s$^{-1}$ per pixel"),
+        ("$\\times\\,A$  (collecting area)", "electron s$^{-1}$ per pixel"),
     ]
     for i, (op, unit) in enumerate(steps):
-        y = 1.0 - i * 0.2
+        y = 1.0 - i * 0.27
         chain.text(
             0.02,
             y,
@@ -423,14 +438,14 @@ def radiometry(fig_cast):
         if i:
             chain.annotate(
                 "",
-                xy=(0.12, y + 0.05),
-                xytext=(0.12, y + 0.15),
+                xy=(0.12, y + 0.06),
+                xytext=(0.12, y + 0.21),
                 arrowprops={"arrowstyle": "->", "color": fig_cast["scenery"]["color"]},
             )
     chain.text(
         0.02,
         -0.08,
-        "A legacy ratio divides by a declared zero point $F_0$ in the\nreceiving adapter; it is not a physical exchange quantity.",
+        "Wavelength-dependent response and QE act inside the band\nintegral, once, before wavelength is discarded. A legacy ratio\ndivides by a declared zero point $F_0$ in the receiving adapter.",
         va="top",
         fontsize="small",
         color=fig_cast["scenery"]["color"],
@@ -445,7 +460,7 @@ def radiometry(fig_cast):
 
 def ring_morphology():
     n, half = RING["n_pix"], 0.5 * RING["field_au"]
-    x = np.linspace(-half, half, n)
+    x = (np.arange(n) + 0.5) * (2 * half / n) - half  # pixel centers
     xx, yy = np.meshgrid(x, x)
     r = np.hypot(xx, yy)
     return np.exp(-((r - RING["radius_au"]) ** 2) / (2 * RING["width_au"] ** 2))
@@ -474,7 +489,8 @@ def identifiability(fig_cast):
         cbar_label="brightness (normalized morphology\ntimes amplitude, arbitrary units)",
     )
     for ax in res.axes:
-        ep.label_au(ax)
+        ax.set_xlabel("sky x [AU]")
+        ax.set_ylabel("sky y [AU]")
     res.axes[1].set_ylabel("")
     residual = images[0] - images[1]
     peak = float(images[0].max())
@@ -485,8 +501,7 @@ def identifiability(fig_cast):
         vlim=1e-3 * peak,
         cbar_label="(a) minus (b), same units",
     )
-    ep.label_au(diff.ax)
-    diff.ax.set_ylabel("")
+    diff.ax.set_xlabel("sky x [AU]")
     diff.ax.set_title(f"(c) (a) minus (b): max |diff| = {np.abs(residual).max():g}")
 
     like = axes[3]
@@ -515,17 +530,19 @@ def identifiability(fig_cast):
     like.text(
         0.97,
         0.97,
-        "contours: $\\Delta\\chi^2$ = 1, 4, 9",
+        "$\\Delta\\chi^2$ = 1, 4, 9: 1, 2, 3 sigma\non the single constrained product",
         transform=like.transAxes,
         ha="right",
         va="top",
         fontsize="small",
     )
-    curve = fig_cast["wrong"]
-    like.plot(nz, target / nz, color=curve["color"], ls=curve["ls"], lw=1.5)
-    like.text(3.9, target / 3.9 + 0.035, "nzodis x albedo = 0.3", ha="right")
-    for (n0, a0), key in zip(AMPLITUDES, ("dust", "dust_second"), strict=True):
+    like.plot(nz, target / nz, color=fig_cast["answer"]["color"], ls="--", lw=1.2)
+    like.text(2.3, 0.45, "nzodis x albedo = 0.3 (dashed)", fontsize="small")
+    for (n0, a0), key, tag in zip(
+        AMPLITUDES, ("dust", "dust_second"), "ab", strict=True
+    ):
         style = fig_cast[key]
+        like.text(n0 + 0.12, a0 + 0.02, f"({tag})")
         like.plot(
             n0,
             a0,
@@ -544,7 +561,7 @@ def identifiability(fig_cast):
 
 def slab_images():
     n, half = SLAB["n_pix"], 0.5 * SLAB["field_au"]
-    x = np.linspace(-half, half, n)
+    x = (np.arange(n) + 0.5) * (2 * half / n) - half  # pixel centers
     xx, yy = np.meshgrid(x, x)
     inc = math.radians(SLAB["inclination_deg"])
     args = (SLAB["radius_au"], SLAB["thickness_au"], SLAB["emissivity"], inc)
@@ -586,7 +603,8 @@ def sign_control(fig_cast):
     c = ep.imshow_diverging(bad, ax=axes[2], extent=extent, vlim=peak, cbar_label=label)
     c.ax.set_title("(c) the same map, signed display", loc="left")
     for res in (a, b, c):
-        ep.label_au(res.ax)
+        res.ax.set_xlabel("sky x, the tilt axis [AU]")
+        res.ax.set_ylabel("sky y [AU]")
     for res in (b, c):
         res.ax.set_ylabel("")
     return fig
@@ -617,7 +635,11 @@ FIGURES = {
     "identifiability": {
         "question": "Why can two parameter vectors make the same image?",
         "status": "analytic fixture",
-        "parameters": {"ring": RING, "amplitudes": AMPLITUDES, "sigma": "0.02 peak"},
+        "parameters": {
+            "ring": RING,
+            "amplitudes": AMPLITUDES,
+            "sigma": "per-pixel noise giving +-0.02 on the product",
+        },
         "quantity": "normalized morphology times amplitude; Gaussian likelihood",
         "normalization": "arbitrary units; shared linear norm for the two images",
     },
@@ -649,6 +671,10 @@ def git_revision(path):
 
 def build():
     OUT.mkdir(parents=True, exist_ok=True)
+    # Capture revisions before any export is rewritten.
+    spohnbook_revision = git_revision(ROOT)
+    eyepiece_root = Path(ep.__file__).resolve().parents[2]
+    eyepiece_revision = git_revision(eyepiece_root)
     source_hash = hashlib.sha256(
         (ROOT / SCRIPT).read_bytes()
         + (ROOT / "tools" / "dust_reference_cases.py").read_bytes()
@@ -697,8 +723,10 @@ def build():
                 ROOT / "tools" / "dust_reference_cases.py"
             ),
         },
-        "spohnbook_revision": git_revision(ROOT),
-        "eyepiece_revision": git_revision(Path(ep.__file__).resolve().parents[2]),
+        "spohnbook_revision": spohnbook_revision,
+        "eyepiece_revision": eyepiece_revision,
+        "eyepiece_imported_version": ep.__version__,
+        "eyepiece_source": str(eyepiece_root.name),
         "hwostyle_revision": git_revision(Path(hwostyle.__file__).resolve().parents[2]),
         "eyepiece_api_floor": "0.4.0: only names exported at tag v0.4.0 are used",
         "package_versions": versions,

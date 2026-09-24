@@ -49,8 +49,10 @@ A finding's stage is the earliest stage at which its repair is required.
 
 Every chapter starts with physical meaning, then equations and units, worked
 examples, adapter obligations, and acceptance fixtures. Its closing table assigns
-every relevant finding to an owner and a gate. The 81 findings include
-overlaps, positive anchors and future gaps; they are not 81 independent bugs.
+every relevant finding to an owner and a gate. The 81 findings counted
+before the dust chapter, and the dust chapter's ten (some shared with the
+radiometry chapter), include overlaps, positive anchors and future gaps; they
+are not independent bugs.
 
 ## Three distinctions to preserve
 
