@@ -26,7 +26,7 @@ result for this build.
 | Model restrictions | Synthetic source with constant photon spectral density over 1 nm; four equally illuminated pixels; constant QE; no dark current, clock-induced charge or read noise; deterministic variance only |
 | Evidence kind | Code verification against an independent analytic anchor, with two negative controls |
 | Data sources | None: the only inputs are the SI values of the Planck constant and the jansky |
-| Applicable profile | {ref}``photon-electron-reference-v1` <profiles-photon-electron-reference-v1>`, proposed |
+| Applicable profile | {ref}`photon-electron-reference-v1 <profiles-photon-electron-reference-v1>`, proposed |
 | Not evidence of | Stochastic readout, band integration of a real spectrum, coronagraph throughput, nonzero detector noise, dQE, an exposure time calculator, or measured-data validation |
 
 ```{include} ../_generated/environment.md
