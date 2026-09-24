@@ -5,6 +5,9 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.12"
+  # The figure style asks for Inter; without it matplotlib warns on every label.
+  apt_packages:
+    - fonts-inter
   jobs:
     # Record the evidence the rendered case states are computed from. A failing
     # test is recorded in the ledger and shown on the evidence page, so it does
