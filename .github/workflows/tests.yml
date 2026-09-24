@@ -5,12 +5,18 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  schedule:
+    # Weekly, so the compatibility job notices new dependency releases.
+    - cron: "0 6 * * 1"
   workflow_dispatch:
 
 jobs:
-  test:
-    name: Tests and documentation build
+  locked:
+    name: Locked build (requirements-docs.txt)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     steps:
     - uses: actions/checkout@v6
       with:
@@ -18,19 +24,93 @@ jobs:
 
     - name: Install uv
       uses: astral-sh/setup-uv@v7
+
+    - name: Install the locked environment
+      run: |
+        uv venv .venv --python 3.12
+        uv pip sync --python .venv/bin/python requirements-docs.txt
+        uv pip install --python .venv/bin/python --no-deps -e .
+        mkdir -p docs/_evidence
+
+    - name: Run tests and record the evidence ledger
+      run: >-
+        .venv/bin/python -m pytest tests -v --tb=short
+        --vv-evidence docs/_evidence/ledger.json 2>&1 | tee docs/_evidence/pytest.log
+
+    - name: Record the build manifest
+      if: always()
+      run: >-
+        .venv/bin/python tools/record_build.py --resolution locked
+        --ledger docs/_evidence/ledger.json
+        --output docs/_evidence/build-manifest.json
+        --command "pytest tests --vv-evidence; sphinx -W --keep-going -D nb_execution_mode=force"
+
+    - name: Build the documentation, executing every example
+      if: always()
+      run: >-
+        .venv/bin/python -m sphinx -W --keep-going -D nb_execution_mode=force
+        -b html docs docs/_build/html 2>&1 | tee docs/_evidence/sphinx.log
+
+    - name: Check that every published page and anchor still resolves
+      if: always()
+      run: >-
+        SPOHNBOOK_HTML_DIR=docs/_build/html
+        .venv/bin/python -m pytest tests/test_handbook.py -v -k rendered
+
+    - name: Upload the rendered site, logs, ledger, manifest and lock
+      if: always()
+      uses: actions/upload-artifact@v7
       with:
-        enable-cache: true
+        name: locked-build
+        path: |
+          docs/_build/html
+          docs/_evidence
+          requirements-docs.txt
 
-    - name: Create venv
-      run: uv venv .venv --python 3.12
+  compatibility:
+    name: Compatibility build (latest PyPI releases)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
 
-    - name: Install package with test and docs dependencies
-      run: uv pip install -e ".[test,docs]"
-      env:
-        VIRTUAL_ENV: ${{ github.workspace }}/.venv
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
 
-    - name: Run tests
-      run: .venv/bin/pytest tests/ -v --tb=short
+    - name: Install the newest releases of every dependency
+      run: |
+        uv venv .venv --python 3.12
+        uv pip install --python .venv/bin/python -e ".[test,docs]"
+        mkdir -p docs/_evidence
 
-    - name: Build the documentation, executing the examples
-      run: .venv/bin/python -m sphinx -W --keep-going -b html docs docs/_build/html
+    - name: Run tests and record the evidence ledger
+      run: >-
+        .venv/bin/python -m pytest tests -v --tb=short
+        --vv-evidence docs/_evidence/ledger.json 2>&1 | tee docs/_evidence/pytest.log
+
+    - name: Record the build manifest, listing every difference from the lock
+      if: always()
+      run: >-
+        .venv/bin/python tools/record_build.py --resolution latest
+        --ledger docs/_evidence/ledger.json
+        --output docs/_evidence/build-manifest.json
+        --command "pytest tests --vv-evidence; sphinx -W --keep-going -D nb_execution_mode=force"
+
+    - name: Build the documentation, executing every example
+      if: always()
+      run: >-
+        .venv/bin/python -m sphinx -W --keep-going -D nb_execution_mode=force
+        -b html docs docs/_build/html 2>&1 | tee docs/_evidence/sphinx.log
+
+    - name: Upload the rendered site, logs, ledger and manifest
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: compatibility-build
+        path: |
+          docs/_build/html
+          docs/_evidence
