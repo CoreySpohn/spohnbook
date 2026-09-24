@@ -77,12 +77,12 @@ def cast():
     return {
         "dust": {"color": roles.disk, "ls": "-", "marker": "o"},
         "dust_second": {
-            "color": adjust_lightness(roles.disk, 1.45 if light else 1.35),
+            "color": adjust_lightness(roles.disk, 1.45 if light else 1.55),
             "ls": "--",
             "marker": "s",
         },
         "dust_third": {
-            "color": adjust_lightness(roles.disk, 0.65 if light else 1.7),
+            "color": adjust_lightness(roles.disk, 0.65 if light else 1.2),
             "ls": "-.",
             "marker": "^",
         },
@@ -345,8 +345,8 @@ def sampling(fig_cast):
     )
     ladder.text(90, 1.3, "sum of pixel fluxes", ha="right", color=ok["color"])
     ladder.text(
-        90,
-        14.0,
+        55,
+        15.0,
         "sum of radiance samples,\nno $d\\Omega$ weight",
         ha="right",
         va="top",
@@ -420,7 +420,7 @@ def radiometry(fig_cast):
             "photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ per pixel",
         ),
         (
-            "$\\int R\\,T_{\\rm opt}\\,q\\,(\\cdot)\\,d\\lambda$  (band, optics, QE)",
+            "$\\int R\\,T_{\\rm opt}\\,q\\,(\\cdot)\\,d\\lambda$  (in band)",
             "electron s$^{-1}$ m$^{-2}$ per pixel",
         ),
         ("$\\times\\,A$  (collecting area)", "electron s$^{-1}$ per pixel"),
@@ -434,7 +434,7 @@ def radiometry(fig_cast):
             va="center",
             bbox={"boxstyle": "round", "fc": "none", "ec": fig_cast["dust"]["color"]},
         )
-        chain.text(0.62, y, unit, va="center", color=fig_cast["scenery"]["color"])
+        chain.text(0.66, y, unit, va="center", color=fig_cast["scenery"]["color"])
         if i:
             chain.annotate(
                 "",
@@ -450,7 +450,7 @@ def radiometry(fig_cast):
         fontsize="small",
         color=fig_cast["scenery"]["color"],
     )
-    chain.set(xlim=(0, 1.3), ylim=(-0.3, 1.1))
+    chain.set(xlim=(0, 1.45), ylim=(-0.3, 1.1))
     chain.axis("off")
     return fig
 
