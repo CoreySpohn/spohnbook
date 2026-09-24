@@ -9,6 +9,21 @@ build:
   apt_packages:
     - fonts-inter
   jobs:
+    # Cancel builds that cannot change the rendered book, so they do not hold one
+    # of the account's concurrent build slots: a release pull request, and the
+    # merge of one into main, only add CHANGELOG.md. Exit code 183 tells Read the
+    # Docs to cancel the build. Tag builds (the editions) always run.
+    post_checkout:
+      - |
+        case "$READTHEDOCS_VERSION_TYPE:$READTHEDOCS_VERSION" in
+          external:*) range="origin/main...HEAD" ;;
+          branch:latest) range="HEAD~1..HEAD" ;;
+          *) range="" ;;
+        esac
+        if [ -n "$range" ] && changed=$(git diff --name-only "$range") && [ -z "$(printf '%s\n' "$changed" | grep -v -e '^CHANGELOG.md$' -e '^$')" ]; then
+          echo "only CHANGELOG.md changed in $range; skipping this build"
+          exit 183
+        fi
     # Record the evidence the rendered case states are computed from. A failing
     # test is recorded in the ledger and shown on the evidence page, so it does
     # not stop the site from building.
