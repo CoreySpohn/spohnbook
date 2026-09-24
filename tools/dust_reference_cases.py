@@ -319,7 +319,7 @@ def henyey_greenstein_mixture(cos_theta, weights, gs):
     """
     weights = np.asarray(weights, dtype=float)
     if not math.isclose(float(weights.sum()), 1.0, rel_tol=0.0, abs_tol=1e-12):
-        msg = f"mixture weights must sum to one; got {weights.sum()!r}"
+        msg = f"mixture weights must sum to one; got {float(weights.sum())!r}"
         raise ValueError(msg)
     return sum(
         w * henyey_greenstein(cos_theta, g) for w, g in zip(weights, gs, strict=True)

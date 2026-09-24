@@ -11,4 +11,5 @@ psf-and-speckles
 exposure-time-and-contrast
 scene-to-detection
 fit-and-forecast
+dust-radiance-and-sampling
 ```

@@ -41,6 +41,7 @@ A finding's stage is the earliest stage at which its repair is required.
 | What exactly does a flux, contrast, zodi value or count rate mean? | [Radiometry, detector counts, and spectral measurements](radiometry-detectors.md) |
 | Where is a pixel, how does roll act, and what does a PSFlet (the detector image of one lenslet's pupil) contain? | [Optical fields, image coordinates, and IFS products](optics-images.md) |
 | What data were actually reported, and what probability model interprets them? | [Measurements, probability, and records](inference-records.md) |
+| What does a dust brightness, a zodi level or an exozodi raster mean, and from which observer? | [Dust models: radiance, geometry, and normalization](dust-models.md) |
 | What do we build first, and what closes each gate? | The adoption stages above, the integration-stages figure in [the figure atlas](figures.md), and the coverage table that closes each chapter |
 | Which colormap encodes this quantity, and which hue belongs to this plotted entity? | [Figures and color](figures-and-color.md) |
 | Which figures can I reuse or regenerate? | [the figure atlas](figures.md) |
@@ -117,6 +118,10 @@ adaptive scheduler.
 | **Record envelope home** | Keep the initial record envelope in spaceodyssey with domain-owned payloads; extract a separate distribution only after two working consumers demonstrate reuse. | Decided | Standalone export/import-to-photomancy plus spaceodyssey reuse of the same records, with dependency isolation |
 | **Sampled campaign first** | Build the sampled fixed campaign first; do not require unused moments/integration methods on its adapters. Revisit an analytic/integrate engine with the matched external-reference deliverable. | Decided; spaceodyssey | One executable sampled path; unsupported engines reject explicitly; later reference engine has its own capability/evidence gate |
 | **Tolerances before tests** | Allocate tolerances to observables before tests; use independent primitives, numerical refinement and calibrated Monte Carlo uncertainty; name external reference profiles. | Method required; domain and verification owners set budgets | Recorded error allocation, reference/configuration/source identity, positive and deliberately failing controls |
+| **Dust exchange profile** | Exchange physical photon radiance with a named measure, frame and ray convention; derive legacy zodi ratios in the receiving adapter. | Pending; zodi + skyscapes + ETC adapters | Positive half-ray sphere, radiance-to-pixels and band-conversion fixtures at the producer and each consumer |
+| **One-zodi specification** | Every dust amplitude names its definition family, reference star, radius, passband, viewing geometry and calibration identity; empirically different definitions stay distinct parameters. | Pending; zodi + skyscapes + consumer adapters | Round trip of each consumer's dialect through the specification; distance-doubling fixture |
+| **Inclination and near side** | Inclination in $[0,\pi]$ with positive path weights on both sides of $\pi/2$; the near side is the forward-scattering half. The angular-momentum sense follows the observer basis decision. | Pending; skyscapes, with the observer basis decision | Inclination sign control and near-side forward-scattering anchors |
+| **Dust kernel ownership** | Run the arbitrary-observer kernel as a bounded experiment; decide its public owner and the constants treatment for a NumPy-only core from that evidence. | Pending; zodi + skyscapes | Inside/outside views of one cloud against analytic limits and independent quadrature, with NumPy and JAX consumers |
 | **One encoding per quantity** | Encode each quantity with one colormap role and each plot entity with one palette role; retire map names from figure code. | Proposed; hwostyle + eyepiece | The swatch, grayscale-pair and default-free fixtures |
 
 Other inherited choices include separate truth and model access, a
@@ -186,6 +191,7 @@ geometry-time
 optics-images
 radiometry-detectors
 inference-records
+dust-models
 figures-and-color
 figures
 ```
