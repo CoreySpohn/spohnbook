@@ -1,19 +1,21 @@
 {
   "script": "tools/build_dust_figures.py",
   "fixtures": "tools/dust_reference_cases.py",
-  "source_hash": "cea47754d566",
+  "source_hash": "667ef697ee1f",
   "source_sha256": {
-    "tools/build_dust_figures.py": "c6ffa57b1c3d8fcbd1c5c03c39d31aa3deedc7dfab3dd9588577dc89382e211a",
-    "tools/dust_reference_cases.py": "c9a6c3a66b4e0eb3f23e1d15b161a7e2f00afe28d119341ed1ec402478b8e145"
+    "tools/build_dust_figures.py": "5366d120e5681761d828366fe877dacd854e85d3fbb81b488f0248e871dcf8c0",
+    "tools/dust_reference_cases.py": "563059982f11363579d5af8687549a921517c71c26d89c12f4298687dce8cf3b"
   },
   "spohnbook_revision": {
-    "commit": "885a480",
-    "dirty": true
+    "commit": "c18f2a9",
+    "dirty": false
   },
   "eyepiece_revision": {
-    "commit": "a3d3a61",
-    "dirty": true
+    "commit": "",
+    "dirty": false
   },
+  "eyepiece_imported_version": "0.4.0",
+  "eyepiece_source": "eyepiece-040",
   "hwostyle_revision": {
     "commit": "18e2644",
     "dirty": false
@@ -156,7 +158,7 @@
           "radius_au": 3.0,
           "width_au": 0.6,
           "field_au": 10.0,
-          "n_pix": 101
+          "n_pix": 100
         },
         "amplitudes": [
           [
@@ -168,7 +170,7 @@
             0.3
           ]
         ],
-        "sigma": "0.02 peak"
+        "sigma": "per-pixel noise giving +-0.02 on the product"
       },
       "quantity": "normalized morphology times amplitude; Gaussian likelihood",
       "normalization": "arbitrary units; shared linear norm for the two images"
@@ -183,7 +185,7 @@
           "emissivity": 5.0,
           "inclination_deg": 120.0,
           "field_au": 10.0,
-          "n_pix": 121
+          "n_pix": 120
         }
       },
       "quantity": "photon radiance of a thin inclined slab",
@@ -207,123 +209,123 @@
   "outputs": [
     {
       "file": "dust-geometry-light.png",
-      "sha256": "d9bd304543b78e860ee0a8908c629372cef18f6eb72c0f8959e45e4bc1f8189a"
+      "sha256": "cdc7fa813f62b0c3c4a94b4a57d5571dc5cd18a31d23acee6cfe8f0d47c8ec99"
     },
     {
       "file": "dust-geometry-light.svg",
-      "sha256": "8428eef5e4254b1fc6c14fab7f5cadb47ed0ab37ebabca74329f5d309e3794fd"
+      "sha256": "efd1bf247e9a18d5fc7131fba526db0d165bcddee27c190c08ebbf58269ade2e"
     },
     {
       "file": "dust-geometry-light.pdf",
-      "sha256": "42fb74dee7d53bf70a0beb2bae197a6e7c49d46de0a4ae6c2012a1b38b6d9815"
+      "sha256": "6ba8924db7685c6532ad31dd6beac73418e917d17e2dee04b88e1445c30f1849"
     },
     {
       "file": "dust-sampling-light.png",
-      "sha256": "8a61016815d719c5d46048a6c6534ab05ee66eb08c43ecd0e9dbe0d8e106b747"
+      "sha256": "a5b7986a07e009a9afe3117a23a0f40984c6042f9f2afc0a376f70b311ed9f51"
     },
     {
       "file": "dust-sampling-light.svg",
-      "sha256": "cbd05e18e946070850b6602b1e29a3839d8942544c16b8146b436d211199390d"
+      "sha256": "6d5f9bd169e99d799560108a3c7e443143402aa52f2444d381fb1121f87bdb7a"
     },
     {
       "file": "dust-sampling-light.pdf",
-      "sha256": "dee544a9717b55e81b3889f82d494762e03ecb2550dc78374d276fab5566e08a"
+      "sha256": "1fa30d6eb83a69edee595ab5374bebddf19bcef4e12cb122b314a22a942fb760"
     },
     {
       "file": "dust-radiometry-light.png",
-      "sha256": "04f5349c51b290e232d1b3e935902fb5de6b4e397a9462db6cc9a5bb6ead0d27"
+      "sha256": "13a860491f7d8d02a11aedf51c290caa3ffced22d4f1d93bf1e93d1bfefac353"
     },
     {
       "file": "dust-radiometry-light.svg",
-      "sha256": "f424de7497be8ff41fcff879c46cebd35c919d2747b8dfd58df1d842756b56bd"
+      "sha256": "69461b9c2e346f284774b5fac5f74d044b2868125a7ac14033b146b1d2b531cb"
     },
     {
       "file": "dust-radiometry-light.pdf",
-      "sha256": "59c3d37865a3bb9746d1a51b5e1d4778e1c771ed4ad2f7e0ea6ef55d592dc023"
+      "sha256": "7ffc222434f6ba747a1b7172f2e1857d92347578f942c8689b4af3fcc97e9d39"
     },
     {
       "file": "dust-identifiability-light.png",
-      "sha256": "80ccb0326df0902c8b99d054119c3f07647bb15a46a18029d008947b1026f2bc"
+      "sha256": "7f303138513366a59fb67de3cc6842882fb970edea038fe91ae14dd5636fe03c"
     },
     {
       "file": "dust-identifiability-light.svg",
-      "sha256": "7a14027f30f4e17a64ebc2fa3df6eef87d12a5512d451aab4ca7a781b2c22b4d"
+      "sha256": "cea0c0eb0b0b32e243d936912fa5eb7605fc1f21eb45630f17bcf64d2eac69cd"
     },
     {
       "file": "dust-identifiability-light.pdf",
-      "sha256": "868f71a6b8066ad5a75d8656068665042f68705fe3eb4e44b26b5657d38f4cf7"
+      "sha256": "71fce308f3ec6a605c446a5d5b77981ee1447b4b1f4479d7f6c7d9a4bb8d4e3f"
     },
     {
       "file": "dust-sign-control-light.png",
-      "sha256": "2968db8472cddf58922035af7e2f68950f288958d9b4d6ed4221246cdbc3aa3e"
+      "sha256": "04066bde441acea658c73584735d4206d8053857693032bfb3cbcde0bd5cc233"
     },
     {
       "file": "dust-sign-control-light.svg",
-      "sha256": "58e9aa111ce055cd69f27a34951b36237ea77099e1d7daf2934332f2e44e8d7d"
+      "sha256": "de6b607c695baac4eacd570ea279186f0391eb07a324384edbd3d4d8b6c5da4f"
     },
     {
       "file": "dust-sign-control-light.pdf",
-      "sha256": "fd121b2a5ff1b365585295d462877ab54d0996748adcbf9ed1dab0f66f0db764"
+      "sha256": "28195c7f74653fbf9795825b3016407034e6aa3f5f619326af28efa4a0cacfca"
     },
     {
       "file": "dust-geometry-dark.png",
-      "sha256": "e31dce377c70eb4a55c16f3da16a2480e8cbeeec22eaa424429741b017a93fac"
+      "sha256": "b89b1a19e051f2622b8faea073f632c3d95163c87515bafd9728fec12944f28c"
     },
     {
       "file": "dust-geometry-dark.svg",
-      "sha256": "2099a9d930e05ebda756ea9946b87cca305cc1ce237a9d8a272920aba6fa0993"
+      "sha256": "75f98373692c182a5b1ab0a117aef4faec16cd085897ac0d00cbb8080165847a"
     },
     {
       "file": "dust-geometry-dark.pdf",
-      "sha256": "d00fb6c3b11d9972c3fd5e19284e7720b98b5b5875b0a7bd080c3ccb1a6c19d7"
+      "sha256": "7735279f391f96f43a592081f513d2e38e89adab46092293d73b01e6c1635d43"
     },
     {
       "file": "dust-sampling-dark.png",
-      "sha256": "593a5ec78df930549252faf0c592753f0e20cbf47a006beccde585d792fc718e"
+      "sha256": "51aea2c348b8742ec1f7380df5113b26c084d626d5e807af29b4f3bba17a35f6"
     },
     {
       "file": "dust-sampling-dark.svg",
-      "sha256": "ee52bdff8e6c77120427a5ef2735769db9b3cd8a7dabe53193aebacebfdbf7c0"
+      "sha256": "b2fd770de69023a0feda14d75a62c2e7d18b8659dc9a9d48d4017108d49f2762"
     },
     {
       "file": "dust-sampling-dark.pdf",
-      "sha256": "c928f019f8eebcc83d2ce709109996f083f99df64f95f7bca5381ea1ff824e8d"
+      "sha256": "626108e2e883599ff08bbcd421021f855b5a40d0e7442add8a6850aa14bc4e7b"
     },
     {
       "file": "dust-radiometry-dark.png",
-      "sha256": "a6f72933b1038c56166b0f8606094904f056276158187886ecf6101923122f25"
+      "sha256": "68ba4dfb7b18724891dcf581ef5b96c60b6988f230038eda46b0712dcba63066"
     },
     {
       "file": "dust-radiometry-dark.svg",
-      "sha256": "f6ea176659f29f26e111cfe37b2b189315811b036054b969682726d5ca790701"
+      "sha256": "0fdb2dd2a72f80cf1abca03c263a70f5832a2394760c0421a0a4f15f44e88b05"
     },
     {
       "file": "dust-radiometry-dark.pdf",
-      "sha256": "4ffea573617a409dc68389565169184a30d45a90bd08817b914bffd1c9795fa7"
+      "sha256": "a3a2742faaf696951b84dc16949fb990eba0c00928010b723d301694a0cefc32"
     },
     {
       "file": "dust-identifiability-dark.png",
-      "sha256": "3b3e09bf56633ac5ac0cc6cc667d5f4ab58a047f9c74f17f6740daa1e39b7d5c"
+      "sha256": "55a4291777694237ce6eca9a4366e0baf3d89e9966f11b6a6d7a917af6d5c7fc"
     },
     {
       "file": "dust-identifiability-dark.svg",
-      "sha256": "a3295796aa317760f5a505d5c56c14287035a4b07e04270979cee219a3c12b05"
+      "sha256": "2d156bfe50d979e67e0699249da38660e66bd42748eaa79259e417cec82d88f9"
     },
     {
       "file": "dust-identifiability-dark.pdf",
-      "sha256": "dfbfe175ef6a6d9c7ba0ad00699866e965770d003695e6dc9663073a186c12cd"
+      "sha256": "e6fb5940d436c52e2d1cd4aceae157828faf7cd62713cf64b1229cbdd23c188f"
     },
     {
       "file": "dust-sign-control-dark.png",
-      "sha256": "f34463c22b357cf737aaef6afe4e8bb9a0285fb1e781ec26382c0aadb3613029"
+      "sha256": "9259bd41264fa99b08dff3fc0f1ea3fda9a238172e44d83ffb00c4276eadc674"
     },
     {
       "file": "dust-sign-control-dark.svg",
-      "sha256": "b7d957fdb65d3c71038a8ffc4708ed9cd4838ad1cd9e37da1bf7d5fc34d78b8f"
+      "sha256": "8d3bcdbe44c78fb6a1d99f387c8d8b5d03f49319e7f413e7d8529469f3d29113"
     },
     {
       "file": "dust-sign-control-dark.pdf",
-      "sha256": "fc258bff3ecb94f8f83bf41ad5f637cb2135fa5b6abe7386412255489d3b3504"
+      "sha256": "a7a7769b26e2bf86f05727b23650cc868be79e612ad11b0cc7a54d95a091c51d"
     }
   ]
 }
