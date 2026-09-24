@@ -1,0 +1,329 @@
+{
+  "script": "tools/build_dust_figures.py",
+  "fixtures": "tools/dust_reference_cases.py",
+  "source_hash": "cea47754d566",
+  "source_sha256": {
+    "tools/build_dust_figures.py": "c6ffa57b1c3d8fcbd1c5c03c39d31aa3deedc7dfab3dd9588577dc89382e211a",
+    "tools/dust_reference_cases.py": "c9a6c3a66b4e0eb3f23e1d15b161a7e2f00afe28d119341ed1ec402478b8e145"
+  },
+  "spohnbook_revision": {
+    "commit": "885a480",
+    "dirty": true
+  },
+  "eyepiece_revision": {
+    "commit": "a3d3a61",
+    "dirty": true
+  },
+  "hwostyle_revision": {
+    "commit": "18e2644",
+    "dirty": false
+  },
+  "eyepiece_api_floor": "0.4.0: only names exported at tag v0.4.0 are used",
+  "package_versions": {
+    "eyepiece": "0.3.1.dev0+g3228acc5e.d20260828",
+    "hwostyle": "1.1.1.dev8+g183fc366e.d20260811",
+    "hwoutils": "1.9.1.dev5+g453bf3fd0.d20260911",
+    "matplotlib": "3.11.0",
+    "numpy": "2.2.6"
+  },
+  "figures": {
+    "geometry": {
+      "question": "How can the same cloud be viewed from inside and outside?",
+      "status": "analytic fixture and schematic",
+      "parameters": {
+        "sphere": {
+          "radius_au": 2.0,
+          "emissivity": 3.0
+        },
+        "rays": [
+          [
+            "inside, +x",
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "x"
+          ],
+          [
+            "inside, -x",
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "x"
+          ],
+          [
+            "outside, -x",
+            [
+              5.0,
+              0.0,
+              0.0
+            ],
+            [
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "x"
+          ],
+          [
+            "outside, +x",
+            [
+              5.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            "x"
+          ],
+          [
+            "grazing, +y",
+            [
+              2.0,
+              -3.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            "y"
+          ]
+        ]
+      },
+      "quantity": "photon radiance along positive half-rays; scattering angle",
+      "normalization": "absolute fixture units (emissivity per AU)"
+    },
+    "sampling": {
+      "question": "Why does resolution change a pixel value but not the integral?",
+      "status": "analytic fixture",
+      "parameters": {
+        "clump": {
+          "peak_sr": 7.0,
+          "sigma_arcsec": 0.25,
+          "field_arcsec": 2.0
+        },
+        "grids": [
+          24,
+          48,
+          96
+        ]
+      },
+      "quantity": "pixel-integrated photon flux density per pixel",
+      "normalization": "absolute; shared log norm across the three grids"
+    },
+    "radiometry": {
+      "question": "Where do wavelength, solid angle, zero point and band enter?",
+      "status": "synthetic spectrum and schematic",
+      "parameters": {
+        "band": {
+          "b0": 1e-06,
+          "lam0_nm": 550.0,
+          "lo_nm": 500.0,
+          "hi_nm": 600.0
+        },
+        "slopes": [
+          0.0,
+          -4.0,
+          2.0
+        ]
+      },
+      "quantity": "photon spectral radiance; relative band-integral error",
+      "normalization": "synthetic energy radiance b0 at lam0"
+    },
+    "identifiability": {
+      "question": "Why can two parameter vectors make the same image?",
+      "status": "analytic fixture",
+      "parameters": {
+        "ring": {
+          "radius_au": 3.0,
+          "width_au": 0.6,
+          "field_au": 10.0,
+          "n_pix": 101
+        },
+        "amplitudes": [
+          [
+            2.0,
+            0.15
+          ],
+          [
+            1.0,
+            0.3
+          ]
+        ],
+        "sigma": "0.02 peak"
+      },
+      "quantity": "normalized morphology times amplitude; Gaussian likelihood",
+      "normalization": "arbitrary units; shared linear norm for the two images"
+    },
+    "sign-control": {
+      "question": "What does a negative line-of-sight weight look like?",
+      "status": "negative control (deliberately wrong kernel)",
+      "parameters": {
+        "slab": {
+          "radius_au": 4.0,
+          "thickness_au": 0.1,
+          "emissivity": 5.0,
+          "inclination_deg": 120.0,
+          "field_au": 10.0,
+          "n_pix": 121
+        }
+      },
+      "quantity": "photon radiance of a thin inclined slab",
+      "normalization": "absolute fixture units; log vmin = peak / 100"
+    }
+  },
+  "derived_values": {
+    "sampling": {
+      "totals": [
+        6.460299301414703e-11,
+        6.460299301414703e-11,
+        6.460299301414704e-11
+      ],
+      "sample_sums": [
+        395.794291536129,
+        1583.1659983017448,
+        6332.652375585588
+      ]
+    }
+  },
+  "outputs": [
+    {
+      "file": "dust-geometry-light.png",
+      "sha256": "d9bd304543b78e860ee0a8908c629372cef18f6eb72c0f8959e45e4bc1f8189a"
+    },
+    {
+      "file": "dust-geometry-light.svg",
+      "sha256": "8428eef5e4254b1fc6c14fab7f5cadb47ed0ab37ebabca74329f5d309e3794fd"
+    },
+    {
+      "file": "dust-geometry-light.pdf",
+      "sha256": "42fb74dee7d53bf70a0beb2bae197a6e7c49d46de0a4ae6c2012a1b38b6d9815"
+    },
+    {
+      "file": "dust-sampling-light.png",
+      "sha256": "8a61016815d719c5d46048a6c6534ab05ee66eb08c43ecd0e9dbe0d8e106b747"
+    },
+    {
+      "file": "dust-sampling-light.svg",
+      "sha256": "cbd05e18e946070850b6602b1e29a3839d8942544c16b8146b436d211199390d"
+    },
+    {
+      "file": "dust-sampling-light.pdf",
+      "sha256": "dee544a9717b55e81b3889f82d494762e03ecb2550dc78374d276fab5566e08a"
+    },
+    {
+      "file": "dust-radiometry-light.png",
+      "sha256": "04f5349c51b290e232d1b3e935902fb5de6b4e397a9462db6cc9a5bb6ead0d27"
+    },
+    {
+      "file": "dust-radiometry-light.svg",
+      "sha256": "f424de7497be8ff41fcff879c46cebd35c919d2747b8dfd58df1d842756b56bd"
+    },
+    {
+      "file": "dust-radiometry-light.pdf",
+      "sha256": "59c3d37865a3bb9746d1a51b5e1d4778e1c771ed4ad2f7e0ea6ef55d592dc023"
+    },
+    {
+      "file": "dust-identifiability-light.png",
+      "sha256": "80ccb0326df0902c8b99d054119c3f07647bb15a46a18029d008947b1026f2bc"
+    },
+    {
+      "file": "dust-identifiability-light.svg",
+      "sha256": "7a14027f30f4e17a64ebc2fa3df6eef87d12a5512d451aab4ca7a781b2c22b4d"
+    },
+    {
+      "file": "dust-identifiability-light.pdf",
+      "sha256": "868f71a6b8066ad5a75d8656068665042f68705fe3eb4e44b26b5657d38f4cf7"
+    },
+    {
+      "file": "dust-sign-control-light.png",
+      "sha256": "2968db8472cddf58922035af7e2f68950f288958d9b4d6ed4221246cdbc3aa3e"
+    },
+    {
+      "file": "dust-sign-control-light.svg",
+      "sha256": "58e9aa111ce055cd69f27a34951b36237ea77099e1d7daf2934332f2e44e8d7d"
+    },
+    {
+      "file": "dust-sign-control-light.pdf",
+      "sha256": "fd121b2a5ff1b365585295d462877ab54d0996748adcbf9ed1dab0f66f0db764"
+    },
+    {
+      "file": "dust-geometry-dark.png",
+      "sha256": "e31dce377c70eb4a55c16f3da16a2480e8cbeeec22eaa424429741b017a93fac"
+    },
+    {
+      "file": "dust-geometry-dark.svg",
+      "sha256": "2099a9d930e05ebda756ea9946b87cca305cc1ce237a9d8a272920aba6fa0993"
+    },
+    {
+      "file": "dust-geometry-dark.pdf",
+      "sha256": "d00fb6c3b11d9972c3fd5e19284e7720b98b5b5875b0a7bd080c3ccb1a6c19d7"
+    },
+    {
+      "file": "dust-sampling-dark.png",
+      "sha256": "593a5ec78df930549252faf0c592753f0e20cbf47a006beccde585d792fc718e"
+    },
+    {
+      "file": "dust-sampling-dark.svg",
+      "sha256": "ee52bdff8e6c77120427a5ef2735769db9b3cd8a7dabe53193aebacebfdbf7c0"
+    },
+    {
+      "file": "dust-sampling-dark.pdf",
+      "sha256": "c928f019f8eebcc83d2ce709109996f083f99df64f95f7bca5381ea1ff824e8d"
+    },
+    {
+      "file": "dust-radiometry-dark.png",
+      "sha256": "a6f72933b1038c56166b0f8606094904f056276158187886ecf6101923122f25"
+    },
+    {
+      "file": "dust-radiometry-dark.svg",
+      "sha256": "f6ea176659f29f26e111cfe37b2b189315811b036054b969682726d5ca790701"
+    },
+    {
+      "file": "dust-radiometry-dark.pdf",
+      "sha256": "4ffea573617a409dc68389565169184a30d45a90bd08817b914bffd1c9795fa7"
+    },
+    {
+      "file": "dust-identifiability-dark.png",
+      "sha256": "3b3e09bf56633ac5ac0cc6cc667d5f4ab58a047f9c74f17f6740daa1e39b7d5c"
+    },
+    {
+      "file": "dust-identifiability-dark.svg",
+      "sha256": "a3295796aa317760f5a505d5c56c14287035a4b07e04270979cee219a3c12b05"
+    },
+    {
+      "file": "dust-identifiability-dark.pdf",
+      "sha256": "dfbfe175ef6a6d9c7ba0ad00699866e965770d003695e6dc9663073a186c12cd"
+    },
+    {
+      "file": "dust-sign-control-dark.png",
+      "sha256": "f34463c22b357cf737aaef6afe4e8bb9a0285fb1e781ec26382c0aadb3613029"
+    },
+    {
+      "file": "dust-sign-control-dark.svg",
+      "sha256": "b7d957fdb65d3c71038a8ffc4708ed9cd4838ad1cd9e37da1bf7d5fc34d78b8f"
+    },
+    {
+      "file": "dust-sign-control-dark.pdf",
+      "sha256": "fc258bff3ecb94f8f83bf41ad5f637cb2135fa5b6abe7386412255489d3b3504"
+    }
+  ]
+}
