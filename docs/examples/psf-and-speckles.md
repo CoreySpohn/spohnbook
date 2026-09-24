@@ -19,6 +19,19 @@ resulting speckle field with a drifting wavefront through tiptilt. Every image
 is drawn with eyepiece under the light hwostyle mode. Float64 is enabled before
 any array exists, because the coronagraph null sits ten decades below the star.
 
+
+| Scope | This page |
+|---|---|
+| Purpose | Propagate a circular pupil to an Airy pattern and a vortex coronagraph with physicaloptix, linearize the path, and drive a speckle field with tiptilt |
+| Model restrictions | Scalar Fraunhofer propagation on a half-pixel-offset grid; the drift uses `tiptilt.TabulatedSpeckleField` because the direct call fails at the recorded versions (`examples-tiptilt-speckle-call` on the [limitations page](../evidence/limitations.md)) |
+| Evidence kind | Executable tutorial, with one bound check: the energy on the finite focal grid does not exceed the pupil energy |
+| Data sources | None |
+| Applicable profile | None adopted; the {ref}`image coordinates and PSFlet origin decision <decision-image-coordinates-and-psflet-origin>` is pending |
+| Not evidence of | Scientific correctness of the results shown, or measured-data validation |
+
+```{include} ../_generated/environment.md
+```
+
 ```{code-cell} python
 import eyepiece as ep
 import hwostyle
@@ -75,6 +88,8 @@ print(
     f"pupil energy {float(entrance.energy()):.4f}, "
     f"energy on the focal grid {float(airy.sum()) * focal_grid.weights:.4f}"
 )
+# Bound check: a finite focal grid cannot hold more energy than the pupil sent.
+assert float(airy.sum()) * focal_grid.weights <= float(entrance.energy()) * (1 + 1e-9)
 ```
 
 `extent_lod` turns a vector of pixel-center coordinates into the pixel-edge

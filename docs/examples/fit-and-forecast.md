@@ -20,6 +20,19 @@ photomancy holds the data, the likelihood, the priors and the inference
 backends, and eyepiece draws the sky, the posterior and the forecast under
 the light hwostyle mode.
 
+
+| Scope | This page |
+|---|---|
+| Purpose | Fit relative astrometry with photomancy and forecast future positions |
+| Model restrictions | The data are simulated with orbix, and photomancy's forward model uses the same orbix projection and equations, so recovering the truth is a same-code round trip, which can preserve a shared convention error; relative astrometry only; the posterior's parameter chart and evidence normalization follow photomancy's current conventions ({ref}`limitations-records`) |
+| Evidence kind | Executable tutorial; no numerical check is enforced, because no independent expected observable exists for this composition |
+| Data sources | None; simulated measurements |
+| Applicable profile | None adopted; the {ref}`reporting law <decision-reporting-law>` and {ref}`evidence and parameter chart <decision-evidence-and-parameter-chart>` decisions are pending |
+| Not evidence of | Scientific correctness of the results shown, or measured-data validation |
+
+```{include} ../_generated/environment.md
+```
+
 ```{code-cell} python
 import eyepiece as ep
 import hwostyle

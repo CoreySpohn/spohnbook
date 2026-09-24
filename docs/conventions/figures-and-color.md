@@ -12,6 +12,7 @@ one quantity two ways, or one document encodes two quantities one way. The rules
 below apply to every figure the suite's libraries ship in their documentation,
 tutorials and papers.
 
+(color-principle)=
 ## The principle
 
 A colormap or a palette color is chosen by the quantity it encodes, never per
@@ -54,9 +55,14 @@ Color roles: the proposed colormap per image quantity, and the palette role per 
 Color roles: the proposed colormap per image quantity, and the palette role per plotted entity with its second channel.
 ```
 
+(color-images)=
 ## Images: colormap by quantity
 
-Every image quantity the suite renders has one role. The role name is the API;
+Every image quantity the suite renders has one role. Quantities centered on a
+reference value take a diverging map and cyclic quantities a cyclic map
+({ref}`Crameri et al. 2020, p. 5 and Fig. 6 <source-crameri2020>`;
+{ref}`Kovesi 2015, Sec. 4.6 <source-kovesi2015>`); the particular maps in the
+table are this book's proposal. The role name is the API;
 the map names in the table describe what the role resolves to in each mode.
 
 | Quantity | Role name | Light | Dark | Norm |
@@ -74,17 +80,13 @@ the map names in the table describe what the role resolves to in each mode.
 `high_dynamic_range` is retired as a role, because dynamic range is the norm's
 job. A map name in a call, such as `cmap="magma"`, is a defect; a role name,
 such as `cmap=hwostyle.cmaps.readouts` for an image or
-`color=hwostyle.roles.planet` for a curve, is the contract. hwostyle ships ten
-roles today: `intensity`, `readouts`, `high_dynamic_range`, `residual`, `opd`,
-`phase`, `probability`, `mask`, `brand_intensity` and `brand_diverging`. In that
-registry `opd` and `residual` resolve to the same diverging map, `intensity`
-resolves to magma in dark mode and so shares a map with `readouts`, and
-`probability` resolves to YlOrRd in light mode and plasma in dark mode. This
-chapter proposes `pupil` and `statistic` as new roles, moves `opd` to BrBG so
+`color=hwostyle.roles.planet` for a curve, is the contract. The {ref}`limitations page <limitations-color>` records the roles the current
+hwostyle release ships and where they collide. This chapter proposes `pupil` and `statistic` as new roles, moves `opd` to BrBG so
 that a wavefront map is never mistaken for a residual, moves `probability` to
 the brand ramp, keeps `intensity` on viridis in both modes, and sets `mask` to
 two neutral grays so that a validity mask never competes with data for a hue.
 
+(color-curves)=
 ## Curves and markers: color by role
 
 A plotted entity has one palette role, and the role carries the second channel
@@ -134,12 +136,13 @@ figure of one paper or one documentation page. When a document runs out of
 distinct meanings before it runs out of hues, split the figure rather than reuse
 a color.
 
+(color-time-ensembles)=
 ## Time, wavelength and ensembles
 
 Time along a track is an alpha ramp in one hue, faint at the earliest epoch and
 full at the latest, never a rainbow. A rainbow spends every hue on one axis,
 leaves nothing for the other entities in the panel, and is not ordered under
-color-vision deficiency.
+color-vision deficiency ({ref}`Crameri et al. 2020, p. 2 <source-crameri2020>`).
 
 Wavelength is encoded by the wavelength-to-color mapping
 (`hwostyle.colors.wavelength_to_hex`), so that one channel has the same color in
@@ -156,6 +159,7 @@ curves, draw a percentile band plus five individual draws. Opacity that a
 reader will interpret as probability must be the probability; driving it from a
 rank or a convenience weight is a false claim the panel makes silently.
 
+(color-fixtures)=
 ## Named acceptance fixtures
 
 These fixtures run against hwostyle's registry and against each library's
@@ -170,16 +174,6 @@ does not verify the science of any figure.
 
 ## Coverage
 
-Gates are **the conventions stage** (convention decisions) and **the
-boundary-anchor stage** (boundary repairs), as the handbook index defines them.
-Listed owners and gates are proposed, not completed work.
-
-| Finding | Proposed owner | Gate |
-|---|---|---|
-| hwostyle `intensity` and `readouts` share magma in dark mode | hwostyle | conventions |
-| hwostyle `opd` and `residual` share one map | hwostyle | conventions |
-| hwostyle planet and data, disk and envelope, model and highlight share colors | hwostyle | conventions |
-| hwostyle has no `pupil` or `statistic` role | hwostyle | conventions |
-| eyepiece corner plots hardcode the truth color and the density map | eyepiece | boundary anchors |
-| eyepiece image functions take map names, not roles, as their override | eyepiece | boundary anchors |
-| documentation pages call maps by name where a role should exist | this handbook | boundary anchors |
+Every finding about the current implementations that bears on this chapter, with
+its proposed owner, gate, status and evidence, is recorded under
+{ref}`limitations-color` on the limitations page.

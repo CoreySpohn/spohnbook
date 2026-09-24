@@ -9,11 +9,11 @@ which other records share the same underlying noise or evidence.
 
 This chapter defines the intended statistical boundaries. The proposed profiles
 remain pending the reporting law decision and the evidence and parameter
-chart decision in [the handbook](index.md). The current
-implementations disagree in the ways the coverage table at the end of this
-chapter lists. Nothing here asserts that a generic joint imaging likelihood or
+chart decision in [the handbook](index.md). Reports that current
+implementations disagree with these profiles are recorded under {ref}`limitations-records`. Nothing here asserts that a generic joint imaging likelihood or
 portable posterior already exists.
 
+(records-reporting-law)=
 ## Define the experiment before the uncertainty
 
 Write an experiment as a resolved response, exposure interval, noise process and
@@ -55,12 +55,15 @@ $$
 $\Phi_{\rm N}$ is the standard-normal CDF, not the Lambert phase function. This
 hybrid record has probability mass for the null event and density for a reported
 flux. The integrated contributions sum to one. Do not multiply the reported-flux
-density by $P(D=1\mid\theta)$ again: the joint event is already represented.
+density by $P(D=1\mid\theta)$ again: the joint event is already represented
+({ref}`Loredo 2004, the survey-likelihood footnote in its trans-Neptunian section <source-loredo2004>`).
 
 A sample consisting only of selected detections under a conditioned sampling
-design uses $p(F\mid D=1,\theta)$, including its selection normalization. Forced
+design uses $p(F\mid D=1,\theta)$, including its selection normalization
+({ref}`Casella and Berger 2024, Exercise 1.52 <source-casella2024>`). Forced
 photometry instead reports $F$ even when $D=0$ and can carry information below the
-detection threshold. These are different experiments. Choose one explicitly;
+detection threshold. These are different experiments, the distinction between
+censoring and truncation ({ref}`Efron and Hastie 2016, Sec. 9.6 <source-efron2016>`). Choose one explicitly;
 neither a detection flag nor a field named `sigma` chooses it for you.
 
 For joint astrometry and flux, replace the scalar $F$ by the actual joint random
@@ -69,22 +72,22 @@ its mean, covariance and shape. An unconditional inverse Fisher matrix is not by
 itself the distribution of selected measurements. The first campaign needs a
 calibrated reporting model, not merely an available flux-error calculation.
 
+(records-null-information)=
 ### The simplest information test
 
-Expected information is about $R$, the record returned by this experiment:
+Expected information is about $R$, the record returned by this experiment
+({ref}`Lindley 1956, Definition 2 and eq. 9 <source-lindley1956>`):
 
 $$
 I(\theta;R)=\mathbb E_{\theta,R}
 \left[\log\frac{p(R\mid\theta)}{p(R)}\right].
 $$
 
-Use natural logarithms and report nats. For two equally weighted hypotheses, if
+Use natural logarithms and report nats; the base is this book's choice. For two equally weighted hypotheses, if
 both always produce the same null record, posterior weights remain $(1/2,1/2)$
-and information is zero. If the record identifies the hypothesis perfectly,
-information is $\ln 2$ nats. The current scheduler implementation in planit-py
-fails the first limit by adding an alias term for measurements that are never
-reported (the finding on an information score that counts never-reported
-measurements).
+and information is zero ({ref}`Lindley 1956, Theorem 1 <source-lindley1956>`). If the record identifies the hypothesis perfectly,
+information is $\ln 2$ nats. The limitations recorded under {ref}`limitations-records` include a report of a
+scheduler that fails the first limit.
 
 A response also has a domain. Below an inner working angle, beyond a tabulated
 outer boundary, or outside a calibrated wavelength range, record an explicit
@@ -92,10 +95,9 @@ unsupported or physically unobservable result according to the response's
 contract. These states are not an infinite sensitivity. Prediction, sampling,
 likelihood and candidate scoring must use the same boundary policy. When an
 exposure or calibration changes the response, its cache identity changes too,
-or the changed arrays must remain dynamic function inputs (the findings on
-contrast-curve support meaning opposite things in scheduling and inference, and
-on a changed response curve reusing the old compiled experiment).
+or the changed arrays must remain dynamic function inputs (see {ref}`limitations-records`).
 
+(records-covariance)=
 ## Covariance describes an ordered, dimensional vector
 
 For a vector such as $(\xi,\eta,f)$, retain axis names, order, units, covariance,
@@ -104,7 +106,8 @@ have mixed units: $C_{\xi f}$ has units of angle times flux. A bare square array
 not a portable uncertainty model.
 
 Under a linear transformation $y=Ax$, covariance transforms exactly as
-$C_y=AC_xA^T$. For a nonlinear transformation, $JC_xJ^T$ is a local approximation;
+$C_y=AC_xA^T$ ({ref}`JCGM 102:2011, 6.2.1.3 <source-jcgm2011>`). For a nonlinear
+transformation, $JC_xJ^T$ is a local approximation ({ref}`JCGM 100:2008, 5.1.2 <source-jcgm2008>`);
 transform posterior samples or use the full distribution where the approximation
 is inadequate. Changing units rescales cross terms as well as diagonal entries.
 
@@ -121,17 +124,16 @@ $$
 An explicit-$b$ model and a correctly marginalized model should agree. Adding a
 free $b$ after using that marginalized covariance counts the same uncertainty
 twice. Deleting its off-diagonal terms falsely treats the calibration as two
-independent offsets. Record the nuisance identity and treatment, not just the
+independent offsets ({ref}`JCGM 100:2008, 5.2.2 note 1 <source-jcgm2008>`). Record the nuisance identity and treatment, not just the
 resulting error bars.
 
 The same principle applies to IFS extraction: within-spaxel spectral blocks do
 not imply zero covariance between overlapping spaxels. A full extracted
 covariance is useful only if its consumer preserves the axes, calibration and
-estimator meaning. Current diagonal interfaces remain explicit capability
-limitations (the finding on full covariance having producers while several
-consumers accept only diagonals, and the optics chapter's finding on IFS
-covariance returned only as selected within-spaxel blocks).
+estimator meaning. Interfaces that accept only diagonal uncertainties are explicit capability
+limitations ({ref}`limitations-records`; {ref}`limitations-optics`).
 
+(records-posterior-chart)=
 ## A posterior needs coordinates and a normalization history
 
 A posterior bundle must carry the parameter chart used by every array:
@@ -147,13 +149,13 @@ A posterior bundle must carry the parameter chart used by every array:
 | Evidence kind, normalization validity and uncertainty | A posterior approximation need not supply an absolute marginal likelihood |
 
 The evidence is $Z=\int p(y\mid\theta)p(\theta)\,d\theta$ for a normalized
-likelihood and proper prior. A normalized mixture weight is not $Z$. An ELBO is a
+likelihood and proper prior ({ref}`Kass and Raftery 1995, eq. 2 <source-kass1995>`). A normalized mixture weight is not $Z$. An ELBO is a
 lower bound on log evidence under its assumptions, not an interchangeable
-estimate. A log posterior potential that omits constants can be sufficient for a
+estimate ({ref}`Blei et al. 2017, Sec. 2.2, eq. 14 <source-blei2017>`). A log posterior potential that omits constants can be sufficient for a
 fixed-noise parameter fit while being insufficient for model evidence or fitting
-the noise scale (the findings on evidence, ELBO and cluster mass sharing one
-public field, and on posterior-only Gaussian helpers feeding an
-evidence-capable backend interface).
+the noise scale, because every likelihood constant must be retained when evidence
+is compared ({ref}`Kass and Raftery 1995, p. 776 and Sec. 5.3 <source-kass1995>`;
+see also {ref}`limitations-records`).
 
 **Proposed contract for the evidence and parameter chart decision:** posterior
 component weights, evidence value, estimator kind and error are separate
@@ -167,11 +169,9 @@ Clustering and covariance floors operate in a declared dimensionless chart.
 Adding $10^{-6}$ to a variance in meters squared and to the same variance in
 kilometers squared implements different approximations. Test unit changes and
 angle-wrap boundaries; label any display-only covariance cap as a visualization
-product rather than posterior samples for scientific analysis (the findings on
-a posterior's coordinate system being mostly implicit and possibly
-process-local, and on clustering and regularization depending on arbitrary
-parameter units).
+product rather than posterior samples for scientific analysis (see {ref}`limitations-records`).
 
+(records-identities)=
 ## Records distinguish acquisition, interpretation and use
 
 Use a small versioned envelope around domain-owned payloads initially. It needs
@@ -202,9 +202,9 @@ Missing data, an unsuccessful acquisition, a masked value, an upper limit, and a
 successful nondetection are distinct states. Unsupported modalities must raise a
 named capability error. They cannot be silently omitted because a particular
 multi-planet model lacks a branch. Capacity overflow must name the limit before
-array padding fails (the finding on supported channels and capacity being part
-of the data contract).
+array padding fails (see {ref}`limitations-records`).
 
+(records-campaign-causality)=
 ## A reproducible campaign preserves causality
 
 Science exposure time, occupied facility time and charged budget are separate
@@ -224,21 +224,16 @@ versions and calibration identity; reject unintended overwrite of an immutable
 run. Checkpoint both acquired-but-unassimilated records and completed charges so
 resume neither resimulates the observation nor double counts it. Keep truth out
 of every policy/update/claim input; independent structural checks complement
-behavioral tests. These requirements answer seven findings in the coverage
-table: the ones on acquisition, product, target and planet identities not being
-interchangeable; on stable random identity being claimed while the loop keys
-draws by global step; on science time, occupied time and budget time being
-conflated; on SNR, significance, false-alarm probability and sequential
-evidence needing distinct types; on precision and artifact identity not yet
-pinning the scientific interpretation; on supported channels and capacity being
-part of the data contract; and on the truth/model firewall being a convention
-without full structural enforcement.
+behavioral tests. These requirements answer seven of the findings recorded
+under {ref}`limitations-records`.
 
 An SNR, a detection statistic, a false-alarm probability, a posterior probability,
 and a sequential evidence process are different quantities. Name the statistic
 and its calibration. In particular, repeatedly crossing a fixed-time threshold
-does not inherit the error guarantee of one prespecified exposure.
+does not inherit the error guarantee of one prespecified exposure
+({ref}`Howard et al. 2021, Sec. 1 <source-howard2021>`).
 
+(records-fixtures)=
 ## Named fixtures and coverage
 
 **Reported-measurement distribution** normalizes the scalar threshold example
@@ -257,22 +252,6 @@ These are fixture definitions, not new passing tests. The conventions stage
 selects their contracts; later stages implement them with independently derived
 expectations.
 
-| Finding | Proposed owner and disposition | Fixture | First gate |
-|---|---|---|---|
-| Contrast-curve support has opposite meanings in scheduling and inference | photomancy: one response-support policy | Response support and cache identity | boundary anchors; required by adaptive choice |
-| Changing the response curve can reuse the old compiled experiment | photomancy: immutable response/cache identity or dynamic inputs | Response support and cache identity | adaptive choice |
-| The information score can count measurements that are never reported | photomancy: information about the reported record | Null-outcome information | adaptive choice |
-| Hard detection, probit nondetection, and Gaussian magnitude errors are different experiments | measurement adapter + photomancy: the joint reporting law of the reporting law decision | Reported-measurement distribution | conventions -> fixed campaign |
-| Full covariance has producers but several consumers only accept diagonals | product owners + photomancy: covariance axes and shared nuisances | Shared-calibration covariance | conventions -> fixed campaign; spectra at images and IFS |
-| Evidence, ELBO, and cluster mass share one public field | photomancy: evidence distinct from ELBO/component mass | Evidence normalization | conventions; before model comparison |
-| Posterior-only Gaussian helpers feed an evidence-capable backend interface | photomancy: normalized likelihood/proper prior for evidence | Evidence normalization | boundary anchors; before model comparison |
-| A posterior's coordinate system is mostly implicit and may be process-local | photomancy: persist reconstructible parameter chart | Parameter chart and units | boundary anchors -> fixed campaign |
-| Clustering and regularization depend on arbitrary parameter units | photomancy: scale-aware regularization and periodic metrics | Parameter chart and units | boundary anchors; before new charts |
-| Acquisition, product, target, and planet identities are not interchangeable | spaceodyssey (campaign library)/import adapters: stable acquisition/product/association IDs | | conventions -> fixed campaign |
-| Stable random identity is claimed, but the loop keys draws by global step | spaceodyssey: meaning-keyed RNG and explicit coupling | Replay and exactly-once charge | fixed campaign |
-| Science time, occupied time, and budget time are conflated | spaceodyssey + planit-py: interval and resource ownership | Replay and exactly-once charge | conventions -> fixed campaign |
-| SNR, significance, false-alarm probability, and sequential evidence need distinct types | coronalyze/spaceodyssey claim adapters: statistic and calibration semantics | | fixed campaign; sequential extension separately gated |
-| Precision and artifact identity do not yet pin the scientific interpretation | spaceodyssey: fixed precision, complete run identity, collision behavior | | fixed campaign |
-| Supported channels and capacity are part of the data contract | photomancy/import adapters: explicit supported data and capacity | | boundary anchors -> fixed campaign |
-| The truth/model firewall is a convention without full structural enforcement | spaceodyssey: private truth and model-side signatures/checks | | fixed campaign |
-| Point values, intervals, distributions, and nuisance parameters need different semantics | configuration owners: typed point/distribution/interval meaning | | conventions; interval execution deferred |
+Every finding about the current implementations that bears on this chapter, with
+its proposed owner, fixture, first gate, status and evidence, is recorded under
+{ref}`limitations-records` on the limitations page.

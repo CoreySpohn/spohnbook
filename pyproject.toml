@@ -25,7 +25,15 @@ Documentation = "https://spohnbook.readthedocs.io"
 
 [project.optional-dependencies]
 dev = ["pre-commit"]
-test = ["pytest"]
+test = [
+    "pytest",
+    "pyyaml",
+    "ineedvalidation",
+    "jax",
+    "numpy",
+    "hwoutils",
+    "optixstuff",
+]
 docs = [
     "myst-nb",
     "sphinx-book-theme",
@@ -67,3 +75,6 @@ packages = ["src/spohnbook"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ineedvalidation]
+library = "spohnbook"

@@ -1,6 +1,8 @@
 # Start here
 
-Pick the library by the question you are asking. Each one installs on its own
+This book covers the conventions of one suite of libraries for HWO-related
+exoplanet analyses and is not a mission requirements document (see the
+{ref}`scope <book-scope>`). Pick the library by the question you are asking. Each one installs on its own
 from PyPI and has its own documentation; the [map](map.md) shows how they fit.
 
 ```{figure} conventions/figures/hwo-conventions-pipeline-light.svg
@@ -55,6 +57,10 @@ compares yields against external yield codes.
   handbook says what it means.
 
 ## Read next
+
+- The {ref}`reading routes <book-reading-routes>` for the difference between the
+  scientific foundations, the convention profiles, the tutorials and the
+  evidence pages.
 
 - The [map](map.md) for what each library owns and what it depends on.
 - The [examples](examples/index.md) for code that runs through several

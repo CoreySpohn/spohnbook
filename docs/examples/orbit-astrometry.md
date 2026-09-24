@@ -18,6 +18,19 @@ draws the orbit in space beside its sky-plane projection with eyepiece under
 the light hwostyle mode, plots the separation and phase angle over the period,
 and animates the planet along both views.
 
+
+| Scope | This page |
+|---|---|
+| Purpose | Build, propagate and project one Keplerian orbit with orbix and draw it with eyepiece |
+| Model restrictions | Two-body Keplerian orbit; `from_period` converts the period to a semi-major axis with the stellar mass alone, a declared approximation ({ref}`geometry-origin-mass-phase`); orbix's current projection profile, which labels its first two components RA and Dec ({ref}`geometry-savransky-profile`) |
+| Evidence kind | Executable tutorial, with one bound check: every propagated radius lies between the periastron and apastron distances |
+| Data sources | None |
+| Applicable profile | None adopted; the {ref}`observer basis and node decision <decision-observer-basis-and-node>` is pending |
+| Not evidence of | Scientific correctness of the results shown, or measured-data validation |
+
+```{include} ../_generated/environment.md
+```
+
 ```{code-cell} python
 import eyepiece as ep
 import hwostyle
@@ -71,6 +84,14 @@ t_jd = tp_d + jnp.linspace(0.0, T_d, 361)
 r_AU, phase_rad, dist_AU = orbit.propagate(t_jd=t_jd, Ms_kg=Ms_kg)
 east_mas, north_mas, toward_mas = np.asarray(1e3 * r_AU[0] / dist_pc)
 print(r_AU.shape, f"max separation {np.hypot(east_mas, north_mas).max():.1f} mas")
+
+# Bound check: a Kepler ellipse keeps every radius between a(1 - e) and a(1 + e).
+# The 1e-6 relative allowance covers the Kepler solver's numerical
+# error (about 2e-8 here); it is not an accuracy requirement.
+a_AU, ecc = float(np.ravel(orbit.a_AU)[0]), float(np.ravel(orbit.e)[0])
+radius_AU = np.linalg.norm(np.asarray(r_AU[0]), axis=0)
+assert np.all(radius_AU >= a_AU * (1 - ecc) * (1 - 1e-6))
+assert np.all(radius_AU <= a_AU * (1 + ecc) * (1 + 1e-6))
 ```
 
 Periastron is the first sample, because `from_period` places periastron passage

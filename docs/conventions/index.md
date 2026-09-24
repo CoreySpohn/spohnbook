@@ -7,18 +7,22 @@ the meaning of a physical quantity, observation or posterior along the way. It
 explains the definitions, shows the transformations, and names the evidence
 required before a composed scientific workflow is trusted.
 
-The current implementations disagree in ways that component tests do not
-expose. This handbook states the candidate contracts, with the scientific
-choices tracked in the decision register below. It does not certify current
+Current implementations can disagree in ways that component tests do not
+expose; the [limitations page](../evidence/limitations.md) records the reports.
+This handbook states the candidate contracts, with the scientific choices
+tracked in the [decision register](../profiles/decisions.md). It does not certify current
 library behavior or silently adopt every proposed axis, unit or parameter name.
 
+(conventions-how-to-read)=
 ## How to read this handbook
 
 This handbook holds the shared conventions that every boundary between the
 suite's libraries must satisfy: units, signs, frames, time scales, radiometric
 measures, the detector experiment, and the reporting law. Each chapter has
 definitions, public reference tables, an independent worked example, named
-acceptance fixtures, and a coverage table of findings with owners.
+acceptance fixtures, and a pointer to the findings about current
+implementations, which the [limitations page](../evidence/limitations.md)
+records with owners, stages, status and evidence.
 
 The chapters refer to six adoption stages, in order:
 
@@ -41,15 +45,16 @@ A finding's stage is the earliest stage at which its repair is required.
 | What exactly does a flux, contrast, zodi value or count rate mean? | [Radiometry, detector counts, and spectral measurements](radiometry-detectors.md) |
 | Where is a pixel, how does roll act, and what does a PSFlet (the detector image of one lenslet's pupil) contain? | [Optical fields, image coordinates, and IFS products](optics-images.md) |
 | What data were actually reported, and what probability model interprets them? | [Measurements, probability, and records](inference-records.md) |
-| What do we build first, and what closes each gate? | The adoption stages above, the integration-stages figure in [the figure atlas](figures.md), and the coverage table that closes each chapter |
+| What do we build first, and what closes each gate? | The adoption stages above, the integration-stages figure in [the figure atlas](figures.md), and the [limitations page](../evidence/limitations.md) for each chapter |
 | Which colormap encodes this quantity, and which hue belongs to this plotted entity? | [Figures and color](figures-and-color.md) |
 | Which figures can I reuse or regenerate? | [the figure atlas](figures.md) |
-| Where is the source evidence for a current failure? | The coverage table that closes each chapter: every finding, its owner and the stage that requires its repair |
+| Where is the source evidence for a current failure? | The [limitations page](../evidence/limitations.md): every finding, its owner, the stage that requires its repair, its status and its evidence |
 
 Every chapter starts with physical meaning, then equations and units, worked
-examples, adapter obligations, and acceptance fixtures. Its closing table assigns
-every relevant finding to an owner and a gate. The 81 findings include
-overlaps, positive anchors and future gaps; they are not 81 independent bugs.
+examples, adapter obligations, and acceptance fixtures. Its closing section
+links to the chapter's findings on the limitations page, which assigns each to
+an owner and a gate. The 81 findings include overlaps, positive anchors and
+future gaps; they are not 81 independent bugs.
 
 ## Three distinctions to preserve
 
@@ -93,38 +98,12 @@ the underlying physical meaning.
 
 ## Decision register
 
-"Pending" means the documentation presents the alternatives and recommendation;
-the contract has not been frozen and implementation must not assume agreement.
-Decided items are not reopened without new evidence.
-
-**Profile selection and implementation certification are separate gates.** The
-conventions stage freezes definitions, mathematical expectations, the migration
-rule and the acceptance design. The table's implementation-evidence column is
-then discharged from boundary anchors through ensembles and external
-references, as each chapter's coverage table assigns. In particular, the
-reporting law decision does not require an already calibrated campaign or
-adaptive scheduler.
-
-| Decision | Recommendation | State / owner | Required implementation evidence after profile selection |
-|---|---|---|---|
-| **Observer basis and node** | Retain +z toward observer; candidate right-handed dynamics use (north,east,toward), public astrometry uses (east,north). Preserve an explicitly identified legacy orbix profile during migration. External reference: Savransky 2019, section 2.1 (see the geometry chapter). | Pending; orbix + photomancy + scene adapters | Signed 3D basis/state/RV/illumination examples; external element transform; saved-posterior migration policy |
-| **Meaning of dQE** | Replace the ambiguous meaning of dQE (the detector's quantum-efficiency degradation factor) with an explicit survival fraction (neutral 1), or an explicit fractional loss (neutral 0); never reinterpret old values silently. | Pending; optixstuff + jaxedith | Neutral/degraded cases across all adapters; serialized configuration mapping |
-| **Stellar leakage measure** | Define scalar stellar leakage as a density plus a precisely named averaging/aperture rule; every backend exports that meaning. | Pending; optixstuff + yippy + physicaloptix + jaxedith | Absolute image-aperture sum at two samplings and on both backends |
-| **Reporting law** | Choose the first campaign's actual reporting law, including joint position/flux, selection, nulls, nuisance treatment and covariance. | Pending; measurement adapter + coronalyze + photomancy | Normalization, detection frequencies, selected distributions, posterior calibration and always-null information limit |
-| **Acquisition experiment** | Define the first acquisition experiment: actual read frames, parallel paths, rolls, background/reference estimation, live/occupied/charged time. | Pending; optixstuff + jaxedith + spaceodyssey (campaign library) / planit-py | Analytic count/variance budget and independently assembled time/resource ledger |
-| **Image coordinates and PSFlet origin** | Name optical center, axis order, pixel measure, native/reference-wavelength grid, PSFlet origin, capture losses and covariance scope. Default generated images to geometric center; honor explicit imported calibration metadata. | Pending by enabled capability; optics/IFS owners | Odd/even/rectangular grids, signed rotations, refinement, centroid-once and edge-capture anchors |
-| **Evidence and parameter chart** | Distinguish component mass, ELBO and evidence; persist an explicit parameter chart; evidence-based claims reject unavailable/invalid normalization. | Proposed contract; photomancy | Analytic evidence, compression/serialization and unit-change fixtures; backend capability table |
-| **Record envelope home** | Keep the initial record envelope in spaceodyssey with domain-owned payloads; extract a separate distribution only after two working consumers demonstrate reuse. | Decided | Standalone export/import-to-photomancy plus spaceodyssey reuse of the same records, with dependency isolation |
-| **Sampled campaign first** | Build the sampled fixed campaign first; do not require unused moments/integration methods on its adapters. Revisit an analytic/integrate engine with the matched external-reference deliverable. | Decided; spaceodyssey | One executable sampled path; unsupported engines reject explicitly; later reference engine has its own capability/evidence gate |
-| **Tolerances before tests** | Allocate tolerances to observables before tests; use independent primitives, numerical refinement and calibrated Monte Carlo uncertainty; name external reference profiles. | Method required; domain and verification owners set budgets | Recorded error allocation, reference/configuration/source identity, positive and deliberately failing controls |
-| **One encoding per quantity** | Encode each quantity with one colormap role and each plot entity with one palette role; retire map names from figure code. | Proposed; hwostyle + eyepiece | The swatch, grayscale-pair and default-free fixtures |
-
-Other inherited choices include separate truth and model access, a
-refit-from-original-prior baseline, causal availability, exactly-once
-acquisition accounting, and explicit unsupported capabilities. Point-valued
-configuration is sufficient initially; distributions and epistemic intervals
-require distinct typed semantics before execution is enabled. A tuple must not
-acquire uncertainty meaning by convention alone.
+The scientific choices these chapters depend on, with their recommendations,
+states, owners and the implementation evidence each requires, are recorded once,
+in the [decision register](../profiles/decisions.md). "Pending" there means the
+alternatives and recommendation are presented but the contract is not frozen, and
+implementation must not assume agreement. The [convention profiles](../profiles/index.md)
+state which clauses a named profile groups and whether it is proposed or adopted.
 
 ## What travels across a boundary
 
@@ -141,6 +120,7 @@ and interpretation happen once at a named adapter. Domain owners retain their
 scientific definitions; hwoutils supplies appropriate shared constants and
 conversions. A new universal units or schema framework is not a prerequisite.
 
+(conventions-contributing)=
 ## Contributing to this handbook
 
 When you repair or add a boundary, ship all of the following with it:
