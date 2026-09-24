@@ -234,3 +234,110 @@ def test_henyey_greenstein_mixture_needs_normalized_weights():
     np.testing.assert_allclose(2.0 * math.pi * np.sum(w * mixed), 1.0, rtol=1e-10)
     with pytest.raises(ValueError, match="sum to one"):
         drc.henyey_greenstein_mixture(mu, (0.7, 0.7), (0.8, -0.2))
+
+
+# Thin uniform slab (face-on radius R, thickness h) seen by a distant observer.
+SLAB_RADIUS_AU = 4.0
+SLAB_THICKNESS_AU = 0.1
+SLAB_EMISSIVITY = 5.0  # photon s^-1 m^-2 nm^-1 sr^-1 AU^-1
+
+
+@pytest.mark.parametrize("inclination_deg", [60.0, 120.0])
+def test_thin_slab_path_is_positive_on_both_sides(inclination_deg):
+    """|cos i| = 1/2 at 60 and 120 deg, so the path is 2h inside the ellipse."""
+    inc = math.radians(inclination_deg)
+    half_minor = SLAB_RADIUS_AU * 0.5
+    inside = drc.thin_slab_radiance(
+        0.0, 0.9 * half_minor, SLAB_RADIUS_AU, SLAB_THICKNESS_AU, SLAB_EMISSIVITY, inc
+    )
+    outside = drc.thin_slab_radiance(
+        0.0, 1.1 * half_minor, SLAB_RADIUS_AU, SLAB_THICKNESS_AU, SLAB_EMISSIVITY, inc
+    )
+    np.testing.assert_allclose(inside, 2.0 * SLAB_THICKNESS_AU * SLAB_EMISSIVITY)
+    assert outside == 0.0
+
+
+def test_signed_slab_weight_goes_negative_past_ninety():
+    """The mutant keeps the sign of cos i: a physically impossible negative
+    radiance that a floored log display would hide."""
+    inc = math.radians(120.0)
+    signed = drc.thin_slab_radiance(
+        0.0, 0.0, SLAB_RADIUS_AU, SLAB_THICKNESS_AU, SLAB_EMISSIVITY, inc, signed=True
+    )
+    np.testing.assert_allclose(signed, -2.0 * SLAB_THICKNESS_AU * SLAB_EMISSIVITY)
+
+
+# Power-law energy radiance B(lambda) = B0 (lambda / lambda0)^k.
+PLANCK_H = 6.62607015e-34  # J s, exact SI
+LIGHT_C = 299792458.0  # m s^-1, exact SI
+
+
+def test_planck_and_light_constants_parity():
+    from hwoutils.constants import c, h
+
+    assert h == pytest.approx(PLANCK_H, rel=1e-15)
+    assert c == pytest.approx(LIGHT_C, rel=1e-15)
+
+
+@pytest.mark.parametrize("k", [0.0, -1.0, -4.0, 1.5])
+def test_photon_band_integral_matches_quadrature(k):
+    """Convert to photons inside the integral; Gauss-Legendre is the
+    independent check of the closed form (basis: floating-point)."""
+    b0, lam0, lo, hi = 2.0e-8, 550.0, 500.0, 600.0
+    lam, w = np.polynomial.legendre.leggauss(64)
+    lam = 0.5 * (hi - lo) * lam + 0.5 * (hi + lo)
+    density = b0 * (lam / lam0) ** k * lam * 1e-9 / (PLANCK_H * LIGHT_C)
+    quad = 0.5 * (hi - lo) * np.sum(w * density)
+    exact = drc.power_law_photon_band_integral(b0, lam0, k, lo, hi)
+    np.testing.assert_allclose(exact, quad, rtol=1e-12)
+
+
+def test_center_conversion_is_exact_only_for_flat_energy():
+    b0, lam0, lo, hi = 2.0e-8, 550.0, 500.0, 600.0
+    flat = drc.center_conversion_band_integral(b0, lam0, 0.0, lo, hi)
+    np.testing.assert_allclose(
+        flat, drc.power_law_photon_band_integral(b0, lam0, 0.0, lo, hi), rtol=1e-12
+    )
+    steep_exact = drc.power_law_photon_band_integral(b0, lam0, -4.0, lo, hi)
+    steep_center = drc.center_conversion_band_integral(b0, lam0, -4.0, lo, hi)
+    assert abs(steep_center / steep_exact - 1.0) > 1e-3
+
+
+# Circular Gaussian clump of photon radiance, integrated exactly per pixel.
+CLUMP_PEAK_SR = 7.0
+CLUMP_SIGMA_ARCSEC = 0.25
+
+
+def _clump_total():
+    """Closed form: peak * 2 pi sigma^2 * erf(F / (2 sqrt2 sigma))^2, in sr."""
+    sigma = CLUMP_SIGMA_ARCSEC * ARCSEC_TO_RAD
+    half = 0.5 * FIELD_ARCSEC / CLUMP_SIGMA_ARCSEC
+    return CLUMP_PEAK_SR * 2.0 * math.pi * sigma**2 * math.erf(half / math.sqrt(2)) ** 2
+
+
+@pytest.mark.parametrize("n_pix", [24, 48, 96])
+def test_gaussian_clump_pixel_integrals_conserve_flux(n_pix):
+    pixels = drc.gaussian_patch_pixel_flux(
+        CLUMP_PEAK_SR, CLUMP_SIGMA_ARCSEC, FIELD_ARCSEC, n_pix
+    )
+    assert pixels.shape == (n_pix, n_pix)
+    assert np.all(pixels > 0.0)
+    np.testing.assert_allclose(pixels.sum(), _clump_total(), rtol=1e-12, atol=0.0)
+
+
+def test_gaussian_clump_center_pixel_approaches_radiance_times_area():
+    """As pixels shrink, center-pixel flux / pixel solid angle -> peak radiance."""
+    ratios = []
+    for n_pix in (24, 48, 96):
+        pixels = drc.gaussian_patch_pixel_flux(
+            CLUMP_PEAK_SR, CLUMP_SIGMA_ARCSEC, FIELD_ARCSEC, n_pix
+        )
+        d_omega = (FIELD_ARCSEC / n_pix * ARCSEC_TO_RAD) ** 2
+        # Even grids: the four central pixels share the peak.
+        c = n_pix // 2
+        ratios.append(pixels[c, c] / d_omega)
+    errors = np.abs(np.array(ratios) / CLUMP_PEAK_SR - 1.0)
+    assert errors[0] > errors[1] > errors[2]
+    # Smooth integrand, pixel-average error is second order in pixel size.
+    observed_order = np.log2(errors[:-1] / errors[1:])
+    np.testing.assert_allclose(observed_order, 2.0, atol=0.05)

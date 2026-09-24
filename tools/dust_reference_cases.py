@@ -23,7 +23,7 @@ scene, zodi or instrument library.
 import math
 
 import numpy as np
-from hwoutils.constants import AU2m, arcsec2rad, pc2m
+from hwoutils.constants import AU2m, arcsec2rad, c, h, nm2m, pc2m
 
 _UNIT_TOL = 1e-12
 
@@ -175,6 +175,32 @@ def uniform_patch_pixel_flux(radiance_sr, field_arcsec, n_pix):
     return np.full((n_pix, n_pix), radiance_sr * pixel_rad**2)
 
 
+def gaussian_patch_pixel_flux(peak_sr, sigma_arcsec, field_arcsec, n_pix):
+    """Exact pixel integrals of a circular Gaussian clump of photon radiance.
+
+    I(theta) = peak_sr * exp(-|theta|^2 / (2 sigma^2)) is separable, so each
+    pixel integral is a product of error-function differences. The pixel sum
+    telescopes to the field integral on every grid. Small-angle (flat
+    tangent-plane) solid angle, as in `uniform_patch_pixel_flux`.
+
+    Args:
+        peak_sr: Peak photon radiance, photon s^-1 m^-2 nm^-1 sr^-1.
+        sigma_arcsec: Gaussian width, arcsec.
+        field_arcsec: Side of the square field centered on the clump, arcsec.
+        n_pix: Pixels per side.
+
+    Returns:
+        (n_pix, n_pix) array of photon flux densities,
+        photon s^-1 m^-2 nm^-1 per pixel.
+    """
+    edges = np.linspace(-0.5 * field_arcsec, 0.5 * field_arcsec, n_pix + 1)
+    erf = np.array([math.erf(e / (math.sqrt(2.0) * sigma_arcsec)) for e in edges])
+    sigma_rad = sigma_arcsec * arcsec2rad
+    # Integral of exp(-t^2 / 2 sigma^2) over one pixel, in radians.
+    line = sigma_rad * math.sqrt(math.pi / 2.0) * np.diff(erf)
+    return peak_sr * np.outer(line, line)
+
+
 def sampled_radiance_sum(radiance_sr, n_pix):
     """Sum of radiance samples with no solid-angle weight (the wrong measure).
 
@@ -298,3 +324,76 @@ def henyey_greenstein_mixture(cos_theta, weights, gs):
     return sum(
         w * henyey_greenstein(cos_theta, g) for w, g in zip(weights, gs, strict=True)
     )
+
+
+def thin_slab_radiance(
+    x, y, radius, thickness, emissivity, inclination, *, signed=False
+):
+    """Distant-observer radiance of a thin, uniform, inclined circular slab.
+
+    The slab has face-on radius `radius` and thickness `thickness` (both AU)
+    and is tilted by `inclination` about the sky x axis. A ray through sky
+    point (x, y) hits it when x^2 + (y / |cos i|)^2 <= radius^2 and then
+    crosses a path thickness / |cos i| (thin-slab limit, i away from 90 deg).
+
+    Args:
+        x: Sky coordinate along the tilt axis, AU (scalar or array).
+        y: Sky coordinate across the tilt axis, AU.
+        radius: Face-on slab radius, AU.
+        thickness: Slab thickness, AU.
+        emissivity: Photon emissivity per unit path, per AU.
+        inclination: Inclination in radians; 0 is face-on.
+        signed: If True, return the deliberately wrong weight
+            thickness / cos(i), whose sign flips past 90 deg.
+
+    Returns:
+        Photon radiance, zero outside the projected ellipse.
+    """
+    cos_i = math.cos(inclination)
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    inside = x**2 + (y / abs(cos_i)) ** 2 <= radius**2
+    weight = thickness / (cos_i if signed else abs(cos_i))
+    return np.where(inside, emissivity * weight, 0.0)
+
+
+def power_law_photon_band_integral(b0, lam0, k, lo, hi):
+    """Exact band-integrated photon radiance of a power-law energy radiance.
+
+    The energy radiance is B(lambda) = b0 (lambda / lam0)^k in
+    W m^-2 sr^-1 nm^-1 with lambda in nm. Each wavelength is converted to
+    photons (divided by hc / lambda) before integrating over the band.
+
+    Args:
+        b0: Energy radiance at lam0, W m^-2 sr^-1 nm^-1.
+        lam0: Reference wavelength, nm.
+        k: Power-law index; k = -2 is excluded.
+        lo: Lower band edge, nm.
+        hi: Upper band edge, nm.
+
+    Returns:
+        Photon radiance integrated over the band, photon s^-1 m^-2 sr^-1.
+    """
+    scale = b0 * nm2m / (h * c * lam0**k)
+    return scale * (hi ** (k + 2) - lo ** (k + 2)) / (k + 2)
+
+
+def center_conversion_band_integral(b0, lam0, k, lo, hi):
+    """The approximation that integrates energy first, then converts once.
+
+    Uses the band-center photon energy for the whole band, which is exact
+    only when the photon density is linear in wavelength (k = 0).
+
+    Args:
+        b0: Energy radiance at lam0, W m^-2 sr^-1 nm^-1.
+        lam0: Reference wavelength, nm.
+        k: Power-law index; k = -1 is excluded.
+        lo: Lower band edge, nm.
+        hi: Upper band edge, nm.
+
+    Returns:
+        Approximate photon radiance over the band, photon s^-1 m^-2 sr^-1.
+    """
+    lam_c = 0.5 * (lo + hi)
+    energy = b0 / lam0**k * (hi ** (k + 1) - lo ** (k + 1)) / (k + 1)
+    return energy * lam_c * nm2m / (h * c)
