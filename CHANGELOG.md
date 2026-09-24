@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.2](https://github.com/CoreySpohn/spohnbook/compare/v0.0.1...v0.0.2) (2026-09-24)
+
+
+### Bug Fixes
+
+* **book:** install the Inter font so executed figures stop warning ([034aa94](https://github.com/CoreySpohn/spohnbook/commit/034aa94254e0fee0e0d50988872d49158de4ce1e))
+
 ## 0.0.1 (2026-09-24)
 
 
