@@ -207,7 +207,9 @@ How a commit becomes a release: the tests workflow and ReadTheDocs run on every 
   commits since the last tag, and opens or updates a release pull request with the
   version bump and `CHANGELOG.md`; merging it tags the commit and creates the GitHub
   release. `refactor`, `docs`, `test` and `chore` do not release, so a user-visible
-  change is `feat` or `fix`. The action uses a personal access token, because a tag
+  change is `feat` or `fix`. This book, whose product is its documentation,
+  classifies substantive content and scientific corrections as `feat(book)` and
+  `fix(book)`; its [releases page](releases.md) explains the policy. The action uses a personal access token, because a tag
   pushed with the default token does not trigger workflows.
 - A tag triggers `publish-to-pypi.yml`: build the sdist and wheel with
   `python -m build`, store them as a workflow artifact, then publish from a `pypi`

@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: >-
+  Cite the edition (version and tag) you used. A development build is not an
+  edition; cite its commit and state that it is a draft. No DOI has been minted.
+title: "The Spohn Book"
+abstract: >-
+  The map, shared conventions and assembled examples of a suite of JAX
+  libraries for exoplanet direct imaging. Draft editions: conventions marked
+  pending or proposed are not adopted.
+type: software
+authors:
+  - family-names: Spohn
+    given-names: Corey
+license: MIT
+repository-code: "https://github.com/CoreySpohn/spohnbook"
+url: "https://spohnbook.readthedocs.io"
+keywords:
+  - exoplanets
+  - direct imaging
+  - coronagraphy
+  - conventions
+  - Habitable Worlds Observatory
