@@ -182,6 +182,7 @@ verification evidence at the required level). The classifier and the map agree.
   owner's fetch function rather than duplicating the registry entry. Tests fetch
   through session-scoped fixtures so that a file is downloaded once per run.
 
+(library-release-and-ci)=
 ## Release and CI
 
 ```{figure} figures/release-flow-light.svg
