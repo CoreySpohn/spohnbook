@@ -72,3 +72,11 @@ def test_uncommitted_build_is_refused(tmp_path):
     path.write_text(json.dumps(manifest))
     with pytest.raises(ValueError, match="uncommitted"):
         mrb.make_bundle("HEAD", html, evidence, tmp_path / "out")
+
+
+def test_bundle_with_private_paths_is_refused(tmp_path):
+    commit = rb.git_identity(ROOT)["commit"]
+    html, evidence = _inputs(tmp_path, commit)
+    (evidence / "sphinx.log").write_text(f"warning in {Path.home()}/lib/x.py")
+    with pytest.raises(ValueError, match="private"):
+        mrb.make_bundle("HEAD", html, evidence, tmp_path / "out")

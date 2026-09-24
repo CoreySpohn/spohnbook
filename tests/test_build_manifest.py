@@ -143,7 +143,9 @@ def test_manifest_and_ledger_join_for_the_pilot_case(tmp_path):
     commit = rb.git_identity(ROOT)["commit"]
     ledger_path, ledger = _ledger(tmp_path, commit)
     manifest = _manifest(tmp_path, ledger_path=ledger_path)
-    manifest["book"]["dirty"] = False  # the check below concerns identity joins
+    # The checks below concern identity joins, not the checkout or the lock.
+    manifest["book"]["dirty"] = False
+    manifest["lock"]["mismatches"] = []
     environment = {k: v["version"] for k, v in manifest["packages"].items()}
     rows = {
         r["case"]: r
@@ -164,3 +166,29 @@ def test_manifest_and_ledger_join_for_the_pilot_case(tmp_path):
         for r in evidence_rows(catalog, other_ledger, manifest, environment=environment)
     }
     assert rows[PILOT]["status"] == "stale"
+
+
+def test_absent_declared_input_is_a_missing_identity(tmp_path):
+    manifest = _manifest(tmp_path)
+    manifest["inputs"] = [{"name": "x", "status": "not present", "sha256": None}]
+    assert any("input" in m for m in rb.missing_identities(manifest))
+
+
+def test_locked_resolution_with_lock_mismatches_is_refused(tmp_path):
+    manifest = _manifest(tmp_path)
+    manifest["lock"]["mismatches"] = ["foo: lock 1.0, installed 2.0"]
+    manifest["lock"]["matches_environment"] = False
+    assert any("lock" in p for p in rb.manifest_problems(manifest, []))
+    manifest["resolution"] = "latest"
+    assert not any("lock" in p for p in rb.manifest_problems(manifest, []))
+
+
+def test_manifest_with_private_path_is_not_written(tmp_path, monkeypatch):
+    home = str(Path.home())
+    manifest = _manifest(tmp_path)
+    manifest["command"] = [f"{home}/private/run"]
+    monkeypatch.setattr(rb, "build_manifest", lambda *a, **k: manifest)
+    output = tmp_path / "manifest.json"
+    code = rb.main(["--output", str(output), "--ledger", str(tmp_path / "x")])
+    assert code == 1
+    assert not output.exists()

@@ -5,8 +5,9 @@ density over a 1 nm rectangular interval, is collected by 1 m2 for 1 s and
 spread over four equally illuminated pixels of an ideal detector with constant
 quantum efficiency and no dark current, clock-induced charge or read noise. The
 summed deterministic source shot variance must then equal QE times the photon
-count. The expected photon density comes from the SI definitions of the Planck
-constant and the jansky, calculated here with decimal arithmetic, never from the
+count. The expected photon density comes from the exact SI value of the Planck
+constant and the definition of the jansky (1e-26 W m-2 Hz-1, not an SI unit),
+calculated here with decimal arithmetic, never from the
 library under test.
 
 This case verifies the Jy-to-photon conversion feeding the deterministic shot
@@ -110,11 +111,11 @@ def test_negative_control_spectral_measure_error_is_rejected():
         _assert_boundary(photon_density, variance, qe)
 
 
-@vv.case("four-pixel-count-budget", "code-verification", srq="aperture electron count")
 def test_four_pixel_count_budget_arithmetic():
     """Recompute the radiometry chapter's worked count example from primitives.
 
-    Analytic only: no library executes this experiment here. Four pixels, 20 and
+    Analytic only: no library executes this experiment here, so the test carries
+    no evidence marker and never enters the ledger. Four pixels, 20 and
     80 photon/s planet and background, QE 0.5, 100 live seconds in ten frames,
     dark 0.01 e/s/pixel, CIC 0.02 e/frame/pixel, read noise 2 e/read.
     """

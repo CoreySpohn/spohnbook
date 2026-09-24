@@ -13,7 +13,11 @@ releases.
 `requirements-docs.txt` pins every direct and transitive dependency of the
 `docs` and `test` extras, with hashes, for Python 3.12 on Linux x86_64
 (`manylinux_2_28`). It is compiled from PyPI with no workspace or local sources.
-The lock does not cover macOS or Windows; see
+One pin is a nightly pre-release, `tfp-nightly`, which a
+dependency of the inference library requires; PyPI has kept that project's
+nightly releases since 2018, but the bundle does not archive wheels, so its
+availability is an external dependency of exact restoration. The lock does not
+cover macOS or Windows; see
 [other platforms](#reproducing-other-platforms). From a clean checkout of the
 edition's tag, on that platform and with [uv](https://docs.astral.sh/uv/):
 
@@ -23,15 +27,15 @@ $ uv pip sync --python .venv/bin/python requirements-docs.txt
 $ uv pip install --python .venv/bin/python --no-deps -e .
 $ mkdir -p docs/_evidence
 $ .venv/bin/python -m pytest tests --vv-evidence docs/_evidence/ledger.json
-$ .venv/bin/python tools/record_build.py --resolution locked \
+$ .venv/bin/python tools/record_build.py --resolution locked --fetch-inputs \
       --ledger docs/_evidence/ledger.json --output docs/_evidence/build-manifest.json
 $ .venv/bin/python -m sphinx -W --keep-going -D nb_execution_mode=force \
       -b html docs docs/_build/html
 $ SPOHNBOOK_HTML_DIR=docs/_build/html .venv/bin/python -m pytest tests/test_handbook.py -k rendered
 ```
 
-The tests write the evidence ledger, `record_build.py` writes the build manifest
-beside it, and the documentation build executes every example page and renders
+The tests write the evidence ledger, `record_build.py` downloads the declared
+input data through its owning library and writes the build manifest beside it, and the documentation build executes every example page and renders
 the {ref}`case results <evidence-results>` from the two files. The last
 command checks that every page and anchor published by earlier editions still
 resolves in the rendered site. Nothing in the procedure needs the author's
@@ -56,8 +60,11 @@ and the input data below.
 - the identity of every input data file the examples read;
 - the command that ran.
 
-Paths under the home directory or the checkout are rewritten before the file is
-written, and the tool fails if one remains. The evidence page joins the ledger
+Paths under the home directory or the checkout are rewritten, and the tool
+refuses to write a manifest in which one remains. It exits with an error when a
+required identity is missing, when a declared input is not present, or when a
+build that claims the locked resolution differs from the lock; the evidence page
+then shows the affected cases as incomplete rather than passed. The evidence page joins the ledger
 and the manifest only when their identities agree, so a manifest recorded for
 different bytes marks a case stale rather than passed.
 

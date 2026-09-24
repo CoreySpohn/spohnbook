@@ -432,7 +432,7 @@ clauses:
 
 profiles:
   - id: photon-electron-reference-v1
-    title: "Jy to photons to ideal-detector shot variance, reference experiment only"
+    title: "Jy to photons to ideal-detector shot variance, reference experiment only (zero dark current, clock-induced charge and read noise)"
     status: proposed
     clauses:
       - radiometry-jy-photons

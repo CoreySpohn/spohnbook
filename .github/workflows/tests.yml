@@ -41,7 +41,7 @@ jobs:
       if: always()
       run: >-
         .venv/bin/python tools/record_build.py --resolution locked
-        --ledger docs/_evidence/ledger.json
+        --ledger docs/_evidence/ledger.json --fetch-inputs
         --output docs/_evidence/build-manifest.json
         --command "pytest tests --vv-evidence; sphinx -W --keep-going -D nb_execution_mode=force"
 
@@ -96,7 +96,7 @@ jobs:
       if: always()
       run: >-
         .venv/bin/python tools/record_build.py --resolution latest
-        --ledger docs/_evidence/ledger.json
+        --ledger docs/_evidence/ledger.json --fetch-inputs
         --output docs/_evidence/build-manifest.json
         --command "pytest tests --vv-evidence; sphinx -W --keep-going -D nb_execution_mode=force"
 

@@ -169,6 +169,8 @@ def validate_catalog(catalog: dict, docs_dir: Path) -> list[str]:
             )
         if not case.get("tests"):
             errors.append(f"case {kid!r}: no tests bound")
+        if not case.get("packages"):
+            errors.append(f"case {kid!r}: no packages bound to its evidence identity")
     return errors
 
 
@@ -179,13 +181,15 @@ def _installed_version(name):
         return None
 
 
-def _identity_problems(case, catalog, ledger, manifest, environment):
+def _identity_problems(case, catalog, ledger, manifest, environment, current):
     """Return (missing, mismatched) identity descriptions for one case."""
     missing, mismatched = [], []
     book = manifest.get("book") or {}
     commit = book.get("commit")
     if not commit:
         missing.append("book commit")
+    elif current and commit != current:
+        mismatched.append(f"evidence recorded for book commit {commit[:12]}")
     elif book.get("dirty") is not False:
         missing.append("committed source (the build had uncommitted changes)")
     if not manifest.get("catalog_sha256"):
@@ -197,6 +201,9 @@ def _identity_problems(case, catalog, ledger, manifest, environment):
         missing.append(f"profile identity for {case['profile']}")
     elif recorded_profile != profile_digest(catalog, case["profile"]):
         mismatched.append(f"profile {case['profile']} changed")
+    lock = manifest.get("lock") or {}
+    if manifest.get("resolution") == "locked" and lock.get("mismatches"):
+        missing.append("an environment matching the lock it claims")
     ledger_sha = (manifest.get("ledger") or {}).get("sha256")
     if not ledger_sha:
         missing.append("ledger identity")
@@ -215,10 +222,13 @@ def _identity_problems(case, catalog, ledger, manifest, environment):
             if environment is not None
             else _installed_version(name)
         )
+        source = (packages.get(name) or {}).get("source", "index")
         if not recorded:
             missing.append(f"version of {name}")
         elif recorded != current:
             mismatched.append(f"{name} {recorded} recorded, {current} present")
+        elif source != "index":
+            missing.append(f"a released {name}: the tested copy was {source}")
     return missing, mismatched
 
 
@@ -252,6 +262,7 @@ def evidence_rows(
     manifest: dict | None,
     *,
     environment: dict | None = None,
+    commit: str | None = None,
 ) -> list[dict]:
     """Compute one status row per case binding.
 
@@ -260,6 +271,7 @@ def evidence_rows(
         ledger: an ``ineedvalidation`` evidence file, or None.
         manifest: a build manifest from ``tools/record_build.py``, or None.
         environment: package versions present now; None reads the installed ones.
+        commit: the book commit being built; evidence for another commit is stale.
 
     Returns:
         Rows with the case, its profile and profile status, the claim, the
@@ -296,7 +308,7 @@ def evidence_rows(
             },
         }
         missing, mismatched = _identity_problems(
-            case, catalog, ledger, manifest, environment
+            case, catalog, ledger, manifest, environment, commit
         )
         if mismatched:
             row["status"], row["reasons"] = "stale", mismatched + missing
@@ -425,17 +437,29 @@ def _git(docs_dir, *args):
     return result.stdout.strip() if result.returncode == 0 else None
 
 
+def current_commit(docs_dir: Path) -> str | None:
+    """The commit being built, from git or from the ReadTheDocs environment."""
+    return _git(docs_dir, "rev-parse", "HEAD") or os.environ.get(
+        "READTHEDOCS_GIT_COMMIT_HASH"
+    )
+
+
+def edition_state(version: str, tags_at_commit: list[str]) -> str:
+    """ "edition" only when the built commit carries the tag v<version>."""
+    released = re.fullmatch(r"\d+\.\d+\.\d+", version) is not None
+    return "edition" if released and f"v{version}" in tags_at_commit else "development"
+
+
 def render_edition(docs_dir: Path) -> str:
     """State which version and commit this build is, and whether it is an edition."""
     version = _installed_version("spohnbook") or "unknown"
-    commit = _git(docs_dir, "rev-parse", "HEAD") or os.environ.get(
-        "READTHEDOCS_GIT_COMMIT_HASH", "unknown"
-    )
-    dirty = _git(docs_dir, "status", "--porcelain", "--untracked-files=no")
-    tagged = re.fullmatch(r"\d+\.\d+\.\d+", version) is not None
+    commit = current_commit(docs_dir) or "unknown"
+    # Untracked files count as changes, as in the build manifest.
+    dirty = _git(docs_dir, "status", "--porcelain")
+    tags = (_git(docs_dir, "tag", "--points-at", "HEAD") or "").split()
     state = (
         f"This is edition {version}, built from commit `{commit}` (tag v{version})."
-        if tagged
+        if edition_state(version, tags) == "edition"
         else (
             f"This is a development build, version {version} from commit "
             f"`{commit}`. It is a draft and not a tagged edition."
@@ -455,9 +479,9 @@ def _read_json(path):
     return json.loads(path.read_text()) if path.exists() else None
 
 
-def render_evidence_page(catalog: dict, ledger, manifest) -> str:
+def render_evidence_page(catalog: dict, ledger, manifest, commit=None) -> str:
     """The generated part of the evidence page: identities and case results."""
-    rows = evidence_rows(catalog, ledger, manifest)
+    rows = evidence_rows(catalog, ledger, manifest, commit=commit)
     if ledger is None or manifest is None:
         header = (
             "This build has no evidence ledger and build manifest, so every case is "
@@ -477,7 +501,7 @@ def render_evidence_page(catalog: dict, ledger, manifest) -> str:
     return header + render_evidence_table(rows)
 
 
-def render_environment(docs_dir: Path, manifest) -> str:
+def render_environment(docs_dir: Path, manifest, commit=None) -> str:
     """Versions of the suite's libraries that executed the examples in this build."""
     names = [
         lib["name"]
@@ -485,13 +509,17 @@ def render_environment(docs_dir: Path, manifest) -> str:
             (Path(docs_dir).parent / "libraries.yaml").read_text()
         )["libraries"]
     ]
-    if manifest is not None:
+    recorded_for = ((manifest or {}).get("book") or {}).get("commit")
+    if manifest is not None and (commit is None or recorded_for == commit):
         packages = manifest.get("packages") or {}
         versions = {n: (packages.get(n) or {}).get("version") for n in names}
         origin = "the build manifest recorded with this build"
     else:
         versions = {n: _installed_version(n) for n in names}
-        origin = "the environment that built this page (no build manifest was supplied)"
+        origin = (
+            "the environment that built this page "
+            "(no build manifest for this commit was supplied)"
+        )
     listed = ", ".join(f"{n} {v}" for n, v in versions.items() if v)
     return (
         f"Executed with {listed}, as read from {origin}. The full dependency "
@@ -517,6 +545,7 @@ def write_handbook_pages(
         evidence_dir = Path(
             os.environ.get("SPOHNBOOK_EVIDENCE_DIR", docs_dir / "_evidence")
         )
+    commit = current_commit(docs_dir)
     ledger = _read_json(Path(evidence_dir) / "ledger.json")
     manifest = _read_json(Path(evidence_dir) / "build-manifest.json")
     out_dir = docs_dir / "_generated"
@@ -525,9 +554,9 @@ def write_handbook_pages(
         "references.md": render_references(catalog),
         "clause-bases.md": render_clause_bases(catalog),
         "profiles.md": render_profiles(catalog),
-        "evidence.md": render_evidence_page(catalog, ledger, manifest),
+        "evidence.md": render_evidence_page(catalog, ledger, manifest, commit),
         "edition.md": render_edition(docs_dir),
-        "environment.md": render_environment(docs_dir, manifest),
+        "environment.md": render_environment(docs_dir, manifest, commit),
     }
     written = []
     for name, text in pages.items():

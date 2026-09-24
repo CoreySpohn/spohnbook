@@ -31,7 +31,7 @@ locator in this edition. They are not reviewed until the gap is closed.
 
 | Clause | Statement | Gap |
 |---|---|---|
-| {ref}`radiometry-quantities` | 1 Jy = $10^{-26}$ W m$^{-2}$ Hz$^{-1}$ | No standards document was inspected for this edition. |
+| {ref}`radiometry-quantities`, {ref}`radiometry-jy-photons`, {ref}`photon-electron-reference-experiment` | 1 Jy = $10^{-26}$ W m$^{-2}$ Hz$^{-1}$ (the jansky is not an SI unit) | No standards document was inspected for this edition. |
 | {ref}`radiometry-etc-forecast` | The detection and characterization noise terms of the {ref}`Nemati (2014) <source-nemati2014>` formulation | The 2014 paper's passage was not inspected; the terms were checked against {ref}`Nemati et al. (2023) <source-nemati2023>` and the EXOSIMS source. |
 | {ref}`geometry-illumination` | Lambert phase function | Cited to a secondary source; the primary (Sobolev 1975) was not inspected. |
 | {ref}`geometry-radial-velocity` | Direction of the line of sight in the literature RV equation | The cited passage does not state whether its line of sight points toward or away from the observer. |

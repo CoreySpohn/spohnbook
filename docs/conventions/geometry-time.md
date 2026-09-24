@@ -147,7 +147,7 @@ The literature writes this curve with the star's argument of periastron ({ref}`L
 
 Take a circular relative orbit with $a=1$ AU, $i=90$ deg, $\Omega=\omega_p=M_0=0$, and $t=t_0$. In the candidate basis, the planet is north of its star: $(X,Y,Z)=(a,0,0)$. It moves toward the observer, $\dot Z=na>0$. The star moves away, $\dot Z_\star<0$, so its recession RV is **positive**. An Earth/Sun mass pair gives about **+0.08946 m/s**. The illumination is quadrature, $\Phi=1/\pi$.
 
-A quarter period later the planet is at $+Z$: it is dark and the stellar reflex RV is zero. Three quarters of a period later it is at $-Z$: it is full and the RV is again zero. Brightness cannot determine the sign of RV by itself. The {ref}`recorded limitations <limitations-geometry>` include reports of an implementation with the opposite stellar RV sign at this epoch and of AU/day values reaching a container that declares m/s.
+A quarter period later the planet is at $+Z$: it is dark and the stellar reflex RV is zero. Three quarters of a period later it is at $-Z$: it is full and the RV is again zero. Brightness cannot determine the sign of RV by itself. The {ref}`recorded limitations <limitations-geometry>` include reports of an implementation with the opposite stellar RV sign at the initial epoch $t_0$ and of AU/day values reaching a container that declares m/s.
 
 (geometry-public-units)=
 ## Public quantities and uncertainty transforms

@@ -15,7 +15,7 @@ kernelspec:
 This page follows one boundary of the suite from its source to its evidence. A
 source defined in janskys is converted to photons by hwoutils and turned into an
 expected electron variance by an optixstuff detector, and the result is compared
-with an answer calculated independently from the SI definitions. The same
+with an answer calculated independently from the SI value of the Planck constant and the definition of the jansky. The same
 comparison runs as the reference case `jy-to-ideal-detector-shot-variance` in the
 repository's tests, and the [evidence page](../evidence/index.md) reports its
 result for this build.
@@ -25,7 +25,7 @@ result for this build.
 | Purpose | Trace one conversion chain from a cited definition to a tested library result |
 | Model restrictions | Synthetic source with constant photon spectral density over 1 nm; four equally illuminated pixels; constant QE; no dark current, clock-induced charge or read noise; deterministic variance only |
 | Evidence kind | Code verification against an independent analytic anchor, with two negative controls |
-| Data sources | None: the only inputs are the SI values of the Planck constant and the jansky |
+| Data sources | None: the only inputs are the SI value of the Planck constant and the definition of the jansky |
 | Applicable profile | {ref}`photon-electron-reference-v1 <profiles-photon-electron-reference-v1>`, proposed |
 | Not evidence of | Stochastic readout, band integration of a real spectrum, coronagraph throughput, nonzero detector noise, dQE, an exposure time calculator, or measured-data validation |
 

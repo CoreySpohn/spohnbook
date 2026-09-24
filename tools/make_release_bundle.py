@@ -24,6 +24,11 @@ import tarfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+
+from record_build import private_roots  # noqa: E402
+
+TEXT_SUFFIXES = {".html", ".json", ".log", ".txt", ".js", ".css", ".yaml", ".cff"}
 
 README = """Release bundle of The Spohn Book, {ref} (commit {commit}).
 
@@ -98,6 +103,16 @@ def make_bundle(ref, html_dir, evidence_dir, output_dir):
     files = sorted(
         p for p in bundle.rglob("*") if p.is_file() and p.name != "SHA256SUMS"
     )
+    roots = private_roots(ROOT)
+    leaks = [
+        p.relative_to(bundle).as_posix()
+        for p in files
+        if p.suffix in TEXT_SUFFIXES
+        and any(r in p.read_text(errors="ignore") for r in roots)
+    ]
+    if leaks:
+        shutil.rmtree(bundle)
+        raise ValueError(f"private paths in {', '.join(leaks[:5])}")
     sums = [f"{_sha256(p)}  {p.relative_to(bundle).as_posix()}" for p in files]
     (bundle / "SHA256SUMS").write_text("\n".join(sums) + "\n")
     with tarfile.open(str(bundle) + ".tar.gz", "w:gz") as archive:

@@ -534,3 +534,68 @@ def test_support_view_never_prints_verified_or_validated_for_a_case():
     assert "passed" in text
     assert "verified" not in text.replace("verification", "")
     assert "validated" not in text
+
+
+# ---------------------------------------------------------------------------
+# Review fixes
+# ---------------------------------------------------------------------------
+
+
+def test_evidence_for_another_book_commit_is_stale():
+    from handbook import evidence_rows
+
+    catalog = _mini_catalog()
+    ledger = _ledger(BOTH_PASS)
+    manifest = _manifest(catalog, ledger)
+    (row,) = evidence_rows(catalog, ledger, manifest, environment=ENV, commit="f" * 40)
+    assert row["status"] == "stale"
+    assert any("commit" in r for r in row["reasons"])
+    (row,) = evidence_rows(catalog, ledger, manifest, environment=ENV, commit=COMMIT)
+    assert row["status"] == "passed"
+
+
+@pytest.mark.parametrize("source", ["local-editable", "local", "vcs", "url"])
+def test_case_package_not_from_the_index_is_incomplete(source):
+    catalog = _mini_catalog()
+    ledger = _ledger(BOTH_PASS)
+    manifest = _manifest(catalog, ledger)
+    manifest["packages"]["numpy"]["source"] = source
+    row = _status(ledger, manifest)
+    assert row["status"] == "incomplete"
+    assert any(source in r for r in row["reasons"])
+
+
+def test_case_without_packages_is_rejected(tmp_path):
+    from handbook import validate_catalog
+
+    catalog = _mini_catalog()
+    catalog["cases"][0]["packages"] = []
+    errors = validate_catalog(catalog, _mini_docs(tmp_path))
+    assert any("packages" in e for e in errors), errors
+
+
+@pytest.mark.parametrize(
+    ("version", "tags", "expected"),
+    [
+        ("0.0.1", ["v0.0.1"], "edition"),
+        ("0.0.1", [], "development"),
+        ("0.1.dev3+gabc", [], "development"),
+        ("0.0.1", ["v0.0.2"], "development"),
+    ],
+)
+def test_edition_claim_requires_the_tag_at_the_built_commit(version, tags, expected):
+    from handbook import edition_state
+
+    assert edition_state(version, tags) == expected
+
+
+def test_locked_manifest_that_differs_from_the_lock_is_incomplete():
+    catalog = _mini_catalog()
+    ledger = _ledger(BOTH_PASS)
+    manifest = _manifest(
+        catalog,
+        ledger,
+        resolution="locked",
+        lock={"mismatches": ["numpy: lock 1.0, installed 2.0.0"]},
+    )
+    assert _status(ledger, manifest)["status"] == "incomplete"

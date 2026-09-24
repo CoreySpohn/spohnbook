@@ -12,7 +12,7 @@ build:
     pre_build:
       - mkdir -p docs/_evidence
       - python -m pytest tests --vv-evidence docs/_evidence/ledger.json || echo "tests failed; the ledger records it"
-      - python tools/record_build.py --resolution locked --ledger docs/_evidence/ledger.json --output docs/_evidence/build-manifest.json --command "readthedocs pre_build" || echo "the manifest is incomplete"
+      - python tools/record_build.py --resolution locked --ledger docs/_evidence/ledger.json --fetch-inputs --output docs/_evidence/build-manifest.json --command "readthedocs pre_build" || echo "the manifest is incomplete"
 
 python:
   install:

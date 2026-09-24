@@ -154,12 +154,18 @@ def input_identity(entry, path):
     return record
 
 
-def _locate(entry):
-    """Upstream URL, registry hash and cached path of a declared input."""
+def _locate(entry, fetch=False):
+    """Upstream URL, registry hash and cached path of a declared input.
+
+    With ``fetch``, the owning library downloads the file first (verifying its
+    registry hash), so the manifest can be recorded before the pages execute.
+    """
     if entry["owner"] == "yippy":
         from yippy import datasets
 
         name = entry["name"]
+        if fetch:
+            datasets.fetch_yip(name)
         filename = f"{name}.zip"
         entry = dict(
             entry,
@@ -170,12 +176,12 @@ def _locate(entry):
     return entry, None
 
 
-def input_identities(inputs):
+def input_identities(inputs, fetch=False):
     """Identity records for every declared input."""
     records = []
     for entry in inputs:
         try:
-            located, path = _locate(entry)
+            located, path = _locate(entry, fetch=fetch)
         except ImportError:
             located, path = entry, None
         records.append(input_identity(located, path))
@@ -221,7 +227,15 @@ def private_path_hits(obj, roots):
     return [root for root in roots if root in text]
 
 
-def build_manifest(repo_root, ledger_path, lock_path, command, resolution, inputs=None):
+def build_manifest(
+    repo_root,
+    ledger_path,
+    lock_path,
+    command,
+    resolution,
+    inputs=None,
+    fetch_inputs=False,
+):
     """Assemble the manifest dictionary for one build."""
     repo_root = Path(repo_root)
     catalog = load_catalog(repo_root / "docs")
@@ -266,7 +280,9 @@ def build_manifest(repo_root, ledger_path, lock_path, command, resolution, input
             "tests": test_precision(repo_root),
             "examples": "each example sets its precision in its first code cell",
         },
-        "inputs": input_identities(INPUTS if inputs is None else inputs),
+        "inputs": input_identities(
+            INPUTS if inputs is None else inputs, fetch=fetch_inputs
+        ),
         "command": list(command),
     }
     mismatches = lock_mismatches(parse_lock(lock_text), packages)
@@ -299,17 +315,41 @@ def missing_identities(manifest):
         missing.append("python version")
     if not (manifest.get("platform") or {}).get("system"):
         missing.append("platform")
+    for record in manifest.get("inputs", []):
+        if record.get("status") != "present" or not record.get("sha256"):
+            missing.append(f"input identity of {record.get('name')} (not present)")
     return missing
 
 
+def manifest_problems(manifest, roots):
+    """Every reason the manifest cannot serve as complete evidence identity."""
+    problems = [f"missing {m}" for m in missing_identities(manifest)]
+    problems += [f"private path {h!r}" for h in private_path_hits(manifest, roots)]
+    lock = manifest.get("lock") or {}
+    if manifest.get("resolution") == "locked" and lock.get("mismatches"):
+        problems.append(
+            "resolution is locked but the environment differs from the lock: "
+            + "; ".join(lock["mismatches"][:5])
+        )
+    return problems
+
+
 def main(argv=None):
-    """Write the manifest; exit nonzero if an identity is missing or private."""
+    """Write the manifest; exit nonzero if it is incomplete or inconsistent.
+
+    A manifest that still contains a private path is never written.
+    """
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--ledger", required=True, type=Path)
     parser.add_argument("--lock", type=Path, default=ROOT / "requirements-docs.txt")
     parser.add_argument("--resolution", choices=["locked", "latest"], default="locked")
     parser.add_argument("--command", default="", help="the commands this run executed")
+    parser.add_argument(
+        "--fetch-inputs",
+        action="store_true",
+        help="download declared input data through its owning library first",
+    )
     args = parser.parse_args(argv)
     manifest = build_manifest(
         ROOT,
@@ -317,11 +357,13 @@ def main(argv=None):
         args.lock,
         [args.command] if args.command else [],
         args.resolution,
+        fetch_inputs=args.fetch_inputs,
     )
-    problems = [f"missing {m}" for m in missing_identities(manifest)]
-    problems += [
-        f"private path {h!r}" for h in private_path_hits(manifest, private_roots(ROOT))
-    ]
+    roots = private_roots(ROOT)
+    problems = manifest_problems(manifest, roots)
+    if private_path_hits(manifest, roots):
+        print("refusing to write a manifest with private paths", file=sys.stderr)
+        return 1
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
     if problems:

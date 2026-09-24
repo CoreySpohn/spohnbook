@@ -108,7 +108,7 @@ text before any edition existed, so they are not errata:
 | Field | Record |
 |---|---|
 | Scientific scope | Conventions chapters, decision register, profile, reference case, evidence and limitation pages of this edition |
-| Tested platform | Linux x86_64, Python 3.12, with the locked dependencies (continuous integration); also executed on macOS arm64 with Python 3.12 against unlocked PyPI releases during preparation |
+| Tested platform | The locked continuous-integration build of the release commit is the record. The locked builds of the release pull request passed on Linux x86_64 with Python 3.12.3 in an environment identical to the lock; the pages were also executed on macOS arm64 with Python 3.12.12 against unlocked PyPI releases during preparation |
 | Reproducibility result | Recorded by the locked build of the release pull request; see its build manifest |
 | Resolved findings | None of the 81 audit findings is closed; five of them, and two further records, are reproduced at stated versions |
 | Unresolved concerns | The source gaps listed on the {ref}`references page <references-source-gaps>`; every finding marked "historical report; reproduction unavailable"; all pending decisions |
