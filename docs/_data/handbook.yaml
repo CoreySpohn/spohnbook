@@ -1,0 +1,455 @@
+# The handbook catalog: sources, stable clauses, convention profiles and
+# reference cases. Chapter prose and the decision register stay in Markdown;
+# docs/handbook.py checks this file's structure at every build and renders the
+# references, profile and evidence tables from it. A citation here repeats the
+# locator given at the statement it supports in the chapter.
+schema_version: 1
+
+sources:
+  - id: bipm2019
+    authors: "Bureau International des Poids et Mesures"
+    year: 2019
+    title: "The International System of Units (SI Brochure), 9th edition"
+    venue: "BIPM, Sevres"
+    url: "https://www.bipm.org/documents/20126/41483022/SI-Brochure-9-EN.pdf"
+  - id: blei2017
+    authors: "Blei, D. M., Kucukelbir, A., McAuliffe, J. D."
+    year: 2017
+    title: "Variational inference: a review for statisticians"
+    venue: "Journal of the American Statistical Association, 112(518), 859-877"
+    doi: "10.1080/01621459.2017.1285773"
+  - id: brandt2017
+    authors: "Brandt, T. D., Rizzo, M., Groff, T., et al."
+    year: 2017
+    title: "Data reduction pipeline for the CHARIS integral-field spectrograph I: detector readout calibration and data cube extraction"
+    venue: "Journal of Astronomical Telescopes, Instruments, and Systems, 3(4), 048002"
+    doi: "10.1117/1.JATIS.3.4.048002"
+  - id: brandt2021
+    authors: "Brandt, T. D., Dupuy, T. J., Li, Y., et al."
+    year: 2021
+    title: "orvara: an efficient code to fit orbits using radial velocity, absolute, and/or relative astrometry"
+    venue: "The Astronomical Journal, 162, 186"
+    doi: "10.3847/1538-3881/ac042e"
+  - id: casella2024
+    authors: "Casella, G., Berger, R. L."
+    year: 2024
+    title: "Statistical Inference, 2nd edition"
+    venue: "Chapman and Hall/CRC"
+    doi: "10.1201/9781003456285"
+  - id: crameri2020
+    authors: "Crameri, F., Shephard, G. E., Heron, P. J."
+    year: 2020
+    title: "The misuse of colour in science communication"
+    venue: "Nature Communications, 11, 5444"
+    doi: "10.1038/s41467-020-19160-7"
+  - id: efron2016
+    authors: "Efron, B., Hastie, T."
+    year: 2016
+    title: "Computer Age Statistical Inference: Algorithms, Evidence, and Data Science"
+    venue: "Cambridge University Press"
+    doi: "10.1017/CBO9781316576533"
+  - id: goodman2015
+    authors: "Goodman, J. W."
+    year: 2015
+    title: "Statistical Optics, 2nd edition"
+    venue: "John Wiley and Sons"
+    isbn: "978-1-119-00945-0"
+  - id: hecht2017
+    authors: "Hecht, E."
+    year: 2017
+    title: "Optics, 5th edition"
+    venue: "Pearson"
+    isbn: "978-0-13-397722-6"
+  - id: howard2021
+    authors: "Howard, S. R., Ramdas, A., McAuliffe, J., Sekhon, J."
+    year: 2021
+    title: "Time-uniform, nonparametric, nonasymptotic confidence sequences"
+    venue: "The Annals of Statistics, 49(2), 1055-1080"
+    doi: "10.1214/20-AOS1991"
+  - id: iau1997b1
+    authors: "International Astronomical Union"
+    year: 1997
+    title: "Resolution B1: on the use of Julian dates, XXIIIrd General Assembly"
+    url: "https://iauarchive.eso.org/static/resolutions/IAU1997_French.pdf"
+  - id: iau2006b3
+    authors: "International Astronomical Union"
+    year: 2006
+    title: "Resolution B3: re-definition of Barycentric Dynamical Time, TDB, XXVIth General Assembly"
+    url: "https://iauarchive.eso.org/static/resolutions/IAU2006_Resol3.pdf"
+  - id: iau2012b2
+    authors: "International Astronomical Union"
+    year: 2012
+    title: "Resolution B2: on the re-definition of the astronomical unit of length, XXVIIIth General Assembly"
+    url: "https://iauarchive.eso.org/static/resolutions/IAU2012_English.pdf"
+  - id: iers2026
+    authors: "IERS Earth Orientation Center"
+    year: 2026
+    title: "Bulletin C 72: information on UTC - TAI"
+    venue: "IERS Bulletin C, Observatoire de Paris"
+    url: "https://hpiers.obspm.fr/iers/bul/bulc/bulletinc.dat"
+  - id: janesick1987
+    authors: "Janesick, J. R., Klaasen, K. P., Elliott, T."
+    year: 1987
+    title: "Charge-coupled-device charge-collection efficiency and the photon-transfer technique"
+    venue: "Optical Engineering, 26(10)"
+    doi: "10.1117/12.7974183"
+  - id: jcgm2008
+    authors: "Joint Committee for Guides in Metrology"
+    year: 2008
+    title: "Evaluation of measurement data: guide to the expression of uncertainty in measurement (JCGM 100:2008)"
+    venue: "BIPM"
+    url: "https://www.bipm.org/documents/20126/2071204/JCGM_100_2008_E.pdf"
+  - id: jcgm2011
+    authors: "Joint Committee for Guides in Metrology"
+    year: 2011
+    title: "Evaluation of measurement data: Supplement 2 to the GUM, extension to any number of output quantities (JCGM 102:2011)"
+    venue: "BIPM"
+    url: "https://www.bipm.org/documents/20126/2071204/JCGM_102_2011_E.pdf"
+  - id: kass1995
+    authors: "Kass, R. E., Raftery, A. E."
+    year: 1995
+    title: "Bayes factors"
+    venue: "Journal of the American Statistical Association, 90(430), 773-795"
+    doi: "10.1080/01621459.1995.10476572"
+  - id: kovesi2015
+    authors: "Kovesi, P."
+    year: 2015
+    title: "Good colour maps: how to design them"
+    venue: "arXiv:1509.03700"
+    doi: "10.48550/arXiv.1509.03700"
+  - id: leinert1998
+    authors: "Leinert, C., Bowyer, S., Haikala, L. K., et al."
+    year: 1998
+    title: "The 1997 reference of diffuse night sky brightness"
+    venue: "Astronomy and Astrophysics Supplement Series, 127, 1-99"
+    doi: "10.1051/aas:1998105"
+  - id: lindley1956
+    authors: "Lindley, D. V."
+    year: 1956
+    title: "On a measure of the information provided by an experiment"
+    venue: "The Annals of Mathematical Statistics, 27(4), 986-1005"
+    doi: "10.1214/aoms/1177728069"
+  - id: loredo2004
+    authors: "Loredo, T. J."
+    year: 2004
+    title: "Accounting for source uncertainties in analyses of astronomical survey data"
+    venue: "AIP Conference Proceedings, 735, 195-206"
+    doi: "10.1063/1.1835214"
+  - id: lovis2010
+    authors: "Lovis, C., Fischer, D. A."
+    year: 2010
+    title: "Radial velocity techniques for exoplanets"
+    venue: "in Exoplanets, ed. S. Seager, University of Arizona Press, pp. 27-53"
+    isbn: "978-0-8165-2945-2"
+  - id: nemati2014
+    authors: "Nemati, B."
+    year: 2014
+    title: "Detector selection for the WFIRST-AFTA coronagraph integral field spectrograph"
+    venue: "Proc. SPIE 9143, 91430Q"
+    doi: "10.1117/12.2060321"
+  - id: nemati2023
+    authors: "Nemati, B., Krist, J., Poberezhskiy, I., Kern, B."
+    year: 2023
+    title: "Analytical performance model and error budget for the Roman coronagraph instrument"
+    venue: "Journal of Astronomical Telescopes, Instruments, and Systems, 9(3), 034007"
+    doi: "10.1117/1.JATIS.9.3.034007"
+  - id: oke1974
+    authors: "Oke, J. B."
+    year: 1974
+    title: "Absolute spectral energy distributions for white dwarfs"
+    venue: "The Astrophysical Journal Supplement Series, 27, 21-35"
+    doi: "10.1086/190287"
+  - id: perryman2014
+    authors: "Perryman, M., Hartman, J., Bakos, G. A., Lindegren, L."
+    year: 2014
+    title: "Astrometric exoplanet detection with Gaia"
+    venue: "The Astrophysical Journal, 797, 14"
+    doi: "10.1088/0004-637X/797/1/14"
+  - id: perryman2018
+    authors: "Perryman, M."
+    year: 2018
+    title: "The Exoplanet Handbook, 2nd edition"
+    venue: "Cambridge University Press"
+    doi: "10.1017/9781108304160"
+  - id: riley2006
+    authors: "Riley, K. F., Hobson, M. P., Bence, S. J."
+    year: 2006
+    title: "Mathematical Methods for Physics and Engineering, 3rd edition"
+    venue: "Cambridge University Press"
+    doi: "10.1017/CBO9780511810763"
+  - id: rizzo2017
+    authors: "Rizzo, M. J., Groff, T. D., Zimmerman, N. T., et al."
+    year: 2017
+    title: "Simulating the WFIRST coronagraph integral field spectrograph"
+    venue: "Proc. SPIE 10400, Techniques and Instrumentation for Detection of Exoplanets VIII"
+    doi: "10.1117/12.2273066"
+  - id: rots2015
+    authors: "Rots, A. H., Bunclark, P. S., Calabretta, M. R., et al."
+    year: 2015
+    title: "Representations of time coordinates in FITS"
+    venue: "Astronomy and Astrophysics, 574, A36"
+    doi: "10.1051/0004-6361/201424653"
+  - id: savransky2019
+    authors: "Savransky, D., Gascon, C., Kinzly, N., et al."
+    year: 2019
+    title: "Exploration of the dynamical phase space of stars with known planets"
+    venue: "Proc. SPIE 11117, Techniques and Instrumentation for Detection of Exoplanets IX, 111171D"
+    doi: "10.1117/12.2529521"
+
+clauses:
+  # Geometry and time
+  - id: geometry-illumination
+    page: conventions/geometry-time
+    derivation: "Point star and distant observer; the supplement identity follows from the geometry and the finite-observer form reduces to it; Phi = 0, 1/pi, 1 at new, quadrature and full phase; face-on e = 0.5 peri/apo ratio ((1+e)/(1-e))^2 = 9."
+    citations:
+      - {source: perryman2018, locator: "Sec. 6.15.1, eq. 6.95", supports: "Lambert phase function"}
+      - {source: perryman2018, locator: "Sec. 6.15.1, eq. 6.93", supports: "reflected-light contrast A_g (R_p/r)^2 Phi"}
+      - {source: savransky2019, locator: "Sec. 2.1, eq. 3", supports: "finite-observer phase angle"}
+  - id: geometry-observer-basis
+    page: conventions/geometry-time
+    derivation: "north x east points toward the observer, so (north, east, toward) is right-handed; the stated rotation gives Z = r sin(i) sin(nu + omega_p), so the node at nu + omega_p = 0 has dZ/dt > 0 for i < 90 deg."
+    decisions: [decision-observer-basis-and-node]
+  - id: geometry-savransky-profile
+    page: conventions/geometry-time
+    citations:
+      - {source: savransky2019, locator: "Sec. 2.1 and Fig. 1 caption", supports: "inertial frame with the observer along +e3 by convention"}
+      - {source: savransky2019, locator: "Sec. 2.1", supports: "3-1-3 rotation from I to P; argument of latitude"}
+      - {source: savransky2019, locator: "Sec. 2.1, eqs. 4 and 6", supports: "distant-observer phase angle cos(beta) = -z/r"}
+      - {source: savransky2019, locator: "Sec. 2.1, paragraph after eq. 2", supports: "the West-pointing sentence this chapter does not inherit"}
+    decisions: [decision-observer-basis-and-node]
+  - id: geometry-origin-mass-phase
+    page: conventions/geometry-time
+    derivation: "Isolated Newtonian two-body problem: relative motion uses the total mass; a stellar-mass-only period is sqrt(1 + Mp/M*) too long, 4.88% at Mp/M* = 0.1."
+    citations:
+      - {source: lovis2010, locator: "Sec. 2.1, eqs. 1 and 12", supports: "two-body relative orbit with total mass"}
+  - id: geometry-radial-velocity
+    page: conventions/geometry-time
+    derivation: "Barycenter definition gives r_star = -Mp/(M*+Mp) r; differentiating Z = r sin(i) sin(nu + omega_p) gives the K bracket; omega_star = omega_p + pi flips the sign; worked example K = 0.0894579 m/s for an Earth-Sun pair."
+    citations:
+      - {source: lovis2010, locator: "Sec. 2.1, eqs. 10-12", supports: "reflex RV curve and semi-amplitude, written with the star's argument of periastron"}
+    decisions: [decision-observer-basis-and-node]
+  - id: geometry-rv-worked-example
+    page: conventions/geometry-time
+    derivation: "Circular edge-on orbit at t0 in the candidate basis; the star recedes, K = +0.08946 m/s for an Earth/Sun mass pair, and the RV is zero at the two line-of-sight crossings."
+  - id: geometry-public-units
+    page: conventions/geometry-time
+    derivation: "mas/yr to arcsec/day by 1/(1000 x 365.25); xi = dRA cos(dec0) is the first-order tangent-plane expansion; C_y = J C_x J^T is the first-order Taylor propagation."
+    citations:
+      - {source: iau2012b2, locator: "Resolution B2, recommendation 1", supports: "au = 149 597 870 700 m exactly, giving the AU/day to m/s factor"}
+      - {source: rots2015, locator: "Sec. 4.2", supports: "day of 86400 s and Julian year of 365.25 d"}
+      - {source: brandt2021, locator: "Sec. 2", supports: "RA offsets carry the cos(dec) factor"}
+      - {source: perryman2014, locator: "Appendix A", supports: "catalog proper motion (mu_alpha*, mu_delta)"}
+    decisions: [decision-observer-basis-and-node]
+  - id: geometry-time-encoding
+    page: conventions/geometry-time
+    derivation: "float32 spacing near JD 2451545 is 0.25 day; calendar 2000.0 to 2001.0 is 366 days, 0.75 day longer than a Julian year."
+    citations:
+      - {source: rots2015, locator: "Sec. 2", supports: "time scale, reference time, reference position and corrections as separate components"}
+      - {source: iau1997b1, locator: "Resolution B1, recommendation (b)", supports: "MJD = JD - 2400000.5"}
+      - {source: iers2026, locator: "Bulletin C 72", supports: "UTC - TAI = -37 s since 2017 January 1"}
+      - {source: rots2015, locator: "Sec. 4.2", supports: "Julian year of 365.25 days of 86400 s"}
+      - {source: rots2015, locator: "Sec. 3", supports: "precision of time values and split representations"}
+      - {source: iau2006b3, locator: "Resolution B3", supports: "definition of TDB"}
+  - id: geometry-fixtures
+    page: conventions/geometry-time
+    derivation: "Expected values are the identities checked in the chapter: Phi = 0, 1/pi, 1; the 9:1 ratio; the 37 s and 0.75 day offsets."
+    decisions: [decision-tolerances-before-tests, decision-observer-basis-and-node]
+
+  # Radiometry and detectors
+  - id: radiometry-quantities
+    page: conventions/radiometry-detectors
+    derivation: "Notation and measure vocabulary local to the book."
+  - id: radiometry-jy-photons
+    page: conventions/radiometry-detectors
+    derivation: "F_nu |d nu| = F_lambda d lambda with nu = c / lambda, divided by the photon energy and rescaled from m to nm; 1 Jy at 700 nm recomputed in 40-digit decimal arithmetic; a flat F_nu spectrum has photon density proportional to 1/lambda."
+    citations:
+      - {source: bipm2019, locator: "Sec. 2.2 and Table 1", supports: "the exact SI value of the Planck constant"}
+  - id: radiometry-pixel-brightness
+    page: conventions/radiometry-detectors
+    derivation: "Solid-angle integral of the brightness over the pixel; a uniform field gives brightness times pixel solid angle; d Omega = (lambda/D)^2 d^2 u in the small-angle tangent-plane approximation."
+    decisions: [decision-stellar-leakage-measure, decision-image-coordinates-and-psflet-origin]
+  - id: radiometry-contrast-zodi
+    page: conventions/radiometry-detectors
+    derivation: "Band contrast is a ratio of response-weighted integrals; an energy I_lambda ratio becomes a photon ratio after one lambda/lambda_ref factor and an I_nu ratio after its square; 10^(-48.60/2.5) erg s-1 cm-2 Hz-1 = 3630.780547701013 Jy."
+    citations:
+      - {source: oke1974, locator: "p. 21, Sec. I", supports: "AB = -2.5 log f_nu - 48.60 in cgs units"}
+      - {source: leinert1998, locator: "Sec. 8.4.1, Table 19", supports: "zodiacal light spectrum in energy units per unit wavelength"}
+  - id: radiometry-response-ownership
+    page: conventions/radiometry-detectors
+    derivation: "The expected count is the live-time and wavelength integral of A Phi T P q; constant factors and a unit-sum response reduce it to A T q Phi t."
+    decisions: [decision-meaning-of-dqe, decision-stellar-leakage-measure, decision-acquisition-experiment, decision-image-coordinates-and-psflet-origin]
+  - id: radiometry-detector-counts
+    page: conventions/radiometry-detectors
+    derivation: "Sum of independent Poisson means plus Gaussian read variance per read, assuming no gain fluctuation, correlated reads, saturation or charge-transfer effects."
+    citations:
+      - {source: nemati2023, locator: "Sec. 4.1, eq. 32", supports: "analog-mode detector variance with dark, CIC and read terms (ENF = 1, unit gain)"}
+      - {source: nemati2023, locator: "Sec. 4.5", supports: "dark current shot variance equals its mean"}
+      - {source: janesick1987, locator: "Sec. 3.2, eqs. 8 and 12-14", supports: "variance in DN is electron variance divided by the squared gain"}
+    decisions: [decision-acquisition-experiment]
+  - id: radiometry-count-example
+    page: conventions/radiometry-detectors
+    derivation: "Arithmetic from the stated primitives: 1000, 4000, 4, 0.8 and 160; mean 5004.8, variance 5164.8, SNR 13.9147, and 100.5 s occupancy."
+    decisions: [decision-acquisition-experiment]
+  - id: radiometry-etc-forecast
+    page: conventions/radiometry-detectors
+    derivation: "Setting SNR(t) = S and solving the quadratic gives t = S^2 V / (C_p^2 - S^2 C_sp^2), which requires a positive denominator."
+    citations:
+      - {source: nemati2023, locator: "Sec. 3.3, eqs. 21-23", supports: "SNR with a time-coherent floor and the time to reach a target SNR"}
+    decisions: [decision-reporting-law]
+  - id: radiometry-spectral-covariance
+    page: conventions/radiometry-detectors
+    derivation: "Wavelength-dependent QE must act before bins mix; the GLS design matrix tH gives the t^2 factor; a known linear calibration propagates as K Sigma K^T."
+    citations:
+      - {source: riley2006, locator: "Sec. 27.6, eqs. 27.98-27.99", supports: "generalized least-squares estimator and its covariance"}
+  - id: radiometry-exchange-fixtures
+    page: conventions/radiometry-detectors
+    derivation: "Three-level refinement supports an observed-order estimate for smooth inputs; no external number is borrowed."
+    decisions: [decision-stellar-leakage-measure, decision-acquisition-experiment, decision-image-coordinates-and-psflet-origin, decision-reporting-law, decision-tolerances-before-tests]
+
+  # Optics and images
+  - id: optics-product-metadata
+    page: conventions/optics-images
+    citations:
+      - {source: brandt2021, locator: "Sec. 2", supports: "east offset includes the right-ascension cosine factor"}
+    decisions: [decision-image-coordinates-and-psflet-origin, decision-observer-basis-and-node]
+  - id: optics-pixel-directions
+    page: conventions/optics-images
+    derivation: "Pixel-center map with geometric center (n - 1)/2: a 4-by-4 grid has origin 1.5 and no sample at zero, a 5-by-5 grid has a sample at zero, and a 256-pixel flip reflects about 127.5."
+    decisions: [decision-image-coordinates-and-psflet-origin]
+  - id: optics-roll-rotation
+    page: conventions/optics-images
+    derivation: "d = R(-theta) s with a counterclockwise R in the worked chart s = (E, N); the pixel examples follow from geometry."
+    citations:
+      - {source: brandt2021, locator: "Sec. 4.2", supports: "position angle measured east of north"}
+      - {source: perryman2018, locator: "Sec. 2.1, Fig. 2.2 caption and footnote 4", supports: "position angle measured from north through east"}
+    decisions: [decision-observer-basis-and-node, decision-image-coordinates-and-psflet-origin]
+  - id: optics-angular-grids
+    page: conventions/optics-images
+    derivation: "u = alpha D / lambda by definition; fixed native steps give an angular step proportional to lambda, reference-wavelength grids a fixed one."
+    decisions: [decision-image-coordinates-and-psflet-origin]
+  - id: optics-pixel-measure
+    page: conventions/optics-images
+    derivation: "Pixel value is the integral of the density over the pixel: 10 x 0.25^2 = 0.625 and 10 x 0.5^2 = 2.5 = 4 x 0.625."
+    decisions: [decision-stellar-leakage-measure, decision-image-coordinates-and-psflet-origin]
+  - id: optics-coherent-phase
+    page: conventions/optics-images
+    derivation: "Under the kernel exp(-i 2 pi u x) a positive phase ramp moves the response to +x; the first-order OPD derivative is i 2 pi / lambda; the change of variables u' = s u gives s^2 in two dimensions. The transform sign pairing is this book's choice."
+    citations:
+      - {source: goodman2015, locator: "Sec. 3.8.3, eq. 3.8-16", supports: "the exp(-i omega t) time convention (not the spatial transform sign)"}
+      - {source: hecht2017, locator: "Sec. 9.4.2, eq. 9.44", supports: "a mirror displacement at normal incidence changes the optical path by twice the displacement"}
+    decisions: [decision-image-coordinates-and-psflet-origin]
+  - id: optics-signed-intensity
+    page: conventions/optics-images
+    derivation: "Expanding |E0 + dE|^2: with E0 = 0.2 and dE = -0.1 the nominal intensity is 0.04, the change -0.03 and the final 0.01."
+    decisions: [decision-image-coordinates-and-psflet-origin, decision-stellar-leakage-measure]
+  - id: optics-ifs-products
+    page: conventions/optics-images
+    derivation: "A regular hexagon with flat-to-flat pitch p has area sqrt(3) p^2 / 2; a square cell has p^2."
+    citations:
+      - {source: rizzo2017, locator: "Sec. 2.2", supports: "lenslet integration followed by PSFlet placement on the detector"}
+      - {source: brandt2017, locator: "Sec. 4, opening paragraph", supports: "each microspectrum integrates the monochromatic lenslet spots"}
+      - {source: brandt2017, locator: "Sec. 5.2", supports: "per-lenslet spectral covariance from chi-squared extraction"}
+    decisions: [decision-image-coordinates-and-psflet-origin]
+  - id: optics-fixtures
+    page: conventions/optics-images
+    derivation: "Expected pixels, energies and covariances are calculated from geometry and the identities above, independently of the implementations."
+    decisions: [decision-tolerances-before-tests, decision-image-coordinates-and-psflet-origin, decision-observer-basis-and-node]
+
+  # Measurements, probability and records
+  - id: records-reporting-law
+    page: conventions/inference-records
+    derivation: "For Gaussian F and a fixed threshold L, Phi_N((L - f)/sigma) plus the integral of the density above L is one; conditioning on detection gives a truncated normal."
+    citations:
+      - {source: loredo2004, locator: "section on trans-Neptunian objects, footnote on the survey likelihood", supports: "detection and measurement are not independent; the conditioned likelihood"}
+      - {source: casella2024, locator: "Exercise 1.52", supports: "truncated density normalized by the selection probability"}
+      - {source: efron2016, locator: "Sec. 9.6", supports: "censoring is not truncation"}
+    decisions: [decision-reporting-law, decision-acquisition-experiment]
+  - id: records-null-information
+    page: conventions/inference-records
+    derivation: "Two equally weighted hypotheses: an always-identical null record gives zero information and perfect identification gives ln 2 nats. The choice of natural logarithms is this book's."
+    citations:
+      - {source: lindley1956, locator: "Definition 2 and eq. 9", supports: "expected information of an experiment"}
+      - {source: lindley1956, locator: "Theorem 1", supports: "information is zero exactly when the data distribution does not depend on the parameter"}
+    decisions: [decision-reporting-law]
+  - id: records-covariance
+    page: conventions/inference-records
+    derivation: "A shared offset b with variance tau^2 adds tau^2 to every entry; tau = 0 recovers the diagonal."
+    citations:
+      - {source: jcgm2011, locator: "6.2.1.3, eq. 3", supports: "covariance of a linear multivariate transformation"}
+      - {source: jcgm2008, locator: "5.1.2 and its note", supports: "first-order Taylor propagation is an approximation for nonlinear models"}
+      - {source: jcgm2008, locator: "5.2.2, note 1, example", supports: "ignoring a shared calibration correlation is incorrect"}
+    decisions: [decision-reporting-law, decision-evidence-and-parameter-chart]
+  - id: records-posterior-chart
+    page: conventions/inference-records
+    derivation: "A variance floor of 1e-6 in km^2 is 1 m^2, a million times the same floor in m^2."
+    citations:
+      - {source: kass1995, locator: "eq. 2", supports: "evidence as the prior-weighted integral of the likelihood"}
+      - {source: kass1995, locator: "paragraph after eq. 2; Sec. 5.3", supports: "likelihood constants must be retained; improper priors"}
+      - {source: blei2017, locator: "Sec. 2.2, eq. 14", supports: "the ELBO is a lower bound on the log evidence"}
+    decisions: [decision-evidence-and-parameter-chart]
+  - id: records-identities
+    page: conventions/inference-records
+    derivation: "Multiplying an imported posterior by its conditioning data again counts the data twice."
+    decisions: [decision-record-envelope-home, decision-acquisition-experiment, decision-reporting-law]
+  - id: records-campaign-causality
+    page: conventions/inference-records
+    citations:
+      - {source: howard2021, locator: "Sec. 1, first paragraph", supports: "continuous monitoring with fixed-sample methods inflates the error rate"}
+    decisions: [decision-acquisition-experiment, decision-sampled-campaign-first, decision-record-envelope-home, decision-reporting-law]
+  - id: records-fixtures
+    page: conventions/inference-records
+    derivation: "The evidence fixture uses a proper conjugate Gaussian model whose evidence is N(y; mu0, sigma^2 + tau0^2)."
+    decisions: [decision-tolerances-before-tests, decision-reporting-law, decision-evidence-and-parameter-chart, decision-sampled-campaign-first]
+
+  # Figures and color
+  - id: color-principle
+    page: conventions/figures-and-color
+    decisions: [decision-one-encoding-per-quantity]
+  - id: color-images
+    page: conventions/figures-and-color
+    citations:
+      - {source: crameri2020, locator: "p. 5 and Fig. 6", supports: "diverging maps for data centred on a value"}
+      - {source: kovesi2015, locator: "Sec. 4.6", supports: "cyclic maps for phase"}
+    decisions: [decision-one-encoding-per-quantity]
+  - id: color-curves
+    page: conventions/figures-and-color
+    decisions: [decision-one-encoding-per-quantity]
+  - id: color-time-ensembles
+    page: conventions/figures-and-color
+    citations:
+      - {source: crameri2020, locator: "p. 2", supports: "a rainbow map has no intuitive order and fails under colour-vision deficiency"}
+    decisions: [decision-one-encoding-per-quantity]
+  - id: color-fixtures
+    page: conventions/figures-and-color
+    decisions: [decision-one-encoding-per-quantity]
+
+  # The reference experiment
+  - id: photon-electron-reference-experiment
+    page: examples/photon-to-electron-reference
+    derivation: "Constant photon density over 1 nm, 1 m2, 1 s and four pixels with constant QE and no detector noise gives summed variance QE times the photon density; anchor 1e-26 / (h x 700) from the SI values."
+    citations:
+      - {source: bipm2019, locator: "Sec. 2.2 and Table 1", supports: "the exact SI value of the Planck constant"}
+
+profiles:
+  - id: photon-electron-reference-v1
+    title: "Jy to photons to ideal-detector shot variance, reference experiment only"
+    status: proposed
+    clauses:
+      - radiometry-jy-photons
+      - radiometry-detector-counts
+      - photon-electron-reference-experiment
+
+cases:
+  - id: jy-to-ideal-detector-shot-variance
+    profile: photon-electron-reference-v1
+    claim: "hwoutils converts 1 Jy at 700 nm to the SI photon density, and optixstuff's IdealDetector returns QE times that count as the summed deterministic shot variance of the reference experiment, for QE 0, 0.5 and 1."
+    evidence: code-verification
+    page: examples/photon-to-electron-reference
+    packages: [hwoutils, optixstuff]
+    tests:
+      - "tests/test_radiometry_boundary.py::test_expected_density_matches_si_definitions"
+      - "tests/test_radiometry_boundary.py::test_jy_to_detector_shot_variance[0.0]"
+      - "tests/test_radiometry_boundary.py::test_jy_to_detector_shot_variance[0.5]"
+      - "tests/test_radiometry_boundary.py::test_jy_to_detector_shot_variance[1.0]"
+      - "tests/test_radiometry_boundary.py::test_negative_control_second_qe_application_is_rejected"
+      - "tests/test_radiometry_boundary.py::test_negative_control_spectral_measure_error_is_rejected"
