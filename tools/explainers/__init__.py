@@ -37,7 +37,7 @@ Embedding a still in a MyST page (the path is relative to the page; from a
 page in ``docs/conventions/`` it is ``figures/...``, from ``docs/`` it is
 ``conventions/figures/...``)::
 
-    ```{figure} figures/explainer-d02-orbit-planes-light.svg
+    ```{figure} figures/explainer-d02-orbit-planes-light.png
     :class: only-light
     :name: fig-explainer-d02-orbit-planes
     :alt: <the alt text from the spec>
@@ -45,26 +45,34 @@ page in ``docs/conventions/`` it is ``figures/...``, from ``docs/`` it is
     <the caption from the spec>
     ```
 
-    ```{figure} figures/explainer-d02-orbit-planes-dark.svg
+    ```{figure} figures/explainer-d02-orbit-planes-dark.png
     :class: only-dark
     :alt: <the alt text from the spec>
 
     <the caption from the spec>
     ```
 
-Embedding a documentation animation. The file is a self-contained HTML
-fragment with its frames embedded, so the page needs no execution, no
-ffmpeg and no sidecar files; the theme hides whichever mode is inactive::
+Embedding a documentation animation. The build writes a light and a dark
+MP4 to docs/_static/explainers/, which Sphinx copies to the site; a raw HTML
+video element plays it, and the theme hides whichever mode is inactive. From
+a page one directory below docs/ (conventions/ or examples/)::
 
     ```{raw} html
-    :file: figures/explainer-d02-orbit-viewpoint-light.html
-    :class: only-light
+    <video class="only-light" controls loop muted playsinline
+      preload="metadata" style="width: 100%; height: auto;"
+      aria-label="<the alt text from the spec>">
+      <source type="video/mp4"
+        src="../_static/explainers/explainer-d02-orbit-viewpoint-light.mp4">
+    </video>
+    <video class="only-dark" controls loop muted playsinline
+      preload="metadata" style="width: 100%; height: auto;"
+      aria-label="<the alt text from the spec>">
+      <source type="video/mp4"
+        src="../_static/explainers/explainer-d02-orbit-viewpoint-dark.mp4">
+    </video>
     ```
 
-    ```{raw} html
-    :file: figures/explainer-d02-orbit-viewpoint-dark.html
-    :class: only-dark
-    ```
+    <the caption from the spec, as a paragraph>
 
 Place the still before the animation and keep the page understandable
 without the animation.

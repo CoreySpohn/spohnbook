@@ -1,0 +1,238 @@
+{
+  "module": "d03_radiometric_collection",
+  "script": "tools/explainers/d03_radiometric_collection.py",
+  "build_command": "python tools/build_explainer_figures.py --only d03",
+  "source_hash": "fb548785702b",
+  "source_sha256": {
+    "tools/explainers/d03_radiometric_collection.py": "6d06f6703f8cc3e46ceb245fd414af6351450d5c88c79c480ee448923b31e85b",
+    "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
+    "tools/explainers/_export.py": "1dae7e6f79963cd53c3f8a4fbff06d493d0d674b97daf4d5916f31a15742c115"
+  },
+  "stamp_date": "2026-09-25",
+  "revisions": {
+    "spohnbook": {
+      "commit": "6c3d11b",
+      "dirty": true
+    },
+    "eyepiece": {
+      "commit": "05e03c0",
+      "dirty": false
+    },
+    "hwostyle": {
+      "commit": "18e2644",
+      "dirty": false
+    }
+  },
+  "package_versions": {
+    "eyepiece": "0.4.1.dev22+g05e03c0b7",
+    "hwostyle": "1.1.1.dev8+g183fc366e.d20260811",
+    "hwoutils": "1.9.1.dev5+g453bf3fd0.d20260911",
+    "matplotlib": "3.11.0",
+    "numpy": "2.2.6"
+  },
+  "ffmpeg": null,
+  "layouts": {
+    "doc": {
+      "name": "doc",
+      "width_in": 7.2,
+      "height_in": 3.6,
+      "dpi": 200,
+      "font_pt": 10.0,
+      "small_pt": 8.5,
+      "title_pt": 11.0,
+      "lw": 1.2,
+      "marker_pt": 7.0,
+      "stamp_pt": 6.0,
+      "frame_budget": 30,
+      "anim_dpi": 150
+    },
+    "slide": {
+      "name": "slide",
+      "width_in": 16.0,
+      "height_in": 9.0,
+      "dpi": 120,
+      "font_pt": 20.0,
+      "small_pt": 16.0,
+      "title_pt": 26.0,
+      "lw": 2.4,
+      "marker_pt": 14.0,
+      "stamp_pt": 9.0,
+      "frame_budget": null,
+      "anim_dpi": 120
+    }
+  },
+  "figures": [
+    {
+      "slug": "d03-radiometric-collection",
+      "status": "schematic, not to scale",
+      "caption": "What an aperture and a pixel collect ({ref}`radiometry-response-ownership`, {ref}`radiometry-pixel-brightness`). Top, side view with light traveling to the right: a point source with photon flux density $\\Phi_\\lambda$ at the aperture and an extended source with brightness $I_\\lambda$ feed an aperture of area $A$; the optics transmit $T_{\\rm opt}(\\lambda)$; the image of the point source spreads over several pixels, and $P_p(\\lambda)$ is the share that lands in pixel $p$; the detector converts photons to electrons with QE $q_p(\\lambda)$. For the extended source, $\\int I_\\lambda P_p\\,d\\Omega$ replaces $\\Phi_\\lambda P_p$; the dashed sky cell $\\Omega_p$ is the idealized footprint of pixel $p$, and the spread image also brings light from outside it. The tags under each element state where a loss is assigned, so that no loss enters two factors. Bottom, the three integrals that turn densities into one pixel's expected count $\\mu_{e,p}$: over solid angle, where the face-on detector shows an illustrative Airy image at one wavelength on a logarithmic scale; over wavelength, where $T_{\\rm opt}$, $P_p$ and $q_p$ multiply $\\Phi_\\lambda$ at each wavelength before the band from $\\lambda_b^-$ to $\\lambda_b^+$ is integrated; and over the live interval $t_{\\rm live}$, while the pixel is exposing rather than being read out, with constant rates assumed. Curves are normalized and show shapes only. The picture illustrates the chapter's expected-count integral; it is an original schematic, not an instrument prescription, and the ownership assignments are the chapter's proposed ledger.",
+      "alt": "Top: a side-view diagram. At left, a hatched green extended source with a yellow star in front of it and a dashed gray square marking a pixel's sky cell. Two yellow rays leave the star, pass scale breaks, and continue as parallel starlight to a vertical aperture bar labeled area A, where dotted gray lines from the sky cell meet at an angle labeled Omega p. A lens and an optics plate labeled T opt of lambda focus the rays onto a column of detector pixels labeled QE q p of lambda; a gray spread profile beside the column shades the part falling in the outlined pixel p, labeled P p of lambda. At right, the photon rate arriving in p from the point source, a note that the integral of I lambda P p over solid angle replaces Phi lambda P p for the extended source, and a data arrow labeled times q p, integral over wavelength and integral over live time leading to the electron count mu e p. Italic tags under the aperture, optics and detector say which factor holds each loss. Bottom: a face-on 7 by 7 pixel window with a spread point-source image at one wavelength and pixel p outlined; normalized curves of Phi lambda, T opt, P p and q p against wavelength with their product shaded between the band edges; and expected electrons in p rising linearly during a shaded live interval labeled t live.",
+      "params": {
+        "psf": "unobscured Airy, 1 lambda/D per pixel, 7 by 7 window",
+        "curves": "illustrative normalized shapes"
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d03-radiometric-collection-light.png",
+          "sha256": "6858533014747701d42132af168433ff9ed5bd57afe98699937b0501b4b10cf2",
+          "bytes": 269050
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d03-radiometric-collection-light.pdf",
+          "sha256": "607b9e0bb2a62aa2887333885c30c7a4faa7fd2bc866ae03dd8df949a8a2fa5a",
+          "bytes": 321310
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d03-radiometric-collection-dark.png",
+          "sha256": "d8365d15092289f277a602a414061c09c39f9c247ddb853a90095f65005f75bb",
+          "bytes": 264282
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d03-radiometric-collection-dark.pdf",
+          "sha256": "775f249c2a0de79f0c116bd02038f62596f271f2a0014bddadd9bee1dd4f9e9a",
+          "bytes": 321270
+        },
+        {
+          "file": "talks/stills/d03-radiometric-collection.png",
+          "sha256": "22d8d4de3c130ed38475b38ad428c65597d3517684302b73093ecbbda3aa9e8b",
+          "bytes": 215163
+        },
+        {
+          "file": "talks/stills/d03-radiometric-collection.pdf",
+          "sha256": "89bbab706fb083e1d35a1649d1809945852fb340e5efde0a7857646d862ab962",
+          "bytes": 201587
+        }
+      ]
+    },
+    {
+      "slug": "d03-collection-wavelength",
+      "status": "schematic, not to scale",
+      "caption": "The spatial response and the spectral integral for pixel $p$ ({ref}`radiometry-response-ownership`, {ref}`radiometry-spectral-covariance`). Left, the face-on detector at one wavelength: an illustrative Airy image of a point source spreads over neighboring pixels, and $P_p$ is the share in the outlined pixel. Right, the photon density $\\Phi_\\lambda$, optical transmission $T_{\\rm opt}(\\lambda)$, spatial response $P_p(\\lambda)$ (the share falls as the image grows with wavelength) and QE $q_p(\\lambda)$ multiply at each wavelength, and only then is the band from $\\lambda_b^-$ to $\\lambda_b^+$ integrated (shaded). Curves are normalized and show shapes only. Schematic of the chapter's expected-count integral, not an instrument prescription.",
+      "alt": "Left: a face-on 7 by 7 pixel window with a spread point-source image at one wavelength on a log color scale and the center pixel p outlined. Right: normalized curves of photon density, optical transmission, dotted P p and dashed QE against wavelength, with their product, labeled Phi lambda T opt P p q p, shaded between the band edges lambda b minus and lambda b plus and labeled integral d lambda.",
+      "params": {},
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d03-collection-wavelength-light.png",
+          "sha256": "7994e7ff898a9a4e14da0d10d4c2e744c723593abf3742b55aba3ed07aacec12",
+          "bytes": 100929
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d03-collection-wavelength-light.pdf",
+          "sha256": "8512690c5185847129540dcdbd2631ffcaa9327150e2fc43c5aae9201d8325c6",
+          "bytes": 97251
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d03-collection-wavelength-dark.png",
+          "sha256": "9279c8c0810d0b7aa00ef08a67134a728d7facb4e40e37bdc38d4af6b982ec83",
+          "bytes": 99629
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d03-collection-wavelength-dark.pdf",
+          "sha256": "38fd6fb9fdcaef80e4b90b8c799e47b087c775e7e4a92a06d43ee5c5686c129c",
+          "bytes": 97240
+        },
+        {
+          "file": "talks/stills/d03-collection-wavelength.png",
+          "sha256": "144ecbf7caf06fefb7b809b50683ee44b3b0d2cb60a442c6e3215979cd6770e4",
+          "bytes": 168200
+        },
+        {
+          "file": "talks/stills/d03-collection-wavelength.pdf",
+          "sha256": "2327804a37f8a6384471379c313adf13c0949431c9597549ec05676a555fecb8",
+          "bytes": 105934
+        }
+      ]
+    },
+    {
+      "slug": "d03-collection-electrons",
+      "status": "schematic, not to scale",
+      "caption": "From the spectral integral to electrons in pixel $p$ ({ref}`radiometry-response-ownership`, {ref}`radiometry-detector-counts`). Left, the integrand with $T_{\\rm opt}$, $P_p$ and $q_p$ applied at each wavelength, integrated over the band, gives an electron rate. Right, that band integral is the slope of the expected count, which accumulates only during the live interval $t_{\\rm live}$, while the pixel is exposing rather than being read out, reaching $\\mu_{e,p}$. Constant rates are assumed; this is an expected count, not a noisy readout, and dark current, clock-induced charge and read noise are not drawn. Schematic, not to scale.",
+      "alt": "Left: normalized curves of photon density, optical transmission, dotted P p and dashed QE against wavelength with their product shaded between the band edges. Right: expected electrons in pixel p against time, flat at zero, rising linearly across a shaded live interval labeled t live and marked by a dashed integration arrow, then flat at the end value mu e p; the slope is labeled as the band integral at left, in electrons per second.",
+      "params": {},
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d03-collection-electrons-light.png",
+          "sha256": "bf8998836b2076feb800658ffd74b3606ea342723f269924dee5806d2291f87a",
+          "bytes": 113713
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d03-collection-electrons-light.pdf",
+          "sha256": "8fab73027d17d106e68c8a77f18d4b9e6e75f0224da7aa218ea429116cae2ef6",
+          "bytes": 75899
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d03-collection-electrons-dark.png",
+          "sha256": "20862b383793289c2d2b997b782263d7c718765ff355c113b94a598794d4b86f",
+          "bytes": 112488
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d03-collection-electrons-dark.pdf",
+          "sha256": "fd6316a7211fec375d79d3b7a38201d58ce1f85f9be64e6e76dc4050b56df539",
+          "bytes": 75894
+        },
+        {
+          "file": "talks/stills/d03-collection-electrons.png",
+          "sha256": "840d39745cb2e24c8ab38553163cd9b14710445133b2e93e4dc6767ae82057af",
+          "bytes": 184159
+        },
+        {
+          "file": "talks/stills/d03-collection-electrons.pdf",
+          "sha256": "44ca04584dcfc5bbefda65828b85b7cd9e027b37e835f5909516b6c528a7b52a",
+          "bytes": 80738
+        }
+      ]
+    },
+    {
+      "slug": "d03-four-pixel-reference",
+      "status": "reference experiment, idealized",
+      "caption": "The reference experiment drawn with its actual parameters ({ref}`photon-electron-reference-experiment`). A synthetic source whose photon spectral density $\\Phi_{\\lambda,\\mathrm{nm}}$ equals that of 1 Jy at 700 nm is held constant over a 1 nm rectangular interval; 1 m$^2$ collects it for 1 s, and the photons are split equally over four pixels by construction, not by a point-spread function. With constant QE $q$ and no dark current, clock-induced charge or read noise, the summed expected electron count, and numerically the summed Poisson variance in electron$^2$, is $q$ times the photon count, shown for the three tested values of $q$. The density comes from the exact SI value of the Planck constant ({ref}`BIPM 2019, Sec. 2.2 and Table 1 <source-bipm2019>`) and the definition of the jansky; numbers are rounded to two decimals. This is a code-verification fixture against an analytic anchor, not validation, and it covers no real spectrum, optical loss, coronagraph or stochastic readout.",
+      "alt": "Left: a rectangular spectrum 1 nm wide centered at 700 nm, labeled with photon density Phi lambda nm equal to 21,559.86 photon per second per square meter per nanometer, 1 Jy at 700 nm. Right: an aperture labeled A equals 1 square meter and t equals 1 second; times A times delta lambda gives 21,559.86 photon per second, sent to a 2 by 2 pixel grid; times t over 4 gives each pixel 5,389.96 photon in 1 second, an equal split by construction, not a point-spread function. A data arrow leads to a column titled expected electrons: summed electrons equal the summed Poisson variance numerically, 0.00 for q 0.0, 10,779.93 for q 0.5 and 21,559.86 for q 1.0, with a note that there is no dark current, clock-induced charge or read noise.",
+      "params": {
+        "flux_jy": 1.0,
+        "wavelength_nm": 700.0,
+        "area_m2": 1.0,
+        "bandwidth_nm": 1.0,
+        "exposure_s": 1.0,
+        "n_pixels": 4,
+        "qe_values": [
+          0.0,
+          0.5,
+          1.0
+        ]
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d03-four-pixel-reference-light.png",
+          "sha256": "a7c8e2f4ce1c6b7121a3814e5e2898417cfa45640f2d3e962230e7494068c8d5",
+          "bytes": 141106
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d03-four-pixel-reference-light.pdf",
+          "sha256": "10ab36cb21afd5254f6ac158cb200e9d9748a9d932595fc467a7a90f10e30cf1",
+          "bytes": 219344
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d03-four-pixel-reference-dark.png",
+          "sha256": "5eef6c250d58db309ba601b71726c4ee8c2dc5010194a07c72e3b948e6c5208e",
+          "bytes": 139314
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d03-four-pixel-reference-dark.pdf",
+          "sha256": "2e4bc808293562b7a752732c5a178e1e0441193b228ac47aa25c0f001a390d96",
+          "bytes": 219328
+        },
+        {
+          "file": "talks/stills/d03-four-pixel-reference.png",
+          "sha256": "a3abbfea39ac2e497150f01d60a7cfb56f39969e357bd600176519c3cb478b5d",
+          "bytes": 194176
+        },
+        {
+          "file": "talks/stills/d03-four-pixel-reference.pdf",
+          "sha256": "198027ea8cdae02ad9db1ad6c675a52850c4cd07a88fda938c2bc7c9db282d5a",
+          "bytes": 203927
+        }
+      ]
+    }
+  ],
+  "animations": []
+}

@@ -30,17 +30,15 @@ from explainers import _export as exporter
 
 EXPECTED_STILLS = {
     "docs/conventions/figures/explainer-d99-probe-light.png",
-    "docs/conventions/figures/explainer-d99-probe-light.svg",
     "docs/conventions/figures/explainer-d99-probe-light.pdf",
     "docs/conventions/figures/explainer-d99-probe-dark.png",
-    "docs/conventions/figures/explainer-d99-probe-dark.svg",
     "docs/conventions/figures/explainer-d99-probe-dark.pdf",
     "talks/stills/d99-probe.png",
     "talks/stills/d99-probe.pdf",
 }
 EXPECTED_ANIMATION = {
-    "docs/conventions/figures/explainer-d99-probe-anim-light.html",
-    "docs/conventions/figures/explainer-d99-probe-anim-dark.html",
+    "docs/_static/explainers/explainer-d99-probe-anim-light.mp4",
+    "docs/_static/explainers/explainer-d99-probe-anim-dark.mp4",
     "talks/animations/d99-probe-anim.mp4",
 }
 
@@ -146,17 +144,14 @@ def test_manifest_records_each_output_hash(tmp_path):
     assert manifest["animations"][0]["frames"]["doc"] == 3
 
 
-def test_animation_players_are_deterministic_and_carry_alt_text(tmp_path):
+def test_animation_videos_are_deterministic(tmp_path):
     prov = exporter.provenance(exporter.PACKAGE / "_common.py")
     written, _ = exporter.export_animation(PROBE_ANIM, prov, root=tmp_path / "a")
     exporter.export_animation(PROBE_ANIM, prov, root=tmp_path / "b")
     assert {p.as_posix() for p in written} == EXPECTED_ANIMATION
     for rel in EXPECTED_ANIMATION:
         assert (tmp_path / "a" / rel).stat().st_size > 0
-        if rel.endswith(".html"):
-            text = (tmp_path / "a" / rel).read_text()
-            assert f'alt="{PROBE_ANIM.alt}"' in text
-            assert _sha(tmp_path / "a" / rel) == _sha(tmp_path / "b" / rel)
+        assert _sha(tmp_path / "a" / rel) == _sha(tmp_path / "b" / rel)
 
 
 def test_building_one_module_leaves_other_modules_untouched(tmp_path):

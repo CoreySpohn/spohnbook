@@ -326,6 +326,21 @@ print(
 )
 ```
 
+```{figure} ../conventions/figures/explainer-d03-collection-electrons-light.png
+:class: only-light
+:name: fig-explainer-d03-collection-electrons
+:alt: Left: normalized curves of photon density, optical transmission, dotted P p and dashed QE against wavelength with their product shaded between the band edges. Right: expected electrons in pixel p against time, flat at zero, rising linearly across a shaded live interval labeled t live and marked by a dashed integration arrow, then flat at the end value mu e p; the slope is labeled as the band integral at left, in electrons per second.
+
+From the spectral integral to electrons in pixel $p$ ({ref}`radiometry-response-ownership`, {ref}`radiometry-detector-counts`). Left, the integrand with $T_{\rm opt}$, $P_p$ and $q_p$ applied at each wavelength, integrated over the band, gives an electron rate. Right, that band integral is the slope of the expected count, which accumulates only during the live interval $t_{\rm live}$, while the pixel is exposing rather than being read out, reaching $\mu_{e,p}$. Constant rates are assumed; this is an expected count, not a noisy readout, and dark current, clock-induced charge and read noise are not drawn. Schematic, not to scale. On this page, jaxedith's rates are the slope drawn here: an expected count-rate budget integrated over the photometric aperture. A simulated noisy acquisition would scatter about this line and add per-frame detector noise.
+```
+
+```{figure} ../conventions/figures/explainer-d03-collection-electrons-dark.png
+:class: only-dark
+:alt: Left: normalized curves of photon density, optical transmission, dotted P p and dashed QE against wavelength with their product shaded between the band edges. Right: expected electrons in pixel p against time, flat at zero, rising linearly across a shaded live interval labeled t live and marked by a dashed integration arrow, then flat at the end value mu e p; the slope is labeled as the band integral at left, in electrons per second.
+
+From the spectral integral to electrons in pixel $p$ ({ref}`radiometry-response-ownership`, {ref}`radiometry-detector-counts`). Left, the integrand with $T_{\rm opt}$, $P_p$ and $q_p$ applied at each wavelength, integrated over the band, gives an electron rate. Right, that band integral is the slope of the expected count, which accumulates only during the live interval $t_{\rm live}$, while the pixel is exposing rather than being read out, reaching $\mu_{e,p}$. Constant rates are assumed; this is an expected count, not a noisy readout, and dark current, clock-induced charge and read noise are not drawn. Schematic, not to scale. On this page, jaxedith's rates are the slope drawn here: an expected count-rate budget integrated over the photometric aperture. A simulated noisy acquisition would scatter about this line and add per-frame detector noise.
+```
+
 Every rate jaxedith returns is a count rate integrated over the photometric
 aperture: the flux chain `F0 x ratio x area x system_throughput x bandwidth`
 times the coronagraph factor for that term, which its docstrings write as

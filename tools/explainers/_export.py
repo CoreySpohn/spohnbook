@@ -1,27 +1,25 @@
 """Render explainer specs to every venue and record a per-module manifest.
 
-A figure becomes five documentation files (light and dark, PNG, SVG and
-PDF, at the documentation column width) and two talk files (dark, 1920 by
-1080, PNG and PDF). An animation becomes two documentation players (light
-and dark self-contained HTML fragments, at most 30 frames at 100 dpi) and
-one talk MP4 (dark, 1920 by 1080). Every file carries an eyepiece provenance
+A figure becomes four documentation files (light and dark, PNG for the
+page and PDF as the vector export, at the documentation column width) and
+two talk files (dark, 1920 by 1080, PNG and PDF). An animation becomes two
+documentation videos (light and dark MP4 at the column width, at most 30
+frames) and one talk MP4 (dark, 1920 by 1080). Every file carries an eyepiece provenance
 stamp, and each diagram module gets its own manifest, so modules built in
 parallel never write the same file.
 
 Vector exports are deterministic: the SVG date is dropped, the PDF creation
 date is dropped, the SVG hash salt is fixed, and the stamp date is the date
-of the source commit rather than today. The HTML players get a fixed element
-id instead of a random one. Rebuilding an unchanged module therefore
-reproduces its files byte for byte.
+of the source commit rather than today. Videos are encoded bit-exact without
+metadata. Rebuilding an unchanged module therefore reproduces its files byte
+for byte.
 """
 
 import dataclasses
 import hashlib
-import html
 import importlib
 import importlib.metadata
 import json
-import re
 import shutil
 import subprocess
 import warnings
@@ -44,12 +42,13 @@ DOC_FIGURES = Path("docs/conventions/figures")
 MANIFESTS = DOC_FIGURES / "explainer-manifests"
 STILLS = Path("talks/stills")
 ANIMATIONS = Path("talks/animations")
+DOC_VIDEOS = Path("docs/_static/explainers")
 PREVIEW = Path(".explainer-preview")
 
 # (layout, mode, suffixes, directory, name pattern) for every still variant.
 STILL_VARIANTS = (
-    (ex.DOC, "light", ("png", "svg", "pdf"), DOC_FIGURES, "explainer-{slug}-light"),
-    (ex.DOC, "dark", ("png", "svg", "pdf"), DOC_FIGURES, "explainer-{slug}-dark"),
+    (ex.DOC, "light", ("png", "pdf"), DOC_FIGURES, "explainer-{slug}-light"),
+    (ex.DOC, "dark", ("png", "pdf"), DOC_FIGURES, "explainer-{slug}-dark"),
     (ex.SLIDE, "dark", ("png", "pdf"), STILLS, "{slug}"),
 )
 # Output arguments that keep an MP4 free of encoder timestamps and metadata.
@@ -177,6 +176,8 @@ def export_figure(spec, prov, *, root=ROOT):
     """
     written = []
     for layout, mode, suffixes, directory, pattern in STILL_VARIANTS:
+        if layout.name not in spec.venues:
+            continue
         with venue(mode, layout) as cast:
             fig = spec.build(layout, cast)
             try:
@@ -239,36 +240,6 @@ def _record(scene, frames, path, *, fps, dpi, holds, allow_rescale, slug):
         raise RuntimeError(msg)
 
 
-def _html_id(slug, mode):
-    return re.sub(r"[^A-Za-z0-9]", "_", f"explainer_{slug}_{mode}")
-
-
-def _finalize_player(path, slug, mode, alt):
-    """Give the player a fixed id, alt text, and a width that fits the column.
-
-    Matplotlib names the player's elements with a random id, which would
-    change the file on every build and collide if two players shared one.
-    The frame image also gets the theme's ``dark-light`` class, which stops
-    the dark theme from dimming it.
-    """
-    text = path.read_text()
-    ids = set(re.findall(r"_anim_img([0-9a-f]{32})", text))
-    if len(ids) != 1:
-        msg = f"{path.name}: expected one player id, found {len(ids)}"
-        raise RuntimeError(msg)
-    new = _html_id(slug, mode)
-    text = text.replace(ids.pop(), new)
-    tag = f'<img id="_anim_img{new}">'
-    replacement = (
-        f'<img id="_anim_img{new}" class="dark-light" '
-        f'alt="{html.escape(alt, quote=True)}" style="max-width: 100%; height: auto;">'
-    )
-    if tag not in text:
-        msg = f"{path.name}: player image tag not found"
-        raise RuntimeError(msg)
-    path.write_text(text.replace(tag, replacement))
-
-
 def export_animation(spec, prov, *, root=ROOT):
     """Render one ``AnimationSpec`` to the documentation players and the MP4.
 
@@ -288,18 +259,19 @@ def export_animation(spec, prov, *, root=ROOT):
             scene, frames = _build_scene(spec, ex.DOC, cast)
             try:
                 _stamp(scene.fig, prov, spec.status, ex.DOC)
-                rel = DOC_FIGURES / f"explainer-{spec.slug}-{mode}.html"
+                fps = spec.fps or ep.PRESETS["docs"]["fps"]
+                holds = tuple(round(s * fps) for s in spec.hold_s)
+                rel = DOC_VIDEOS / f"explainer-{spec.slug}-{mode}.mp4"
                 _record(
                     scene,
                     frames,
                     Path(root) / rel,
-                    fps=spec.fps or ep.PRESETS["jshtml"]["fps"],
+                    fps=fps,
                     dpi=ex.DOC.anim_dpi,
-                    holds=(0, 0),
+                    holds=holds,
                     allow_rescale=spec.allow_rescale,
                     slug=spec.slug,
                 )
-                _finalize_player(Path(root) / rel, spec.slug, mode, spec.alt)
                 written.append(rel)
                 counts["doc"] = len(frames)
             finally:

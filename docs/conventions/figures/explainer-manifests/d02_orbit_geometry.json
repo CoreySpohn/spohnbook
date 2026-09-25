@@ -1,0 +1,339 @@
+{
+  "module": "d02_orbit_geometry",
+  "script": "tools/explainers/d02_orbit_geometry.py",
+  "build_command": "python tools/build_explainer_figures.py --only d02",
+  "source_hash": "c858ed71c380",
+  "source_sha256": {
+    "tools/explainers/d02_orbit_geometry.py": "f2a4fcb430d17c2380124dc81e0f338a7c9e0fb62e064ee9b323da84cc364af6",
+    "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
+    "tools/explainers/_export.py": "1dae7e6f79963cd53c3f8a4fbff06d493d0d674b97daf4d5916f31a15742c115"
+  },
+  "stamp_date": "2026-09-25",
+  "revisions": {
+    "spohnbook": {
+      "commit": "6c3d11b",
+      "dirty": true
+    },
+    "eyepiece": {
+      "commit": "05e03c0",
+      "dirty": false
+    },
+    "hwostyle": {
+      "commit": "18e2644",
+      "dirty": false
+    }
+  },
+  "package_versions": {
+    "eyepiece": "0.4.1.dev22+g05e03c0b7",
+    "hwostyle": "1.1.1.dev8+g183fc366e.d20260811",
+    "hwoutils": "1.9.1.dev5+g453bf3fd0.d20260911",
+    "matplotlib": "3.11.0",
+    "numpy": "2.2.6"
+  },
+  "ffmpeg": null,
+  "layouts": {
+    "doc": {
+      "name": "doc",
+      "width_in": 7.2,
+      "height_in": 3.6,
+      "dpi": 200,
+      "font_pt": 10.0,
+      "small_pt": 8.5,
+      "title_pt": 11.0,
+      "lw": 1.2,
+      "marker_pt": 7.0,
+      "stamp_pt": 6.0,
+      "frame_budget": 30,
+      "anim_dpi": 150
+    },
+    "slide": {
+      "name": "slide",
+      "width_in": 16.0,
+      "height_in": 9.0,
+      "dpi": 120,
+      "font_pt": 20.0,
+      "small_pt": 16.0,
+      "title_pt": 26.0,
+      "lw": 2.4,
+      "marker_pt": 14.0,
+      "stamp_pt": 9.0,
+      "frame_budget": null,
+      "anim_dpi": 120
+    }
+  },
+  "figures": [
+    {
+      "slug": "d02-observer-construction",
+      "status": "proposed observer profile (pending); schematic, not to scale",
+      "caption": "Where the illumination angle and the observer-axis angle are measured ({ref}`geometry-illumination`). Side view in the plane that contains the star, the planet and the line of sight, with the star at the origin and $+Z$ toward the observer as in the proposed observer profile. The vertical is an unnamed sky-plane direction, so the drawing does not choose a north/east ordering. Starlight travels along $\\mathbf r$; $Z=\\mathbf r\\cdot\\hat{\\mathbf o}$ is the line-of-sight coordinate and $\\rho$ the projected separation in the sky plane. The observer-axis angle $\\beta_{\\rm axis}=\\operatorname{atan2}(\\rho,Z)$ is measured at the star from $\\hat{\\mathbf o}$. The illumination angle $\\alpha$ is measured at the planet, between the direction back to the star and the direction $\\mathbf R_{\\rm obs}-\\mathbf r$ to the observer ({ref}`Savransky et al. 2019, Sec. 2.1, eq. 3 <source-savransky2019>`). For a point-source star and a distant observer that direction is parallel to $\\hat{\\mathbf o}$, and $\\alpha=\\pi-\\beta_{\\rm axis}$ is an identity under those assumptions. The hemisphere facing the star is lit. Schematic, not to scale; the break marks the omitted observer distance.",
+      "alt": "Side-view diagram. A star sits at the origin on a horizontal line of sight that runs right to a distant observer, drawn as an aperture beyond a scale break; a vertical dash-dot line through the star is the sky plane seen edge-on. A yellow ray labeled r runs up and to the right from the star and stops just short of a planet whose star-facing half is colored and whose other half is gray. A cyan ray leaves the planet toward the observer, parallel to the unit vector o-hat. Dotted lines drop from the planet to the line of sight and to the sky plane; dimension bars mark Z along the line of sight and rho along the sky plane. An arc at the star marks beta-axis from o-hat to r, and an arc at the planet marks alpha from the observer direction back to the star, with the relation alpha equals pi minus beta-axis.",
+      "params": {
+        "orbit": {
+          "a": 1.0,
+          "e": 0.35,
+          "i_deg": 55.0,
+          "Omega_deg": 130.0,
+          "omega_deg": 70.0
+        },
+        "side": {
+          "r": 1.0,
+          "beta_deg": 55.0
+        },
+        "oblique_view": [
+          15.0,
+          15.0
+        ]
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d02-observer-construction-light.png",
+          "sha256": "86c005e09694add6dad8e31265d824fb9e84f499230cc03d171556db03d6d63d",
+          "bytes": 107936
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d02-observer-construction-light.pdf",
+          "sha256": "77d39820e4023eb86171cc4bc02b9fb20e930dfc7fb218a3de577cb7b4f14aeb",
+          "bytes": 175336
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d02-observer-construction-dark.png",
+          "sha256": "5aa33191dadb31c756655e215fe4455d9209a7464dc3c82199ded84d2a32226f",
+          "bytes": 105064
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d02-observer-construction-dark.pdf",
+          "sha256": "6d80ed946b95b9ffb7e93da20e2ca9bf5a68a938b54b4b15e6c628ac43289ccf",
+          "bytes": 175310
+        },
+        {
+          "file": "talks/stills/d02-observer-construction.png",
+          "sha256": "ca83f4414ee861d84c62e75cad93db96b6610bc1c6b0eafd657994d153b0aeed",
+          "bytes": 148312
+        },
+        {
+          "file": "talks/stills/d02-observer-construction.pdf",
+          "sha256": "00b17a0ba9f5d71dde73c68f2706d6253995347e27bdd112e06b4d69fd81db2f",
+          "bytes": 155660
+        }
+      ]
+    },
+    {
+      "slug": "d02-orbit-elements",
+      "status": "proposed observer profile (pending); orbit to scale, observer distance not drawn",
+      "caption": "An inclined eccentric orbit in the proposed observer profile ({ref}`geometry-observer-basis`), a candidate that is pending at the conventions stage. Left, an oblique view (camera turned 15 degrees from east toward the observer and raised 15 degrees toward north): the right-handed basis $(\\hat{\\mathbf X},\\hat{\\mathbf Y},\\hat{\\mathbf Z})$ = (north, east, toward observer) with the sky plane through the star. The ascending node is the sky-plane crossing where the planet moves toward the observer, $\\dot Z>0$. $\\Omega$ is measured in the sky plane from north toward east to the node; $i$ is the angle from $+\\hat{\\mathbf Z}$ to the angular momentum direction $\\hat{\\mathbf h}$; $\\omega_p$ is measured in the orbit plane from the node toward periapsis in the direction of motion, so that $\\mathbf r=R_Z(\\Omega)R_X(i)R_Z(\\omega_p)[r\\cos\\nu,\\ r\\sin\\nu,\\ 0]^{\\mathsf T}$. Right, the same orbit as the observer sees it from $+\\hat{\\mathbf Z}$, north up and east to the left, where $\\Omega$ runs counterclockwise on the image from north to the ascending node. Exchanged offsets are ordered $(\\xi,\\eta)$ = (east, north), which is not the dynamical axis order. The observer direction, rotation order and node agree with {ref}`Savransky et al. (2019), Sec. 2.1 and Fig. 1 <source-savransky2019>`; placing east along $\\hat{\\mathbf Y}$ is this chapter's reading, which one sentence of that paper contradicts, and it awaits the three-axis basis transform fixture ({ref}`geometry-savransky-profile`). The drawing is computed from the chapter's formulas, not from orbix. The current orbix projection applies the same rotation but labels its first rotated component RA (east) and its second Dec (north), so for the same elements the tutorial's sky plot is this panel mirrored about the north-east diagonal: the node appears at position angle $90^\\circ-\\Omega$ and the apparent motion is reversed. A reflection is not a rotation, so relabeling cannot migrate fitted elements between the two profiles (the migration rule in {ref}`geometry-savransky-profile`). Orbit to scale with $e=0.35$, $i=55^\\circ$, $\\Omega=130^\\circ$, $\\omega_p=70^\\circ$; both panels share one page scale; the observer distance is not drawn.",
+      "alt": "Two panels. Left: an oblique view of a star at the center of a shaded elliptical disk labeled sky plane, with basis arrows labeled north X-hat (up), east Y-hat and toward observer Z-hat. A cyan eccentric orbit crosses the sky plane along a line of nodes; the part in front of the plane is solid and the part behind is dashed. A filled triangle marks the ascending node, an open triangle the descending node, a diamond periapsis, and cyan arrowheads the direction of motion. A heavier arrow labeled h-hat angular momentum rises from the star. Three arcs with arrowheads mark i from Z-hat to h-hat, Omega in the sky plane from north to the ascending node, and omega-p in the orbit plane from the node to periapsis; the three arcs have different radii, Omega outermost and omega-p innermost. Right: the same orbit seen by the observer, north up and east left, with the nodes and periapsis marked, an arc Omega from north counterclockwise to the ascending node, and a compass labeled N, eta and E, xi.",
+      "params": {
+        "orbit": {
+          "a": 1.0,
+          "e": 0.35,
+          "i_deg": 55.0,
+          "Omega_deg": 130.0,
+          "omega_deg": 70.0
+        },
+        "side": {
+          "r": 1.0,
+          "beta_deg": 55.0
+        },
+        "oblique_view": [
+          15.0,
+          15.0
+        ]
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d02-orbit-elements-light.png",
+          "sha256": "52dd888a2c005c87073c70280dc15a54c5dab85c09bf6f6b6db98a40e6bbea12",
+          "bytes": 184300
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d02-orbit-elements-light.pdf",
+          "sha256": "9c7f5caf02043ec1b41086af248860fbec1739773dc843faa4b14213a7765218",
+          "bytes": 189724
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d02-orbit-elements-dark.png",
+          "sha256": "e60c2b8ef227d5bfbb5fefb77d516b6edd4b12c7b10bcd039230a82200fd79d8",
+          "bytes": 179563
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d02-orbit-elements-dark.pdf",
+          "sha256": "84f6534ee5c790c8e1ff0a7e22d1deb9e818491d646cdafb66b66e655ac4f1be",
+          "bytes": 189698
+        },
+        {
+          "file": "talks/stills/d02-orbit-elements.png",
+          "sha256": "8f38e1efd8107d8a29a5350978948c76b1116cefe39ae7da36dcc808653dafe7",
+          "bytes": 223559
+        },
+        {
+          "file": "talks/stills/d02-orbit-elements.pdf",
+          "sha256": "67f2f0707aae59e8f57af3b63a1da201ca609e2d6bab3ed1c5c33b7e2877a81e",
+          "bytes": 176285
+        }
+      ]
+    },
+    {
+      "slug": "d02-phase-epochs",
+      "status": "proposed observer profile (pending); orbit to scale, planet disk enlarged",
+      "caption": "Illumination follows the line-of-sight coordinate, not the projected separation ({ref}`geometry-illumination`), in the proposed observer profile, which is pending ({ref}`geometry-observer-basis`). The orbit of the previous figure at three arguments of latitude $u=\\nu+\\omega_p$: $270^\\circ$ (behind the sky plane), $0^\\circ$ (the ascending node, on the sky plane) and $90^\\circ$ (in front). Top: side view from the east, with the sky plane edge-on and the observer to the right; the dotted segment is the line-of-sight coordinate $Z$. Bottom: the observer's view, north up and east to the left, with the projected separation $\\rho$ and the planet disk enlarged and lit as a Lambert sphere at the illumination angle (colored lit, gray unlit); dots mark 24 equal time steps per period. Because $\\cos\\alpha=-Z/r$ and $Z=r\\sin i\\sin u$, the three states have $\\alpha=90^\\circ-i$, $90^\\circ$ and $90^\\circ+i$, and a planet is at quadrature exactly where it crosses the sky plane. $\\Phi(\\alpha)$ is the Lambert phase function ({ref}`Perryman 2018, Sec. 6.15.1, eq. 6.95 <source-perryman2018>`). Orbit to scale; planet disk enlarged.",
+      "alt": "Six panels in two rows and three columns, titled behind the sky plane, on the sky plane (ascending node), and in front of the sky plane. The top row shows the orbit from the east with the sky plane as a vertical dash-dot line and, under it, an arrow to the observer and the sign of Z; the planet sits left of the plane, on it, and right of it, with a dotted segment marking Z. The bottom row shows the observer's view of the same orbit with equal-time dots, a line from the star to an enlarged planet disk, and the lit part of the disk in color with the unlit part gray: nearly full at alpha 35 degrees with Phi 0.84, half lit at alpha 90 degrees with Phi 0.32, and a thin crescent at alpha 145 degrees with Phi 0.02.",
+      "params": {
+        "orbit": {
+          "a": 1.0,
+          "e": 0.35,
+          "i_deg": 55.0,
+          "Omega_deg": 130.0,
+          "omega_deg": 70.0
+        },
+        "side": {
+          "r": 1.0,
+          "beta_deg": 55.0
+        },
+        "oblique_view": [
+          15.0,
+          15.0
+        ],
+        "epoch_u_deg": [
+          270.0,
+          0.0,
+          90.0
+        ],
+        "n_ticks": 24
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d02-phase-epochs-light.png",
+          "sha256": "c66a06eee3884285ab90385a1b848be8e08221dcd7badd4db8088521e1238428",
+          "bytes": 167347
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d02-phase-epochs-light.pdf",
+          "sha256": "76db742350c9086e6e591be49e4a1d2717b3ff44d80045a92af96c6763cdef56",
+          "bytes": 127175
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d02-phase-epochs-dark.png",
+          "sha256": "55dc08c0597cf506bb73a9ff80e53bcd22d450e92d7db8b2e566b639a6e6fa45",
+          "bytes": 162574
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d02-phase-epochs-dark.pdf",
+          "sha256": "3bbfe53e9047e762341f28d33ff63fc393e9cbda6e1eff822693e6df85f395e8",
+          "bytes": 127176
+        },
+        {
+          "file": "talks/stills/d02-phase-epochs.png",
+          "sha256": "bc62b12eca1d8d0a1178886d02ee432ad517129440292ece2efac1e7201b5fab",
+          "bytes": 201406
+        },
+        {
+          "file": "talks/stills/d02-phase-epochs.pdf",
+          "sha256": "d438c8df4340fcd1b05888bff4d3cd53aaa38c7f9d9a8c324b998b36cf451b0b",
+          "bytes": 116475
+        }
+      ]
+    }
+  ],
+  "animations": [
+    {
+      "slug": "d02-viewpoint-sweep",
+      "status": "proposed observer profile (pending); orbit to scale, observer distance not drawn",
+      "ground": "viewpoint",
+      "caption": "The orbit of the orbit-elements figure and one planet position, seen by a camera that turns about the north axis only, from the side view from the east (sky plane edge-on, observer to the right) to the observer's own view from $+\\hat{\\mathbf Z}$ (north up, east to the left). The orbit, the planet and the page scale are fixed; only the viewpoint changes, so the observer's view is a projection of one three-dimensional state. The inset shows the camera direction seen from north. Unlike the oblique still, this camera is not raised toward north, so at the start the east axis points at the camera. Proposed observer profile ({ref}`geometry-observer-basis`), pending; orbit to scale.",
+      "alt": "Animation. A camera turns 90 degrees about the north axis. At the start the sky plane is edge-on, the east axis points at the camera and the observer direction points right; at the end the sky plane is face-on, the observer direction points at the camera, north is up and east is left. The cyan orbit, its nodes, periapsis and the planet do not move in space. A small inset seen from north shows a square camera marker moving along a quarter circle from the east direction to the observer direction.",
+      "params": {
+        "orbit": {
+          "a": 1.0,
+          "e": 0.35,
+          "i_deg": 55.0,
+          "Omega_deg": 130.0,
+          "omega_deg": 70.0
+        },
+        "side": {
+          "r": 1.0,
+          "beta_deg": 55.0
+        },
+        "oblique_view": [
+          15.0,
+          15.0
+        ],
+        "sweep_u_deg": 140.0
+      },
+      "frames": {
+        "doc": 30,
+        "talk": 126
+      },
+      "revision": {
+        "commit": "6c3d11b",
+        "dirty": true
+      },
+      "outputs": [
+        {
+          "file": "docs/_static/explainers/explainer-d02-viewpoint-sweep-light.mp4",
+          "sha256": "699a35633673c2863c8983d5d2ff0fbdc4c9eb8430c681be8e6af42de418c8fa",
+          "bytes": 179532
+        },
+        {
+          "file": "docs/_static/explainers/explainer-d02-viewpoint-sweep-dark.mp4",
+          "sha256": "0163a048d3b6cf7b3c8359b1d4628664b262bc0a12262c454f51c4330fa9b5f0",
+          "bytes": 183516
+        },
+        {
+          "file": "talks/animations/d02-viewpoint-sweep.mp4",
+          "sha256": "1989f595c9b14e7819b61ade885cad57e2e3bd87767d271eae35e48f761e20a2",
+          "bytes": 568144
+        }
+      ]
+    },
+    {
+      "slug": "d02-orbit-clock",
+      "status": "proposed observer profile (pending); orbit to scale, planet disk enlarged",
+      "ground": "narration",
+      "caption": "One orbital period at equal time steps, with both cameras fixed: the side view from the east (left) and the observer's view (right). As the planet moves, its line-of-sight coordinate, its projected offset and its illumination angle change together. The planet is at quadrature, $\\alpha=90^\\circ$, where it crosses the sky plane; the readouts give $\\alpha$ and the Lambert phase function $\\Phi$ ({ref}`geometry-illumination`; {ref}`Perryman 2018, Sec. 6.15.1, eq. 6.95 <source-perryman2018>`). Time is counted from periapsis passage $t_p$ in units of the period. Proposed observer profile, pending; orbit to scale, planet disk enlarged.",
+      "alt": "Animation of one orbital period with fixed cameras. Left: side view from the east with the sky plane as a vertical dash-dot line; the planet moves around the tilted orbit, a dotted segment shows its distance Z from the sky plane, and a line under the sky plane says whether it is in front or behind. Right: the observer's view; an enlarged planet disk moves along the projected orbit past equal-time dots, its lit part changing from nearly full behind the sky plane to half lit at the node to a thin crescent in front. Readouts give the time since periapsis, alpha and Phi.",
+      "params": {
+        "orbit": {
+          "a": 1.0,
+          "e": 0.35,
+          "i_deg": 55.0,
+          "Omega_deg": 130.0,
+          "omega_deg": 70.0
+        },
+        "side": {
+          "r": 1.0,
+          "beta_deg": 55.0
+        },
+        "oblique_view": [
+          15.0,
+          15.0
+        ],
+        "n_ticks": 24
+      },
+      "frames": {
+        "doc": 30,
+        "talk": 230
+      },
+      "revision": {
+        "commit": "6c3d11b",
+        "dirty": true
+      },
+      "outputs": [
+        {
+          "file": "docs/_static/explainers/explainer-d02-orbit-clock-light.mp4",
+          "sha256": "5f621f25a400f980c347534d3b99fb50cc5cd23f475dfb19e33894420fdd6713",
+          "bytes": 90030
+        },
+        {
+          "file": "docs/_static/explainers/explainer-d02-orbit-clock-dark.mp4",
+          "sha256": "290828166152f4bed1619d416314f64090f907a606d244dc29cf490bfcfad0bf",
+          "bytes": 93728
+        },
+        {
+          "file": "talks/animations/d02-orbit-clock.mp4",
+          "sha256": "5a1a490c4a3003cfbc471a4b38334ed19ed75edc87531b17ebe48234694dcdfe",
+          "bytes": 382046
+        }
+      ]
+    }
+  ]
+}

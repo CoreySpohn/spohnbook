@@ -1,0 +1,220 @@
+{
+  "module": "d07_detector_acquisition",
+  "script": "tools/explainers/d07_detector_acquisition.py",
+  "build_command": "python tools/build_explainer_figures.py --only d07",
+  "source_hash": "e8177d609dd4",
+  "source_sha256": {
+    "tools/explainers/d07_detector_acquisition.py": "979c996e4afc125875de6d88677a15bd2f19b5e6f95e7aabeb2e3bd57953b51d",
+    "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
+    "tools/explainers/_export.py": "1dae7e6f79963cd53c3f8a4fbff06d493d0d674b97daf4d5916f31a15742c115"
+  },
+  "stamp_date": "2026-09-25",
+  "revisions": {
+    "spohnbook": {
+      "commit": "6c3d11b",
+      "dirty": true
+    },
+    "eyepiece": {
+      "commit": "05e03c0",
+      "dirty": false
+    },
+    "hwostyle": {
+      "commit": "18e2644",
+      "dirty": false
+    }
+  },
+  "package_versions": {
+    "eyepiece": "0.4.1.dev22+g05e03c0b7",
+    "hwostyle": "1.1.1.dev8+g183fc366e.d20260811",
+    "hwoutils": "1.9.1.dev5+g453bf3fd0.d20260911",
+    "matplotlib": "3.11.0",
+    "numpy": "2.2.6"
+  },
+  "ffmpeg": null,
+  "layouts": {
+    "doc": {
+      "name": "doc",
+      "width_in": 7.2,
+      "height_in": 3.6,
+      "dpi": 200,
+      "font_pt": 10.0,
+      "small_pt": 8.5,
+      "title_pt": 11.0,
+      "lw": 1.2,
+      "marker_pt": 7.0,
+      "stamp_pt": 6.0,
+      "frame_budget": 30,
+      "anim_dpi": 150
+    },
+    "slide": {
+      "name": "slide",
+      "width_in": 16.0,
+      "height_in": 9.0,
+      "dpi": 120,
+      "font_pt": 20.0,
+      "small_pt": 16.0,
+      "title_pt": 26.0,
+      "lw": 2.4,
+      "marker_pt": 14.0,
+      "stamp_pt": 9.0,
+      "frame_budget": null,
+      "anim_dpi": 120
+    }
+  },
+  "figures": [
+    {
+      "slug": "d07-acquisition-schedule",
+      "status": "schematic, not to scale; worked example values",
+      "caption": "One pixel's acquisition under the simple detector model of {ref}`radiometry-detector-counts`: independent Poisson photoelectrons, dark charge and clock-induced charge (CIC), and independent Gaussian read noise, with one read per frame, unit gain, and no saturation, gain fluctuation, correlated reads or charge-transfer effects. Photoelectrons and dark charge accumulate during the live intervals (hatched), so their means and variances scale with the live time $t_{\\rm live}$; CIC and read noise enter once per frame at its read (solid), so theirs scale with the frame count $n_f$, and read noise adds variance only. The schedule and the budget are the {ref}`worked count example <radiometry-count-example>`, a four-pixel aperture observed in ten 10 s frames, each followed by a 0.05 s nonoverlapping read, which occupy 100.5 s of elapsed time for 100 s of live time. The drawn pixel is one of the four; $E_p$ is one pixel's accumulated output, and the table sums it over the four pixels, with the source rates stated for the whole aperture and the detector terms per pixel. Frames 3 to 9 are omitted and the reads are drawn wider than to scale. The table lists expected values and numerical variances, not a random draw; the SNR is rounded to three decimals (13.9147 in the chapter). The terms match the analog-mode noise model of {ref}`Nemati et al. (2023, Sec. 4.1, eq. 32; Sec. 4.5) <source-nemati2023>` with unit gain and no excess-noise factor. The expectation and variance are identities under these assumptions; the read cadence is the example's stated schedule, and the {ref}`acquisition experiment decision <decision-acquisition-experiment>` that will fix read cadence is pending. The drawing does not describe nondestructive sampling or a particular detector architecture.",
+      "alt": "Schematic in three bands. Top: planet light and background light enter one of the four aperture pixels, drawn as a charge well holding filled dots for photoelectrons and open dots for dark charge. An arrow clocks the charge out past a diamond marking clock-induced charge to a read amplifier marked with a small Gaussian curve for read noise, giving one frame value. Under the well a hatched bar reads grows with live time; under the clocking and read a solid bar reads once per frame, at its read. Middle: a time axis with hatched 10 s live intervals and solid read bars for frames 1, 2 and 10, frames 3 to 9 omitted behind a break; the first read bar is labeled read, 0.05 s, and frame 2 is outlined as the frame shown in detail. Under each read a diamond and a Gaussian curve mark one CIC draw and one read-noise draw, and a data arrow carries each frame value to a box reading E_p equals the sum of 10 frame values. A bold line states live time 10 x 10 s = 100 s and elapsed time 10 x (10 s + 0.05 s) = 100.5 s. Bottom: a table of means and variances summed over the four aperture pixels: planet photoelectrons 1000 and 1000, background photoelectrons 4000 and 4000, dark charge 4 and 4, all growing with live time; clock-induced charge 0.8 and 0.8, growing with frames; read noise 0 and 160, growing with reads as variance only; total 5004.8 electrons and 5164.8 electrons squared, and an SNR of 13.915 after subtracting the known background, dark and CIC means.",
+      "params": {
+        "count": {
+          "n_pixels": 4,
+          "planet_photon_rate_per_s": 20.0,
+          "background_photon_rate_per_s": 80.0,
+          "qe": 0.5,
+          "n_frames": 10,
+          "frame_time_s": 10.0,
+          "read_time_s": 0.05,
+          "dark_e_per_pixel_s": 0.01,
+          "cic_e_per_pixel_frame": 0.02,
+          "read_noise_e_rms_per_pixel_read": 2.0
+        }
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d07-acquisition-schedule-light.png",
+          "sha256": "38729da438600da8785c0648c64ce0c145173bd4094f23908a503f9e68aba4ef",
+          "bytes": 274985
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d07-acquisition-schedule-light.pdf",
+          "sha256": "fbecef805d9ea3e51cddbb0a0426e21b45ec1600916fe098bff5bd408b43a34a",
+          "bytes": 335442
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d07-acquisition-schedule-dark.png",
+          "sha256": "52aae23b8a2ea9bf05f1d96f39690c98168248e769bcb21e88f577a07bc05b52",
+          "bytes": 273408
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d07-acquisition-schedule-dark.pdf",
+          "sha256": "df869a0cfb789dc2a1a2b18a37017c793e1917efe508b4414715823beb94e208",
+          "bytes": 335371
+        },
+        {
+          "file": "talks/stills/d07-acquisition-schedule.png",
+          "sha256": "78d60dacfc67b9d1e8ce88a06409e61501591693d89e61aeda0b7835d0a2f461",
+          "bytes": 280688
+        },
+        {
+          "file": "talks/stills/d07-acquisition-schedule.pdf",
+          "sha256": "aa95622ec1d3e028e3edab4e696ccdf3af8124ad85e50734365502c8c413eddb",
+          "bytes": 214559
+        }
+      ]
+    },
+    {
+      "slug": "d07-reference-restriction",
+      "status": "schematic, not to scale; restricted reference case",
+      "caption": "The same pixel annotated for the restricted {ref}`photon-to-electron reference case <photon-electron-reference-experiment>`: a synthetic source with the photon spectral flux density of 1 Jy at 700 nm, held constant over 1 nm, collected on 1 m$^2$ for one 1 s exposure and spread over four pixels with constant quantum efficiency. Dark current, clock-induced charge and read noise are zero, and the case compares a computed expected variance with the library's, not a sampled readout, so the clocking and read operations add nothing. For independent Poisson photoelectrons the summed variance equals the summed mean ({ref}`radiometry-detector-counts`); the photon density follows from the exact SI Planck constant ({ref}`BIPM 2019, Sec. 2.2 and Table 1 <source-bipm2019>`). The picture is a schematic of that one restricted experiment; it is not evidence of a stochastic readout, nonzero detector noise or the band integration of a real spectrum.",
+      "alt": "Schematic. A synthetic source labeled with the photon spectral flux density of 1 Jy at 700 nm, constant over 1 nm, sends a ray into one of four pixels, drawn as a charge well with filled dots for photoelectrons; labels say the dark charge is 0 here, the clocking adds no clock-induced charge and the read adds no read noise, and the chain ends in a box reading expected variance only. Brackets read one 1 s exposure and computed, not sampled. A table below gives the photon spectral flux density 21 559.86 photon per second per square meter per nanometer, 21 559.86 photons on the four pixels, 10 779.93 expected photoelectrons for a quantum efficiency of 0.5, a summed Poisson variance of 10 779.93 electrons squared, and zero for dark charge, clock-induced charge and read noise.",
+      "params": {
+        "reference": {
+          "flux_jy": 1.0,
+          "wavelength_nm": 700.0,
+          "area_m2": 1.0,
+          "bandwidth_nm": 1.0,
+          "exposure_s": 1.0,
+          "n_pixels": 4,
+          "qe": 0.5
+        }
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d07-reference-restriction-light.png",
+          "sha256": "589798c0c624eadb6b381655c2c5926f265fce4dc1273a724fad6d1ec4ce3ce8",
+          "bytes": 159443
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d07-reference-restriction-light.pdf",
+          "sha256": "0cb8ea85f67377274875a0448b48570620f51415ab428a4ed481ae90a79275e7",
+          "bytes": 200685
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d07-reference-restriction-dark.png",
+          "sha256": "4a0010c7e2c7bb593ae8a252fc502e7ce479424542a39f150e9cbfac21c16521",
+          "bytes": 159233
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d07-reference-restriction-dark.pdf",
+          "sha256": "0cf34f7aa570e78bf2c35d20a4de65e2a7a97d5da68f7852364c4940473d7744",
+          "bytes": 200684
+        },
+        {
+          "file": "talks/stills/d07-reference-restriction.png",
+          "sha256": "0d6cea0c7542df1f8b61637e913501ad7b59f0bb71d4d357354628a34a14d9cc",
+          "bytes": 196632
+        },
+        {
+          "file": "talks/stills/d07-reference-restriction.pdf",
+          "sha256": "b93e7103cf7fa6fce2047c2a210e202a0d1dd224b81ff862ee858ac25029826a",
+          "bytes": 175418
+        }
+      ]
+    }
+  ],
+  "animations": [
+    {
+      "slug": "d07-acquisition-count",
+      "status": "simulated; representative realization (seed 16, selected)",
+      "ground": "narration",
+      "caption": "One simulated realization of the {ref}`worked count example <radiometry-count-example>`, summed over its four-pixel aperture, as elapsed time runs through ten 10 s live intervals and their 0.05 s reads. The realization was selected as representative: of random seeds 0 to 399, seed 16 was chosen because its total ends 0.5 standard deviations below the expected total and no frame value lies more than 1.1 standard deviations from its mean. Top: the charge held in the four pixels rises during each live interval at the expected 50.04 e/s (photoelectrons plus dark charge) and empties at each read. Bottom: the recorded sum grows by one frame value per read; a frame value is the frame's charge plus one Poisson draw of clock-induced charge and one Gaussian read-noise draw. Pink curves are expectations under the model of {ref}`radiometry-detector-counts`, known before observing, and the pink band is one standard deviation of the recorded sum, which grows as the square root of the number of reads; the gray trace and squares are the realization. The top title keeps the identity elapsed time = live time + reads x 0.05 s, so ten frames occupy 100.5 s of elapsed time for 100 s of live time. Photoelectrons and dark charge are simulated as one Poisson arrival process, and every draw is independent; the animation illustrates the stated model and is not a detector simulation.",
+      "alt": "Animation on fixed axes with four panels. Upper left, a gauge for the four pixels fills during each live interval and empties at each read. Upper right, charge in the four pixels against elapsed time from 0 to 100.5 s: a pink sawtooth of expected charge rising to about 500 electrons in every 10 s live interval and dropping to zero at each read, over a gray simulated trace drawn up to the current time. Lower left, a stack of frame-value blocks grows by one block per read. Lower right, the recorded sum against elapsed time: a pink expected staircase rising 500.48 electrons per read inside a pink one-standard-deviation band, and a gray simulated staircase with square markers at the reads, labeled as one simulated realization selected as representative. The top title states elapsed time as live time plus the number of reads times 0.05 s, ending at 100.5 s = 100 s + 10 reads x 0.05 s; the bottom title gives the recorded sum, 4969.0 electrons at the end, and the expected sum, 5004.8 plus or minus 71.9 electrons.",
+      "params": {
+        "count": {
+          "n_pixels": 4,
+          "planet_photon_rate_per_s": 20.0,
+          "background_photon_rate_per_s": 80.0,
+          "qe": 0.5,
+          "n_frames": 10,
+          "frame_time_s": 10.0,
+          "read_time_s": 0.05,
+          "dark_e_per_pixel_s": 0.01,
+          "cic_e_per_pixel_frame": 0.02,
+          "read_noise_e_rms_per_pixel_read": 2.0
+        },
+        "seed": 16,
+        "seed_scan": [
+          0,
+          399
+        ]
+      },
+      "frames": {
+        "doc": 30,
+        "talk": 75
+      },
+      "revision": {
+        "commit": "6c3d11b",
+        "dirty": true
+      },
+      "outputs": [
+        {
+          "file": "docs/_static/explainers/explainer-d07-acquisition-count-light.mp4",
+          "sha256": "e1cd55222168fedad6969f1ef1f553ded7060f46c92815dd8769795588f1fb02",
+          "bytes": 196792
+        },
+        {
+          "file": "docs/_static/explainers/explainer-d07-acquisition-count-dark.mp4",
+          "sha256": "49213563dbbbb8d2853e4219160bb83cb3fddd5bc802bf4df6e75fa641a0e226",
+          "bytes": 202734
+        },
+        {
+          "file": "talks/animations/d07-acquisition-count.mp4",
+          "sha256": "403e4606dfc5308b7b88613567095335c90f6fbd2976589b175a0b189fc0bba1",
+          "bytes": 430783
+        }
+      ]
+    }
+  ]
+}

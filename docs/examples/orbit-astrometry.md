@@ -46,6 +46,20 @@ hwostyle.use("light")
 plt.rcParams["savefig.dpi"] = 120  # keeps the baked page image small
 ```
 
+```{figure} ../conventions/figures/explainer-d02-orbit-elements-light.png
+:class: only-light
+:alt: Two panels. Left: an oblique view of a star at the center of a shaded elliptical disk labeled sky plane, with basis arrows labeled north X-hat (up), east Y-hat and toward observer Z-hat. A cyan eccentric orbit crosses the sky plane along a line of nodes; the part in front of the plane is solid and the part behind is dashed. A filled triangle marks the ascending node, an open triangle the descending node, a diamond periapsis, and cyan arrowheads the direction of motion. A heavier arrow labeled h-hat angular momentum rises from the star. Three arcs with arrowheads mark i from Z-hat to h-hat, Omega in the sky plane from north to the ascending node, and omega-p in the orbit plane from the node to periapsis; the three arcs have different radii, Omega outermost and omega-p innermost. Right: the same orbit seen by the observer, north up and east left, with the nodes and periapsis marked, an arc Omega from north counterclockwise to the ascending node, and a compass labeled N, eta and E, xi.
+
+Orientation in the proposed chapter profile, not the frame used by the code below: north is the first axis and $\Omega$ is measured from north toward east. orbix labels its first rotated component RA (east), so for the same elements the plot below is this view mirrored about the north-east diagonal, with the node at position angle 90 deg minus $\Omega$ and the apparent motion reversed; a reflection is not a rotation ({ref}`geometry-savransky-profile`).
+```
+
+```{figure} ../conventions/figures/explainer-d02-orbit-elements-dark.png
+:class: only-dark
+:alt: Two panels. Left: an oblique view of a star at the center of a shaded elliptical disk labeled sky plane, with basis arrows labeled north X-hat (up), east Y-hat and toward observer Z-hat. A cyan eccentric orbit crosses the sky plane along a line of nodes; the part in front of the plane is solid and the part behind is dashed. A filled triangle marks the ascending node, an open triangle the descending node, a diamond periapsis, and cyan arrowheads the direction of motion. A heavier arrow labeled h-hat angular momentum rises from the star. Three arcs with arrowheads mark i from Z-hat to h-hat, Omega in the sky plane from north to the ascending node, and omega-p in the orbit plane from the node to periapsis; the three arcs have different radii, Omega outermost and omega-p innermost. Right: the same orbit seen by the observer, north up and east left, with the nodes and periapsis marked, an arc Omega from north counterclockwise to the ascending node, and a compass labeled N, eta and E, xi.
+
+Orientation in the proposed chapter profile, not the frame used by the code below: north is the first axis and $\Omega$ is measured from north toward east. orbix labels its first rotated component RA (east), so for the same elements the plot below is this view mirrored about the north-east diagonal, with the node at position angle 90 deg minus $\Omega$ and the apparent motion reversed; a reflection is not a rotation ({ref}`geometry-savransky-profile`).
+```
+
 `KeplerianOrbit.from_period` takes the period in days, the eccentricity, the
 cosine of the inclination, the longitude of the ascending node, the cosine and
 sine of the argument of periastron, and the time of periastron passage, then

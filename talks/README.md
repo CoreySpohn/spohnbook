@@ -13,8 +13,9 @@ page it came from cannot drift apart.
 | `animations/<slug>.mp4` | Dark animation at 1920 by 1080 pixels, holding its first and last frames. |
 | `notes/dNN.md` | Speaker notes for diagram `dNN`: the lesson, the assumptions and the source locators. |
 
-The documentation versions (light and dark stills, and compact HTML players)
-live in `docs/conventions/figures/` under the name `explainer-<slug>-<mode>`.
+The documentation versions live beside the pages: light and dark stills in
+`docs/conventions/figures/` and light and dark videos in
+`docs/_static/explainers/`, each named `explainer-<slug>-<mode>`.
 Each diagram module records every output, with its SHA-256, in
 `docs/conventions/figures/explainer-manifests/<module>.json`.
 

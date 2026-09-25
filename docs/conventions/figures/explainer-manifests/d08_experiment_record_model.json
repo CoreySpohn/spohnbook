@@ -1,0 +1,180 @@
+{
+  "module": "d08_experiment_record_model",
+  "script": "tools/explainers/d08_experiment_record_model.py",
+  "build_command": "python tools/build_explainer_figures.py --only d08",
+  "source_hash": "2cc9ee067a0a",
+  "source_sha256": {
+    "tools/explainers/d08_experiment_record_model.py": "f5aac9f1ff176629ff9cdddc41c8d8bb98df1e4f5a67c74953ce7c2d473f7e9c",
+    "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
+    "tools/explainers/_export.py": "1dae7e6f79963cd53c3f8a4fbff06d493d0d674b97daf4d5916f31a15742c115"
+  },
+  "stamp_date": "2026-09-25",
+  "revisions": {
+    "spohnbook": {
+      "commit": "6c3d11b",
+      "dirty": true
+    },
+    "eyepiece": {
+      "commit": "05e03c0",
+      "dirty": false
+    },
+    "hwostyle": {
+      "commit": "18e2644",
+      "dirty": false
+    }
+  },
+  "package_versions": {
+    "eyepiece": "0.4.1.dev22+g05e03c0b7",
+    "hwostyle": "1.1.1.dev8+g183fc366e.d20260811",
+    "hwoutils": "1.9.1.dev5+g453bf3fd0.d20260911",
+    "matplotlib": "3.11.0",
+    "numpy": "2.2.6"
+  },
+  "ffmpeg": null,
+  "layouts": {
+    "doc": {
+      "name": "doc",
+      "width_in": 7.2,
+      "height_in": 3.6,
+      "dpi": 200,
+      "font_pt": 10.0,
+      "small_pt": 8.5,
+      "title_pt": 11.0,
+      "lw": 1.2,
+      "marker_pt": 7.0,
+      "stamp_pt": 6.0,
+      "frame_budget": 30,
+      "anim_dpi": 150
+    },
+    "slide": {
+      "name": "slide",
+      "width_in": 16.0,
+      "height_in": 9.0,
+      "dpi": 120,
+      "font_pt": 20.0,
+      "small_pt": 16.0,
+      "title_pt": 26.0,
+      "lw": 2.4,
+      "marker_pt": 14.0,
+      "stamp_pt": 9.0,
+      "frame_budget": null,
+      "anim_dpi": 120
+    }
+  },
+  "figures": [
+    {
+      "slug": "d08-experiment-record-model",
+      "status": "schematic, proposed information boundary; simulated pixels",
+      "caption": "The proposed information boundary of a simulated imaging experiment ({ref}`records-reporting-law`, {ref}`records-identities`, {ref}`records-campaign-causality`). The simulated world holds the scene and a truth record. Truth reaches the detector only through the simulated light and the noise draw, and reaches evaluation directly, for simulation-only scoring; neither truth nor scores reach the inference model or the observing policy, which is a decision rule rather than a hypothesis. Two visits of one target give the two records of the report-only-on-detection experiment, R = (D = 1, F) and R = (D = 0), where D records whether F exceeded the threshold L. The threshold L and the standard deviation sigma of F before any selection are fixed, known settings of the experiment, not measured values. The dashed card is a different experiment, forced photometry, which replaces the visit 2 record and reports F = 17.7 e$^-$ from the same pixels although F is below L ({ref}`Efron and Hastie 2016, Sec. 9.6 <source-efron2016>`). The 9 by 9 pixel cutouts are simulated raw readouts: a known background of 20 e$^-$ per pixel, a pixel-integrated Gaussian planet image and independent Gaussian noise of 2 e$^-$ per pixel. The reduction subtracts the background and sums the 9 dotted pixels, those whose centers lie within 1.5 pixels of the fixed target position, so sigma = 6.0 e$^-$. The next figure details the reporting law. The figure is a schematic of a proposed convention, not an example implementation, and does not assert that the current tutorial or campaign software enforces every separation it shows.",
+      "alt": "Schematic in three labeled zones. Left, a dashed region named simulated world holds a star at the focus of an orbit, a planet on it, and a truth record box listing the true orbit and flux, the planet ID and the noise seed. Rays of starlight and planet light cross a scale break to a telescope aperture and a detector in the middle zone; a dashed gray arrow labeled noise draw runs from the truth record to the detector, and a red crossed arrow from the truth record carries the note: no path, truth or scores never reach inference or policy. A configured visit box, a command, receives a next visit arrow from the observing policy. The detector feeds two 9 by 9 pixel images of raw electrons, visit 1 with a bright planet and visit 2 fainter, each with the summed 3 by 3 pixels outlined by a dotted square. Each record card lists measured fields above fixed experiment settings. Visit 1 reads D = 1, detected, and F = 84.8 electrons; visit 2 reads D = 0 and F not reported; both list the threshold L = 30 electrons and sigma = 6.0 electrons. A dashed forced photometry card, labeled as an alternative experiment that replaces the visit 2 record, reads D = 0 and F = 17.7 electrons, below L. The two records feed an inference model box on the right, which feeds the observing policy. Below a dashed divider, an evaluation box for simulation-only scoring receives the posterior and, along the bottom, the truth record; a red crossed arrow from evaluation back to the inference model is labeled no path.",
+      "params": {
+        "n_pix": 9,
+        "psf_sigma_px": 0.9,
+        "background_e": 20.0,
+        "pixel_noise_e": 2.0,
+        "aperture_radius_px": 1.5,
+        "threshold_e": 30.0,
+        "visit_flux_e": [
+          100.0,
+          20.0
+        ],
+        "noise_seed": 20260925
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d08-experiment-record-model-light.png",
+          "sha256": "c897085be533059ec5b1ae771253e5ccd91cdb54c847263c3cb34ca18cf7b43c",
+          "bytes": 300491
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d08-experiment-record-model-light.pdf",
+          "sha256": "5bded087ed145c856970c0ccbd9aa7e2c582f674956992d5723ca4a226783d82",
+          "bytes": 198733
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d08-experiment-record-model-dark.png",
+          "sha256": "64dd0bb46ef4978217ed500dba2adf9b9ffa17d76cfd5a87e34e38aec6877b65",
+          "bytes": 292228
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d08-experiment-record-model-dark.pdf",
+          "sha256": "47d40be20ac30a3f706ecd85cc2883ae6f24c146b2818a7dcdf0caac7d8a0541",
+          "bytes": 198641
+        },
+        {
+          "file": "talks/stills/d08-experiment-record-model.png",
+          "sha256": "c3800a30e6a0c137124ffd3f71378b5be6df5d02639b7ebfeefc27b4423b322a",
+          "bytes": 277657
+        },
+        {
+          "file": "talks/stills/d08-experiment-record-model.pdf",
+          "sha256": "5e7af333a1040cc37880336c7f740a8efa5ff6f6cfbf4eec02f9edd89f7806a7",
+          "bytes": 191329
+        }
+      ]
+    },
+    {
+      "slug": "d08-fit-forecast-timeline",
+      "status": "simulated; tutorial setup",
+      "caption": "The fit-and-forecast tutorial on a time axis, a specialization of the experiment diagram in {ref}`records-reporting-law` (see also {ref}`records-campaign-causality`). Filled markers are the five acquired relative-astrometry epochs, simulated with 5 mas of Gaussian noise per axis; the error bars are smaller than the markers. The pink band and curves are the posterior of the planet's position from the tutorial's own fit, rerun with the same orbit, epochs, random key and samplers: the 90 percent band of all 2000 draws and five of those draws. At days 240, 320 and 400 each violin is the distribution of the forecast position over the 2000 draws, with its 90 percent interval as a capped line; these are forecasts of the position, not measurements, and a future 5 mas measurement would add that noise in quadrature. The shaded interval holds no acquired data. The period ridge of the posterior, about 430 to 720 days, makes the day 400 east forecast bimodal, so no single central value summarizes it. The gray curve and dots are the simulated truth, drawn for comparison only and never an input to the fit; one of the six forecast truths lies outside its 90 percent interval, which is expected for a few intervals of this kind. The fit uses photomancy's current conventions and the reporting law is pending ({ref}`decision-reporting-law`); the figure illustrates the proposed separation and does not assert that the tutorial software enforces it.",
+      "alt": "Two stacked panels sharing a time axis in days from the reference epoch, JD 2461160, east offset above and north offset below, in milliarcseconds. Five filled cyan markers at days -140, -70, 0, 70 and 140 lie on a narrow pink posterior band with five thin pink draws and a gray truth curve. A dotted vertical line at day 140 separates the acquired interval, labeled acquired: 5 epochs, 5 mas per axis, from a shaded interval labeled forecast: no data yet. In the shaded interval the pink band widens and the draws fan apart. Pink violins with capped 90 percent interval lines show the forecast positions at days 240, 320 and 400, and small gray dots mark the truth there. The day 400 east violin has two separated lobes. The north truth at day 400 lies just above its 90 percent interval; the other five truths lie inside theirs.",
+      "params": {
+        "period_d": 600.0,
+        "eccentricity": 0.3,
+        "inclination_deg": 60.0,
+        "node_deg": 30.0,
+        "arg_periastron_deg": 70.0,
+        "periastron_jd": 2461000.0,
+        "distance_pc": 10.0,
+        "t_ref_jd": 2461160.0,
+        "t_obs_d": [
+          -140.0,
+          -70.0,
+          0.0,
+          70.0,
+          140.0
+        ],
+        "t_future_d": [
+          240.0,
+          320.0,
+          400.0
+        ],
+        "sigma_mas": 5.0,
+        "seed": 7
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d08-fit-forecast-timeline-light.png",
+          "sha256": "92df43cbff1aaf70772e625d4406b6b2e339c2b5d78199237abe779532f77c58",
+          "bytes": 248937
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d08-fit-forecast-timeline-light.pdf",
+          "sha256": "782a988c45bdcb3e5eba20c4ee050f568297456cd4e50573423491191d749066",
+          "bytes": 60793
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d08-fit-forecast-timeline-dark.png",
+          "sha256": "2c7ad7d4febf272ea3f178efd6d10dd948490710a244a486b26fe46ea3f9abc9",
+          "bytes": 248886
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d08-fit-forecast-timeline-dark.pdf",
+          "sha256": "433d057136beb5e0ca00001da337354220d6f116d96b9f0e241c02d006406d18",
+          "bytes": 60767
+        },
+        {
+          "file": "talks/stills/d08-fit-forecast-timeline.png",
+          "sha256": "7cee397e5726151fab45f651354d89d8134bffeb94462724778104d1c15aefb0",
+          "bytes": 326925
+        },
+        {
+          "file": "talks/stills/d08-fit-forecast-timeline.pdf",
+          "sha256": "6c8e7c040b910d0884fd794b998ded2d9e053211127f1f06fba583dc09f050d9",
+          "bytes": 71662
+        }
+      ]
+    }
+  ],
+  "animations": []
+}

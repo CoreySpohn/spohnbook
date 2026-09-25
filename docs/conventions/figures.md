@@ -170,6 +170,26 @@ python tools/build_dust_figures.py
 
 which needs NumPy, Matplotlib, hwostyle, hwoutils and eyepiece 0.4.0 or later, downloads nothing, and writes 30 exports (five figures, light and dark, PNG/SVG/PDF) plus `dust-figure-manifest.json`. The manifest records each figure's question, status, fixture parameters, quantity and normalization; the source hashes; the spohnbook, eyepiece and hwostyle revisions; package versions; and a SHA-256 for every export. Each figure carries an eyepiece provenance stamp naming the script and source hash. Physical radiance is checked for finite, nonnegative values before any logarithmic display; only the sign-control panel bypasses that check, deliberately.
 
+## Explainer diagrams
+
+The chapters open their scientific explanations with physical overview diagrams: the objects, planes and measurements a reader should be able to point at before the first equation. Each comes from one module in `tools/explainers/`, which renders a light and a dark documentation still (PNG for the page, PDF as the vector export), a 16:9 slide still in `talks/stills/`, and, where motion teaches the mechanism, light and dark documentation videos in `docs/_static/explainers/` plus a talk video in `talks/animations/`. Speaker notes are in `talks/notes/`.
+
+| Diagram | Question answered | Home | Source |
+|---|---|---|---|
+| Observer construction, orbit elements, phase epochs; viewpoint and orbit videos | Where are the angles measured, from which axis and in which direction, and how does the orbit become the observed offset? | [Geometry and time](geometry-time.md) | `tools/explainers/d02_orbit_geometry.py` |
+| Radiometric collection, and the four-pixel reference | Which operation turns a density over wavelength, solid angle and area into the count in one pixel? | [Radiometry](radiometry-detectors.md), [reference case](../examples/photon-to-electron-reference.md) | `tools/explainers/d03_radiometric_collection.py` |
+| Optical planes and an OPD perturbation; plane-tour video | Where do fields and images live, and which steps keep complex amplitudes versus produce an intensity? | [Optics](optics-images.md) | `tools/explainers/d04_optical_planes.py` |
+| Acquisition schedule; accumulation video | Which terms grow with live time, which occur per frame or read, and why do live and elapsed time differ? | [Radiometry](radiometry-detectors.md) | `tools/explainers/d07_detector_acquisition.py` |
+| Experiment, record and model; fit and forecast timeline | Which objects exist in the simulated world, which are measured, and which are inferred? | [Measurements and records](inference-records.md), [fit and forecast](../examples/fit-and-forecast.md) | `tools/explainers/d08_experiment_record_model.py` |
+
+They are schematic teaching figures. Where a panel shows a computed quantity, the module's tests recompute every printed number independently of the libraries. Rebuild one module, or all of them, from the repository root with
+
+```sh
+python tools/build_explainer_figures.py --only d04
+```
+
+Each module writes its own manifest, `docs/conventions/figures/explainer-manifests/<module>.json`, with the caption, alternative text, scientific parameters, source hash, package versions and a SHA-256 for every output.
+
 ## Rebuild and provenance
 
 Install the plotting dependencies with `pip install numpy matplotlib hwostyle`

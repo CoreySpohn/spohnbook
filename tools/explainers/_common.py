@@ -149,7 +149,7 @@ DOC = Layout(
     marker_pt=7.0,
     stamp_pt=6.0,
     frame_budget=30,
-    anim_dpi=ep.PRESETS["docs"]["dpi"],
+    anim_dpi=150,
 )
 SLIDE = Layout(
     name="slide",
@@ -1366,6 +1366,9 @@ class FigureSpec:
             example ``"schematic, not to scale"`` or ``"illustrative
             calculation"``.
         params: Scientific inputs, recorded in the manifest.
+        venues: Layout names to render, a subset of ``("doc", "slide")``.
+            A talk-only still (one step of a slide relay) sets
+            ``("slide",)`` so no unused documentation files are written.
     """
 
     slug: str
@@ -1374,12 +1377,16 @@ class FigureSpec:
     alt: str
     status: str = "schematic, not to scale"
     params: dict = field(default_factory=dict)
+    venues: tuple = ("doc", "slide")
 
     def __post_init__(self):
         """Validate the slug and require a caption and alt text."""
         _check_slug(self.slug)
         if not self.caption.strip() or not self.alt.strip():
             msg = f"{self.slug}: caption and alt text are required"
+            raise ValueError(msg)
+        if not self.venues or not set(self.venues) <= {"doc", "slide"}:
+            msg = f"{self.slug}: venues must be a nonempty subset of doc, slide"
             raise ValueError(msg)
 
 
@@ -1404,7 +1411,7 @@ class AnimationScene:
 
 @dataclass(frozen=True)
 class AnimationSpec:
-    """One animation, rendered as a documentation player and a talk MP4.
+    """One animation, rendered as documentation videos and a talk MP4.
 
     Attributes:
         slug: Output name, ``dNN-words``; must differ from every figure slug.
@@ -1415,11 +1422,11 @@ class AnimationSpec:
             moves), ``"rate"`` (a rate is the concept) or ``"narration"`` (a
             live narration beat).
         caption: Caption for the documentation page.
-        alt: Alternative text for the player.
+        alt: Alternative text for the video.
         status: Honesty label for the provenance stamp.
         params: Scientific inputs, recorded in the manifest.
         fps: Playback rate; None uses eyepiece's preset for each venue.
-        hold_s: Seconds to hold the first and the last frame in the talk MP4.
+        hold_s: Seconds to hold the first and the last frame in every video.
         preview_frames: Frame indices written by ``--preview``; None picks
             the first, middle and last frames. Choose frames at events.
         allow_rescale: Permit axis limits or color norms to change between
