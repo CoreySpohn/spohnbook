@@ -226,3 +226,6 @@ uv.lock
 # Generated at documentation build time
 docs/_generated/
 docs/_evidence/
+
+# Explainer figure previews (tools/build_explainer_figures.py --preview)
+.explainer-preview/
