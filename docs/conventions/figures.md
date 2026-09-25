@@ -150,6 +150,26 @@ gates. A scalar fixed-schedule ensemble does not require a physical IFS or an
 adaptive policy. Individual extended applications inherit the gates for every
 capability they use.
 
+## Dust figures
+
+The [dust models chapter](dust-models.md) carries five further figures, built with eyepiece from the analytic fixtures in `tools/dust_reference_cases.py`. They are teaching figures and one negative control; none executes a library dust model.
+
+| Figure | Question answered | Light vector export | Status |
+|---|---|---|---|
+| 8. Rays and scattering angle | How can the same cloud be viewed from inside and outside, and which angle does the phase function take? | `dust-geometry-light.pdf` | Analytic fixture and schematic |
+| 9. Radiance and pixel flux | Why does resolution change a pixel value but not the integral? | `dust-sampling-light.pdf` | Analytic fixture |
+| 10. Spectral boundary | Where do wavelength, band, solid angle, zero point and QE enter? | `dust-radiometry-light.pdf` | Synthetic spectrum and schematic |
+| 11. Amplitude identifiability | Why can two parameter vectors make the same image? | `dust-identifiability-light.pdf` | Analytic fixture |
+| 12. Sign control | What does a negative line-of-sight weight look like on log and signed displays? | `dust-sign-control-light.pdf` | Negative control (deliberately wrong kernel) |
+
+Rebuild them from the repository root with
+
+```sh
+python tools/build_dust_figures.py
+```
+
+which needs NumPy, Matplotlib, hwostyle, hwoutils and eyepiece 0.4.0 or later, downloads nothing, and writes 30 exports (five figures, light and dark, PNG/SVG/PDF) plus `dust-figure-manifest.json`. The manifest records each figure's question, status, fixture parameters, quantity and normalization; the source hashes; the spohnbook, eyepiece and hwostyle revisions; package versions; and a SHA-256 for every export. Each figure carries an eyepiece provenance stamp naming the script and source hash. Physical radiance is checked for finite, nonnegative values before any logarithmic display; only the sign-control panel bypasses that check, deliberately.
+
 ## Rebuild and provenance
 
 Install the plotting dependencies with `pip install numpy matplotlib hwostyle`

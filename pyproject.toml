@@ -40,7 +40,7 @@ docs = [
     "pyyaml",
     "hwoutils",
     "hwostyle",
-    "eyepiece",
+    "eyepiece>=0.4.0",
     "orbix",
     "skyscapes",
     "optixstuff",

@@ -158,6 +158,24 @@ Findings bearing on [figures and color](../conventions/figures-and-color.md). Th
 | `color-eyepiece-corner-plots-hardcode-truth` | eyepiece corner plots hardcode the truth color and the density map | eyepiece | boundary anchors | historical report; reproduction unavailable | not recorded | not published |
 | `color-eyepiece-image-functions-take-map` | eyepiece image functions take map names, not roles, as their override | eyepiece | boundary anchors | historical report; reproduction unavailable | not recorded | not published |
 | `color-documentation-pages-call-maps-name` | documentation pages call maps by name where a role should exist | this handbook | boundary anchors | historical report; reproduction unavailable | not recorded | not published |
+(limitations-dust)=
+## Dust models
+
+Findings bearing on [dust models](../conventions/dust-models.md). The owner and gate columns are proposals, not completed work.
+
+| Identifier | Finding | Contract owner | Gates and acceptance fixture | Status | Affected versions | Evidence |
+|---|---|---|---|---|---|---|
+| `dust-inclination-path-weight-sign` | parametric disks return negative radiance above 90 degrees inclination because path weights keep the sign of the direction cosine | skyscapes | conventions / boundary anchors; Inclination sign control, Positive half-ray sphere | historical report; reproduction unavailable | not recorded | not published |
+| `dust-parametric-disks-sampled-brightness` | parametric disks return sampled brightness under a per-pixel flux contract. The same finding as `radiometry-parametric-disks-return-sampled-brightness`, listed here for its dust fixture. | skyscapes, coronagraphoto | conventions / boundary anchors / images and IFS; Radiance to pixels (shared with the radiometry chapter) | historical report; reproduction unavailable | not recorded | not published |
+| `dust-level-spectral-amplitude-degenerate` | dust level times free spectral amplitude is exactly degenerate | skyscapes, photomancy | conventions / fixed campaign; Amplitude product | historical report; reproduction unavailable | not recorded | not published |
+| `dust-vertical-bound-truncates-flared-column` | fixed vertical integration bound truncates the flared outer column | skyscapes | boundary anchors; support-expansion ladder | historical report; reproduction unavailable | not recorded | not published |
+| `dust-disk-wrappers-duplicate-stellar-distance` | disk wrappers duplicate stellar distance as their own field | skyscapes | boundary anchors; Distance doubling with distance owned by the star | historical report; reproduction unavailable | not recorded | not published |
+| `dust-composite-disks-lack-pixel-scale` | composite disks lack the pixel scale an image renderer requires, and equal extents do not guarantee equal shapes | skyscapes, coronagraphoto | boundary anchors / images and IFS; composite-to-renderer check | historical report; reproduction unavailable | not recorded | not published |
+| `dust-rasters-lack-flux-conserving-resampling` | imported rasters have no flux-conserving resampling | skyscapes | images and IFS; Radiance to pixels on a non-integer resample | historical report; reproduction unavailable | not recorded | not published |
+| `dust-exozodi-reference-radius-differs` | exozodi reference radius, luminosity scaling and radius convention differ between consumers | zodi, jaxedith, EXOSIMS and pyEDITH adapters | conventions / boundary anchors / ensembles and external references; one-zodi specification round trip | historical report; reproduction unavailable | not recorded | not published |
+| `dust-identity-absent-from-cached-rates` | dust identity is absent from cached rates, and detection-band brightness is reused for characterization | EXOSIMS adapters | fixed campaign / adaptive choice; cold and warm cache checks | historical report; reproduction unavailable | not recorded | not published |
+| `dust-thermal-color-normalization` | thermal-emission color normalization. An open validation case: a source-derived risk, not a certified numerical defect. | zodi, consumer adapters | ensembles and external references; open validation case | historical report; reproduction unavailable | not recorded | not published |
+
 (limitations-additional)=
 ## Further implementation records
 

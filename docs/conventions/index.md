@@ -45,6 +45,7 @@ A finding's stage is the earliest stage at which its repair is required.
 | What exactly does a flux, contrast, zodi value or count rate mean? | [Radiometry, detector counts, and spectral measurements](radiometry-detectors.md) |
 | Where is a pixel, how does roll act, and what does a PSFlet (the detector image of one lenslet's pupil) contain? | [Optical fields, image coordinates, and IFS products](optics-images.md) |
 | What data were actually reported, and what probability model interprets them? | [Measurements, probability, and records](inference-records.md) |
+| What does a dust brightness, a zodi level or an exozodi raster mean, and from which observer? | [Dust models: radiance, geometry, and normalization](dust-models.md) |
 | What do we build first, and what closes each gate? | The adoption stages above, the integration-stages figure in [the figure atlas](figures.md), and the [limitations page](../evidence/limitations.md) for each chapter |
 | Which colormap encodes this quantity, and which hue belongs to this plotted entity? | [Figures and color](figures-and-color.md) |
 | Which figures can I reuse or regenerate? | [the figure atlas](figures.md) |
@@ -53,8 +54,9 @@ A finding's stage is the earliest stage at which its repair is required.
 Every chapter starts with physical meaning, then equations and units, worked
 examples, adapter obligations, and acceptance fixtures. Its closing section
 links to the chapter's findings on the limitations page, which assigns each to
-an owner and a gate. The 81 findings include overlaps, positive anchors and
-future gaps; they are not 81 independent bugs.
+an owner and a gate. The 81 findings of the first five chapters, and the dust
+chapter's further nine, include overlaps, positive anchors and future gaps; they
+are not independent bugs.
 
 ## Three distinctions to preserve
 
@@ -166,6 +168,7 @@ geometry-time
 optics-images
 radiometry-detectors
 inference-records
+dust-models
 figures-and-color
 figures
 ```

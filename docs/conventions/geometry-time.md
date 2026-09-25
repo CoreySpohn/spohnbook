@@ -52,7 +52,7 @@ $$
 \frac{F_p}{F_\star}=A_g\left(\frac{R_p}{r}\right)^2\Phi(\alpha).
 $$
 
-The limiting phase-function values are zero, $1/\pi$, and one at new phase, quadrature, and full phase. At finite observer distance, use the actual planet-to-observer vector ({ref}`Savransky et al. 2019, Sec. 2.1, eq. 3 <source-savransky2019>`): $\cos\alpha=(-\mathbf r)\cdot(\mathbf R_{\rm obs}-\mathbf r)/(r\lVert\mathbf R_{\rm obs}-\mathbf r\rVert)$. The supplement identity is the distant-observer limit.
+The limiting phase-function values are zero, $1/\pi$, and one at new phase, quadrature, and full phase. At finite observer distance, use the actual planet-to-observer vector ({ref}`Savransky et al. 2019, Sec. 2.1, eq. 3 <source-savransky2019>`): $\cos\alpha=(-\mathbf r)\cdot(\mathbf R_{\rm obs}-\mathbf r)/(r\lVert\mathbf R_{\rm obs}-\mathbf r\rVert)$. The supplement identity is the distant-observer limit. For scattering by dust, the phase function takes the scattering (deflection) angle $\Theta=\pi-\alpha$, measured between the incident propagation direction and the direction toward the observer; [the dust models chapter](dust-models.md) defines it with the ray convention.
 
 **Proposed choice:** physical-model inputs carry `illumination_angle_rad`; an observer-axis angle has a different name. A grid must say whether it stores intrinsic reflection or apparent contrast. The latter includes $r^{-2}$ and cannot generally be indexed by phase alone: an eccentric face-on orbit with $e=0.5$ has identical phase at periapsis and apoapsis but a 9:1 brightness ratio. The {ref}`recorded limitations <limitations-geometry>` include reports that some current models and imported grids take the observer-axis angle in place of this illumination angle.
 

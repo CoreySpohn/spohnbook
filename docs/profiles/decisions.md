@@ -26,6 +26,10 @@ adaptive scheduler.
 | {ref}`Record envelope home <decision-record-envelope-home>` | Decided |
 | {ref}`Sampled campaign first <decision-sampled-campaign-first>` | Decided; spaceodyssey |
 | {ref}`Tolerances before tests <decision-tolerances-before-tests>` | Method required; domain and verification owners set budgets |
+| {ref}`Dust exchange profile <decision-dust-exchange-profile>` | Pending; zodi + skyscapes + ETC adapters |
+| {ref}`One-zodi specification <decision-one-zodi-specification>` | Pending; zodi + skyscapes + consumer adapters |
+| {ref}`Inclination and near side <decision-inclination-and-near-side>` | Pending; skyscapes, with the observer basis decision |
+| {ref}`Dust kernel ownership <decision-dust-kernel-ownership>` | Pending; zodi + skyscapes |
 | {ref}`One encoding per quantity <decision-one-encoding-per-quantity>` | Proposed; hwostyle + eyepiece |
 
 Other inherited choices include separate truth and model access, a
@@ -124,6 +128,42 @@ acquire uncertainty meaning by convention alone.
 **State and owner.** Method required; domain and verification owners set budgets
 
 **Required implementation evidence after profile selection.** Recorded error allocation, reference/configuration/source identity, positive and deliberately failing controls
+
+(decision-dust-exchange-profile)=
+## Dust exchange profile
+
+**Recommendation.** Exchange physical photon radiance with a named measure, frame and ray convention; derive legacy zodi ratios in the receiving adapter.
+
+**State and owner.** Pending; zodi + skyscapes + ETC adapters
+
+**Required implementation evidence after profile selection.** Positive half-ray sphere, radiance-to-pixels and band-conversion fixtures at the producer and each consumer
+
+(decision-one-zodi-specification)=
+## One-zodi specification
+
+**Recommendation.** Every dust amplitude names its definition family, reference star, radius, passband, viewing geometry and calibration identity; empirically different definitions stay distinct parameters.
+
+**State and owner.** Pending; zodi + skyscapes + consumer adapters
+
+**Required implementation evidence after profile selection.** Round trip of each consumer's dialect through the specification; distance-doubling fixture
+
+(decision-inclination-and-near-side)=
+## Inclination and near side
+
+**Recommendation.** Inclination in $[0,\pi]$ with positive path weights on both sides of $\pi/2$; the near side is the forward-scattering half. The angular-momentum sense follows the observer basis decision.
+
+**State and owner.** Pending; skyscapes, with the observer basis decision
+
+**Required implementation evidence after profile selection.** Inclination sign control and near-side forward-scattering anchors
+
+(decision-dust-kernel-ownership)=
+## Dust kernel ownership
+
+**Recommendation.** Run the arbitrary-observer kernel as a bounded experiment; decide its public owner and the constants treatment for a NumPy-only core from that evidence.
+
+**State and owner.** Pending; zodi + skyscapes
+
+**Required implementation evidence after profile selection.** Inside/outside views of one cloud against analytic limits and independent quadrature, with NumPy and JAX consumers
 
 (decision-one-encoding-per-quantity)=
 ## One encoding per quantity
