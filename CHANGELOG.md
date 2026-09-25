@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.0](https://github.com/CoreySpohn/spohnbook/compare/v0.0.2...v0.1.0) (2026-09-25)
+
+
+### Features
+
+* **book:** add shared explainer figure tooling and talk asset layout ([6c3d11b](https://github.com/CoreySpohn/spohnbook/commit/6c3d11be2ccdc1d93b3a6f7208ff871468f298ae))
+
 ## [0.0.2](https://github.com/CoreySpohn/spohnbook/compare/v0.0.1...v0.0.2) (2026-09-24)
 
 
