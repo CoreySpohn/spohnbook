@@ -176,9 +176,12 @@ The chapters open their scientific explanations with physical overview diagrams:
 
 | Diagram | Question answered | Home | Source |
 |---|---|---|---|
+| Observation overview, one variant per chapter; five-step talk relay | What physical system does the suite represent, and which part of it does this chapter discuss? | [Start here](../start-here.md), each chapter opening, [scene to detection](../examples/scene-to-detection.md) | `tools/explainers/d01_observation_overview.py` |
 | Observer construction, orbit elements, phase epochs; viewpoint and orbit videos | Where are the angles measured, from which axis and in which direction, and how does the orbit become the observed offset? | [Geometry and time](geometry-time.md) | `tools/explainers/d02_orbit_geometry.py` |
 | Radiometric collection, and the four-pixel reference | Which operation turns a density over wavelength, solid angle and area into the count in one pixel? | [Radiometry](radiometry-detectors.md), [reference case](../examples/photon-to-electron-reference.md) | `tools/explainers/d03_radiometric_collection.py` |
 | Optical planes and an OPD perturbation; plane-tour video | Where do fields and images live, and which steps keep complex amplitudes versus produce an intensity? | [Optics](optics-images.md) | `tools/explainers/d04_optical_planes.py` |
+| Lenslet IFS instrument, PSFlet placement and extraction; wavelength-scan video | How does one lenslet's light become a trace on the detector, and why are neighboring extracted bins correlated? | [Optics](optics-images.md) | `tools/explainers/d05_lenslet_ifs.py` |
+| Local zodiacal versus exozodiacal geometry; inclination-sweep video | Where is the observer relative to the dust, and which angles set the scattered brightness? | [Dust models](dust-models.md) | `tools/explainers/d06_dust_geometry.py` |
 | Acquisition schedule; accumulation video | Which terms grow with live time, which occur per frame or read, and why do live and elapsed time differ? | [Radiometry](radiometry-detectors.md) | `tools/explainers/d07_detector_acquisition.py` |
 | Experiment, record and model; fit and forecast timeline | Which objects exist in the simulated world, which are measured, and which are inferred? | [Measurements and records](inference-records.md), [fit and forecast](../examples/fit-and-forecast.md) | `tools/explainers/d08_experiment_record_model.py` |
 

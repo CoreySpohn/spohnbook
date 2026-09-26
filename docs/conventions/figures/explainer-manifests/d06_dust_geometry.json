@@ -1,0 +1,213 @@
+{
+  "module": "d06_dust_geometry",
+  "script": "tools/explainers/d06_dust_geometry.py",
+  "build_command": "python tools/build_explainer_figures.py --only d06",
+  "source_hash": "375d2e200ccb",
+  "source_sha256": {
+    "tools/explainers/d06_dust_geometry.py": "b23d87fa11efed5d96412c98dcea9ed7b600849719f9964bf66d932ea75eb105",
+    "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
+    "tools/explainers/_export.py": "b62dc95b9442fd3062fe8b1446626b4aea0e896263564843ab38c84fcf3e1dfc"
+  },
+  "stamp_date": "2026-09-25",
+  "revisions": {
+    "spohnbook": {
+      "commit": "58b2bdd",
+      "dirty": true
+    },
+    "eyepiece": {
+      "commit": "05e03c0",
+      "dirty": false
+    },
+    "hwostyle": {
+      "commit": "18e2644",
+      "dirty": false
+    }
+  },
+  "package_versions": {
+    "eyepiece": "0.4.1.dev22+g05e03c0b7",
+    "hwostyle": "1.1.1.dev8+g183fc366e.d20260811",
+    "hwoutils": "1.9.1.dev5+g453bf3fd0.d20260911",
+    "matplotlib": "3.11.0",
+    "numpy": "2.2.6"
+  },
+  "ffmpeg": "ffmpeg version 4.4.6 Copyright (c) 2000-2025 the FFmpeg developers",
+  "layouts": {
+    "doc": {
+      "name": "doc",
+      "width_in": 7.2,
+      "height_in": 3.6,
+      "dpi": 200,
+      "font_pt": 10.0,
+      "small_pt": 8.5,
+      "title_pt": 11.0,
+      "lw": 1.2,
+      "marker_pt": 7.0,
+      "stamp_pt": 6.0,
+      "frame_budget": 30,
+      "anim_dpi": 150
+    },
+    "slide": {
+      "name": "slide",
+      "width_in": 16.0,
+      "height_in": 9.0,
+      "dpi": 120,
+      "font_pt": 20.0,
+      "small_pt": 16.0,
+      "title_pt": 26.0,
+      "lw": 2.4,
+      "marker_pt": 14.0,
+      "stamp_pt": 9.0,
+      "frame_budget": null,
+      "anim_dpi": 120
+    }
+  },
+  "figures": [
+    {
+      "slug": "d06-dust-two-systems",
+      "status": "schematic, not to scale",
+      "caption": "Two separate systems, one scattering process (schematic, not to scale; the sections Rays, frames and angles and The single-scattering integral). Top, local zodiacal light: the telescope sits inside the Solar-system dust cloud, 1 AU from the Sun, and integrates along the half-ray $\\boldsymbol x(s)=\\boldsymbol x_{\\rm obs}+s\\hat{\\boldsymbol n}$, $s\\ge0$ (dashed integration arrow). (a) The view from the ecliptic north pole; the dotted circle is the Earth orbit at 1 AU. The sightline differs from the Sun in ecliptic longitude by $|\\lambda-\\lambda_\\odot|=135^\\circ$ (the arc) and rises $\\beta=30^\\circ$ above the ecliptic, so it is drawn projected; its true angle from the Sun, the solar elongation $\\epsilon$ with $\\cos\\epsilon=\\cos\\beta\\cos(\\lambda-\\lambda_\\odot)$, is $128^\\circ$. It is drawn at $\\lambda-\\lambda_\\odot=-135^\\circ$, and the Leinert table is symmetric in that sign. The cloud outline is a schematic extent, not a density model. The grain 1 AU along the sightline receives sunlight (yellow ray) and sends light to the telescope along $-\\hat{\\boldsymbol n}$ (green ray). Beside it the grain is drawn in its own scattering plane: scattering angle $\\Theta=154^\\circ$, measured from the incident propagation direction to $-\\hat{\\boldsymbol n}$ with $\\Theta=0$ forward, and illumination angle $\\alpha=\\pi-\\Theta=26^\\circ$. Bottom, exozodiacal light: the same telescope is about 10 pc from a host star, far outside its disk; the scale break marks the omitted distance. (b) The disk side on at inclination $i=60^\\circ$, in the plane of the sightline and the projected minor axis; the layer thickness is schematic. A midplane grain on the minor axis of the near half, the half toward the telescope in the chapter's proposed near-side profile, scatters forward at $\\Theta=90^\\circ-i=30^\\circ$ (inset); the sightline's path through the dust layer is highlighted and labeled. (c) The projected image of a synthetic GRaTeR disk (Augereau et al. 1999, section 3.1; edges 1.5 and 5 AU, Henyey-Greenstein asymmetry 0.4) at 550 nm, rendered by the skyscapes GraterDisk example implementation and divided by its peak: the forward-scattering near half is brighter. Its axes are the line of nodes and the projected minor axis, with the minor axis as in (b); the image is symmetric about the minor axis, and how the axes map to east and north depends on the pending observer basis. The circle marks the sightline of (b). The disk orientation is set independently of any planet orbit. The input lines name what each profile takes: the Leinert table (Leinert et al. 1998, section 8.1, equation 14) returns the brightness along one sightline from inside the cloud and supports no outside view; the parametric disk is evaluated for a distant observer from its density, phase function, orientation (inclination and position angle), stellar luminosity $L_\\star$ and distance $D$. Both pictures keep the chapter's scope: optically thin single scattering of a point star, with thermal emission, extinction and polarization excluded. The analytic ray-support and scattering-angle fixtures follow in {ref}`the dust geometry figure <fig-dust-geometry>`.",
+      "alt": "Two rows separated by a dotted line. Top row, local zodiacal light: a view from the ecliptic north pole with the Sun at the center of a hatched green cloud outline and a telescope on the dotted 1 AU Earth orbit; a thin sightline leaves the telescope at 135 degrees in longitude from the Sun with a dashed integration arrow beside it, and a grain 1 AU out on it receives a yellow ray from the Sun and sends a green ray back along the sightline to the telescope. Beside the view, the grain is magnified in its scattering plane with a scattering angle of 154 degrees and an illumination angle of 26 degrees, and notes say the sightline rises 30 degrees above the ecliptic and its solar elongation is 128 degrees. Bottom row, exozodiacal light: a disk seen side on, tilted 60 degrees from the sky plane, with near and far halves; a grain on the near half receives a yellow ray from the star and sends a purple ray along the sightline to a telescope 10 pc away beyond a scale break; a dashed integration arrow runs from the break through the disk, and the path through the dust layer is labeled; an inset gives a scattering angle of 30 degrees and an illumination angle of 150 degrees. Beside it, the projected image: an inclined ring whose upper, near half is brighter, with leaders to the near and far halves, a circle on the marked sightline and its 1.5 and 5 AU edges labeled.",
+      "params": {
+        "zodi": {
+          "ecliptic_lat_deg": 30.0,
+          "solar_lon_deg": 135.0,
+          "observer_distance_AU": 1.0,
+          "grain_distance_AU": 1.0,
+          "ray_length_AU": 1.6
+        },
+        "cloud_envelope_AU": {
+          "radius": 2.4,
+          "half_height": 0.8
+        },
+        "disk": {
+          "sma_AU": 3.0,
+          "alpha_in": 5.0,
+          "alpha_out": -3.0,
+          "ksi0_AU": 0.1,
+          "gamma": 2.0,
+          "beta": 1.0,
+          "rmin_AU": 1.5,
+          "rmax_AU": 5.0,
+          "g_HG": 0.4,
+          "albedo": 0.3,
+          "n_pix": 121,
+          "pixel_scale_arcsec": 0.0085,
+          "dist_pc": 10.0,
+          "n_slices_los": 41,
+          "wavelength_nm": 550.0
+        },
+        "incl_deg": 60.0,
+        "pa_deg": 0.0,
+        "grain_radius_AU": 3.0,
+        "layer_thickness_AU": 0.6,
+        "dynamic_range": 300.0
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d06-dust-two-systems-light.png",
+          "sha256": "34cf67676ee49a3bd62b8ff38e2bfd61c8ee350ccbbde79340b6fdb46af9930a",
+          "bytes": 388252
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d06-dust-two-systems-light.pdf",
+          "sha256": "c9f4adb8405982e5aa2c0d07b498d53648443f41788a805f5631ef1c669105c9",
+          "bytes": 94698
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d06-dust-two-systems-dark.png",
+          "sha256": "306285b01a15c02a952dd3242aaac148d5628007bb80ee48af426421d55b8d52",
+          "bytes": 379988
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d06-dust-two-systems-dark.pdf",
+          "sha256": "42dd96c98b6d9b3660f6b12ee37831d936d1e8daec7cc45ed7bcda897f7ea4f9",
+          "bytes": 94566
+        },
+        {
+          "file": "talks/stills/d06-dust-two-systems.png",
+          "sha256": "0dd4132932752dfaa586e808733f279817318488ca14c857655114dd848ea0a9",
+          "bytes": 346079
+        },
+        {
+          "file": "talks/stills/d06-dust-two-systems.pdf",
+          "sha256": "b7c7ba8b9fd2e97fcd55f9bd15b85501b30e89be4d76481520ba722259a8ba65",
+          "bytes": 75122
+        }
+      ]
+    }
+  ],
+  "animations": [
+    {
+      "slug": "d06-dust-inclination-sweep",
+      "status": "simulated example disk",
+      "ground": "viewpoint",
+      "caption": "The viewpoint changes, the disk does not (a simulated example with schematic geometry; the section Rays, frames and angles, inclination and near side, a proposed profile). The synthetic disk of the opening figure is seen at inclinations from 0 to 80 degrees with its density, position angle and distance fixed; the small disk-frame glyph shows the direction to the telescope turning while the disk stays put. Left: the sightline through a midplane grain 3 AU out on the near half's minor axis, with its path through the schematic dust layer highlighted and the integration running from the telescope beyond the scale break; the inset gives the grain's scattering angle $\\Theta=90^\\circ-i$ and illumination angle $\\alpha=\\pi-\\Theta$. Top: the disk's Henyey-Greenstein phase function (asymmetry 0.4) with the near-side grain at $\\Theta=90^\\circ-i$ and its far-side mirror at $\\Theta=90^\\circ+i$. Right: the skyscapes GraterDisk image at 550 nm, every frame on one logarithmic scale divided by the brightest frame; the circle is the same sightline. Two effects change the image as the disk tilts. The path through a thin layer lengthens as $h/|\\cos i|$, which brightens the whole ring. The near and far grains move to opposite ends of the phase function: from $i=0$ to $80^\\circ$ the near grain's $p(\\Theta)$ rises from 0.054 to 0.29 sr$^{-1}$ and the far grain's falls from 0.054 to 0.025 sr$^{-1}$, which brightens the near half and dims the far half, so the near half ends brighter than the far half. The sweep stops at 80 degrees, short of edge-on and of the pending sense of $i>90^\\circ$. Optically thin single scattering; thermal emission excluded.",
+      "alt": "Animation. Along the top: the title same disk, seen from different inclinations; a phase-function curve with a filled near-half dot and a hollow far-half dot moving apart as the inclination grows, named in a fixed key; and a small fixed disk with an arrow to the telescope swinging away from the disk normal. Below left: the disk side on, its midplane turning from vertical to nearly horizontal while a grain on its near half stays on a horizontal sightline to a telescope beyond a scale break, with the path through the dust layer highlighted and labeled and an inset giving the scattering angle as it falls from 90 degrees. Below right: the projected image on a fixed color scale, a ring that flattens into an ellipse and brightens, its near half more than its far half.",
+      "params": {
+        "zodi": {
+          "ecliptic_lat_deg": 30.0,
+          "solar_lon_deg": 135.0,
+          "observer_distance_AU": 1.0,
+          "grain_distance_AU": 1.0,
+          "ray_length_AU": 1.6
+        },
+        "cloud_envelope_AU": {
+          "radius": 2.4,
+          "half_height": 0.8
+        },
+        "disk": {
+          "sma_AU": 3.0,
+          "alpha_in": 5.0,
+          "alpha_out": -3.0,
+          "ksi0_AU": 0.1,
+          "gamma": 2.0,
+          "beta": 1.0,
+          "rmin_AU": 1.5,
+          "rmax_AU": 5.0,
+          "g_HG": 0.4,
+          "albedo": 0.3,
+          "n_pix": 121,
+          "pixel_scale_arcsec": 0.0085,
+          "dist_pc": 10.0,
+          "n_slices_los": 41,
+          "wavelength_nm": 550.0
+        },
+        "incl_deg": 60.0,
+        "pa_deg": 0.0,
+        "grain_radius_AU": 3.0,
+        "layer_thickness_AU": 0.6,
+        "dynamic_range": 300.0,
+        "sweep_deg": [
+          0.0,
+          80.0
+        ],
+        "sweep_frames": 49
+      },
+      "frames": {
+        "doc": 30,
+        "talk": 99
+      },
+      "revision": {
+        "commit": "58b2bdd",
+        "dirty": true
+      },
+      "outputs": [
+        {
+          "file": "docs/_static/explainers/explainer-d06-dust-inclination-sweep-light.mp4",
+          "sha256": "6e27d525bb7f2dd1754c49c2395b127d07911199e52b73dbe950ce72618f18be",
+          "bytes": 268185
+        },
+        {
+          "file": "docs/_static/explainers/explainer-d06-dust-inclination-sweep-dark.mp4",
+          "sha256": "2bad4082970fe65f8bc313db3bf832332699209b89b04c330af02e93e5939e53",
+          "bytes": 273878
+        },
+        {
+          "file": "talks/animations/d06-dust-inclination-sweep.mp4",
+          "sha256": "bdd09283f4d1dbd9b59d773975c763b2fefa8a60d15c33e78c04a5941f5faa9a",
+          "bytes": 519522
+        }
+      ]
+    }
+  ]
+}

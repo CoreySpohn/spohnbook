@@ -1,0 +1,883 @@
+{
+  "module": "d01_observation_overview",
+  "script": "tools/explainers/d01_observation_overview.py",
+  "build_command": "python tools/build_explainer_figures.py --only d01",
+  "source_hash": "d4c802862350",
+  "source_sha256": {
+    "tools/explainers/d01_observation_overview.py": "8e08fad05e6889f83f2dcbb1c9083e4cbcab70906dd273004f90729fef1165a7",
+    "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
+    "tools/explainers/_export.py": "b62dc95b9442fd3062fe8b1446626b4aea0e896263564843ab38c84fcf3e1dfc"
+  },
+  "stamp_date": "2026-09-25",
+  "revisions": {
+    "spohnbook": {
+      "commit": "58b2bdd",
+      "dirty": true
+    },
+    "eyepiece": {
+      "commit": "05e03c0",
+      "dirty": false
+    },
+    "hwostyle": {
+      "commit": "18e2644",
+      "dirty": false
+    }
+  },
+  "package_versions": {
+    "eyepiece": "0.4.1.dev22+g05e03c0b7",
+    "hwostyle": "1.1.1.dev8+g183fc366e.d20260811",
+    "hwoutils": "1.9.1.dev5+g453bf3fd0.d20260911",
+    "matplotlib": "3.11.0",
+    "numpy": "2.2.6"
+  },
+  "ffmpeg": null,
+  "layouts": {
+    "doc": {
+      "name": "doc",
+      "width_in": 7.2,
+      "height_in": 3.6,
+      "dpi": 200,
+      "font_pt": 10.0,
+      "small_pt": 8.5,
+      "title_pt": 11.0,
+      "lw": 1.2,
+      "marker_pt": 7.0,
+      "stamp_pt": 6.0,
+      "frame_budget": 30,
+      "anim_dpi": 150
+    },
+    "slide": {
+      "name": "slide",
+      "width_in": 16.0,
+      "height_in": 9.0,
+      "dpi": 120,
+      "font_pt": 20.0,
+      "small_pt": 16.0,
+      "title_pt": 26.0,
+      "lw": 2.4,
+      "marker_pt": 14.0,
+      "stamp_pt": 9.0,
+      "frame_budget": null,
+      "anim_dpi": 120
+    }
+  },
+  "figures": [
+    {
+      "slug": "d01-overview",
+      "status": "schematic of the simulation scope, not to scale",
+      "caption": "The physical observation, from a distant system to the products an analysis reports. Top row, physical light (solid arrows with filled heads): a host star, and a planet on an orbit in the midplane of an exozodiacal dust disk, seen side on, with the observer to the right along the positive z direction of the proposed observer-toward-positive-Z profile ({ref}`geometry-illumination`); the planet is on the far side, so the observer sees mostly its lit hemisphere. Reflected planet light, scattered dust light and starlight cross an interstellar distance that is not drawn to scale and enter a generic telescope aperture and coronagraph that end on a detector ({ref}`radiometry-response-ownership`), together with local zodiacal light from the dust cloud around the observer, a foreground along the same line of sight (the same scattering process seen from inside the cloud, {doc}`/conventions/dust-models`). Bottom row, data (hollow block arrows): a synthetic raw frame in which planet light, stellar leakage, exozodiacal light and the uniform local zodiacal floor share the same pixels; one record per visit $k$, with its epoch $t_k$, reporting event $D_k$, east and north offsets $(\\xi_k,\\eta_k)$, their covariance $C_k$ and its calibration revision ({ref}`records-reporting-law`, {ref}`records-covariance`, {ref}`records-identities`); and, in the inferred-orbit sky panel, posterior orbit draws given the positions measured on four visits, drawn with crosshairs of plus and minus one standard deviation, the visit shown in the raw frame ringed. The prior takes eccentricity uniform on [0, 0.6], the argument of periapsis and the mean anomaly at epoch uniform on the circle, and the semimajor axis, inclination and node angle Gaussian about the simulated values (standard deviations of 15 percent, 15 degrees and 15 degrees); six million prior samples are weighted by the Gaussian likelihood of the measured positions and thirty draws are taken by systematic resampling, so the draws gather along the measured arc and fan out on the unobserved one. Sky offsets follow the proposed observer profile of {ref}`geometry-observer-basis` (north, east, toward the observer, with the node angle measured from north toward east); the library outputs, which label the same rotated components right ascension and declination, are mapped into it by exchanging those two components. The inferred-orbit panel, the one sky panel on this map, is shown east to the left and north up, as its compass marks. The raw frame carries no compass: how detector rows and columns map to east and north depends on the roll and on the pending image-coordinate decision ({ref}`optics-roll-rotation`), so its pixels are placed as the sky would appear at zero roll under one possible mapping. The frame amplitudes are schematic, not a brightness ratio. Each outlined name locates the chapter that defines that part: Geometry and time, Dust models, Radiometry, Optical fields, and Measurements, probability, and records. An original schematic of the physical system this book's libraries simulate, not an identity, a convention or an instrument design.",
+      "alt": "A two-row schematic. Top row, left to right: a side view titled target system, side view, observer to the right, of a star with a planet inside a tilted, hatched dust disk, labeled star, planet and exozodiacal dust, with a dotted sky plane; yellow, cyan and purple rays labeled starlight, reflected and scattered leave the system toward the right, cross paired slash marks labeled interstellar distance, not to scale, and converge on an edge-on telescope aperture inside a green dotted cloud labeled local zodiacal dust, which sends two green rays nearly parallel to the others into the aperture; the beam continues through a rail labeled pupil, focal mask, Lyot stop and detector, captioned generic coronagraph, not a flight design. A hollow arrow labeled read out leads down to a small pixelated raw frame, titled raw frame, synthetic, with a saturated central stellar leakage, a planet blob, a faint dust arc and a noisy floor labeled local zodi, uniform floor. Hollow arrows labeled reduce and infer with an assumed model lead left to a card of records, one per visit, listing epoch t sub k, event D sub k, offsets xi sub k and eta sub k, covariance C sub k and calibration revision, and then to a sky panel with an east and north compass, the star at the center, four cyan measured positions, one ringed and labeled current visit, and a bundle of thin pink posterior orbit tracks, tight along the measured arc and fanning out on the opposite side. Small outlined tags name the chapter for each part: Geometry at the system, Dust at both dust clouds, Radiometry at the read out, Optics at the coronagraph and Records above the record card. A key at the top separates light arrows from data arrows and explains the tags, and a badge reads schematic of the simulation scope, not to scale.",
+      "params": {
+        "profile": "geometry chapter observer profile (proposed): (X, Y, Z) = (north, east, toward observer), r = R_Z(Omega) R_X(i) R_Z(omega_p) r_perifocal, offsets (xi, eta) = (east, north) = (Y, X) / d; library (RA, Dec) outputs mapped by exchanging their two sky components",
+        "scene": {
+          "dist_pc": 10.0,
+          "a_AU": 3.0,
+          "e": 0.05,
+          "i_deg": 60.0,
+          "W_deg": 30.0,
+          "w_deg": 0.0,
+          "M0_deg": 0.0,
+          "disk_incl_deg": 60.0,
+          "disk_pa_deg": 30.0,
+          "disk_r_in_AU": 1.0,
+          "disk_r_out_AU": 5.0,
+          "wavelength_nm": 550.0
+        },
+        "t_epoch_jd": 1186.0,
+        "t_visits_jd": [
+          870.0,
+          1030.0,
+          1186.0,
+          1345.0
+        ],
+        "frame": {
+          "n_pix": 25,
+          "pixel_arcsec": 0.04,
+          "oversample": 5,
+          "local_zodi": 10.0,
+          "exozodi_peak": 40.0,
+          "planet_total": 700.0,
+          "psf_sigma_pix": 0.8,
+          "leak_core": 2500.0,
+          "display_max": 300.0,
+          "leak_core_pix": 1.0,
+          "speckle_amp": 70.0,
+          "n_speckles": 6,
+          "speckle_radius_pix": 2.6,
+          "seed": 20260925
+        },
+        "draws": {
+          "n": 30,
+          "n_prior": 6000000,
+          "chunk": 500000,
+          "prior_a_frac": 0.15,
+          "prior_i_deg": 15.0,
+          "prior_W_deg": 15.0,
+          "prior_e_max": 0.6,
+          "astrometry_sigma_arcsec": 0.012,
+          "seed": 7
+        }
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-light.png",
+          "sha256": "ce2abf4e52f17815305859fd2f8eeaf1041a83f96c5b227918efd6e6b4392691",
+          "bytes": 277209
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-light.pdf",
+          "sha256": "aee19fef5bf12c426b115b723dcf3ea44c34372a564b5c770266373430739d4d",
+          "bytes": 92876
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-dark.png",
+          "sha256": "94d3a54afde895f3b001ca692e2c781645b4320c788662e335e07c65893c87f7",
+          "bytes": 270370
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-dark.pdf",
+          "sha256": "b576ccacbf2098d2001b1f46cb0231ec2693c6f2f6ed242e51546bc90c0f9fc8",
+          "bytes": 92805
+        },
+        {
+          "file": "talks/stills/d01-overview.png",
+          "sha256": "f63e97700fdfbd8ebf544bbc2cfb03a657b915cc64d16d2ca6547250eda7c278",
+          "bytes": 341079
+        },
+        {
+          "file": "talks/stills/d01-overview.pdf",
+          "sha256": "78286483cc38ded885eae6bdf64536b301416fc3ddd06be4320ac1020b13daa3",
+          "bytes": 101097
+        }
+      ]
+    },
+    {
+      "slug": "d01-overview-geometry",
+      "status": "schematic of the simulation scope, not to scale",
+      "caption": "Where this chapter sits in the physical observation: the target system and the direction to the observer, at full strength, with the rest of the map dimmed ({ref}`full map <fig-explainer-d01-overview>`). An original schematic of the physical system this book's libraries simulate, not an identity, a convention or an instrument design.",
+      "alt": "The observation map with the target system and the direction to the observer at full strength, its Geometry tag drawn bold and keyed as this chapter, and every other part faded toward the background. A two-row schematic. Top row, left to right: a side view titled target system, side view, observer to the right, of a star with a planet inside a tilted, hatched dust disk, labeled star, planet and exozodiacal dust, with a dotted sky plane; yellow, cyan and purple rays labeled starlight, reflected and scattered leave the system toward the right, cross paired slash marks labeled interstellar distance, not to scale, and converge on an edge-on telescope aperture inside a green dotted cloud labeled local zodiacal dust, which sends two green rays nearly parallel to the others into the aperture; the beam continues through a rail labeled pupil, focal mask, Lyot stop and detector, captioned generic coronagraph, not a flight design. A hollow arrow labeled read out leads down to a small pixelated raw frame, titled raw frame, synthetic, with a saturated central stellar leakage, a planet blob, a faint dust arc and a noisy floor labeled local zodi, uniform floor. Hollow arrows labeled reduce and infer with an assumed model lead left to a card of records, one per visit, listing epoch t sub k, event D sub k, offsets xi sub k and eta sub k, covariance C sub k and calibration revision, and then to a sky panel with an east and north compass, the star at the center, four cyan measured positions, one ringed and labeled current visit, and a bundle of thin pink posterior orbit tracks, tight along the measured arc and fanning out on the opposite side. Small outlined tags name the chapter for each part: Geometry at the system, Dust at both dust clouds, Radiometry at the read out, Optics at the coronagraph and Records above the record card. A key at the top separates light arrows from data arrows and explains the tags, and a badge reads schematic of the simulation scope, not to scale.",
+      "params": {
+        "highlight": "geometry",
+        "parts": [
+          "system",
+          "path"
+        ]
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-geometry-light.png",
+          "sha256": "750123e04b5edfe2834024c772abc11e26c57bafd8d4d2fc27837bbd5f6972d1",
+          "bytes": 245465
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-geometry-light.pdf",
+          "sha256": "d31d643493a7d8bc1cbcd3656858482ddec3a3eaa0912b0764fcac86be3375bd",
+          "bytes": 100438
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-geometry-dark.png",
+          "sha256": "9e3e6d361647b3f101ce5967ecd3740cf785de21890e466cbaab926894572ad7",
+          "bytes": 238722
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-geometry-dark.pdf",
+          "sha256": "4170edc400ffa9144c6bebc9f6799f442b97a4e8631a64d5be369fea3d0edc16",
+          "bytes": 100345
+        },
+        {
+          "file": "talks/stills/d01-overview-geometry.png",
+          "sha256": "77286478f8fee46ded9c3cb0d1fb274b7cd8e19a15d0f41d423052822d5bdc13",
+          "bytes": 300062
+        },
+        {
+          "file": "talks/stills/d01-overview-geometry.pdf",
+          "sha256": "17859ec6ead8762b45f0ed4dedf8ca67545f7c6104cab427967909706758fe96",
+          "bytes": 110230
+        }
+      ]
+    },
+    {
+      "slug": "d01-overview-dust",
+      "status": "schematic of the simulation scope, not to scale",
+      "caption": "Where this chapter sits in the physical observation: the exozodiacal disk and the local zodiacal cloud, at full strength, with the rest of the map dimmed ({ref}`full map <fig-explainer-d01-overview>`). An original schematic of the physical system this book's libraries simulate, not an identity, a convention or an instrument design.",
+      "alt": "The observation map with the exozodiacal disk and the local zodiacal cloud at full strength, its Dust tag drawn bold and keyed as this chapter, and every other part faded toward the background. A two-row schematic. Top row, left to right: a side view titled target system, side view, observer to the right, of a star with a planet inside a tilted, hatched dust disk, labeled star, planet and exozodiacal dust, with a dotted sky plane; yellow, cyan and purple rays labeled starlight, reflected and scattered leave the system toward the right, cross paired slash marks labeled interstellar distance, not to scale, and converge on an edge-on telescope aperture inside a green dotted cloud labeled local zodiacal dust, which sends two green rays nearly parallel to the others into the aperture; the beam continues through a rail labeled pupil, focal mask, Lyot stop and detector, captioned generic coronagraph, not a flight design. A hollow arrow labeled read out leads down to a small pixelated raw frame, titled raw frame, synthetic, with a saturated central stellar leakage, a planet blob, a faint dust arc and a noisy floor labeled local zodi, uniform floor. Hollow arrows labeled reduce and infer with an assumed model lead left to a card of records, one per visit, listing epoch t sub k, event D sub k, offsets xi sub k and eta sub k, covariance C sub k and calibration revision, and then to a sky panel with an east and north compass, the star at the center, four cyan measured positions, one ringed and labeled current visit, and a bundle of thin pink posterior orbit tracks, tight along the measured arc and fanning out on the opposite side. Small outlined tags name the chapter for each part: Geometry at the system, Dust at both dust clouds, Radiometry at the read out, Optics at the coronagraph and Records above the record card. A key at the top separates light arrows from data arrows and explains the tags, and a badge reads schematic of the simulation scope, not to scale.",
+      "params": {
+        "highlight": "dust",
+        "parts": [
+          "disk",
+          "local_zodi"
+        ]
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-dust-light.png",
+          "sha256": "d62e7daa46b8e8340c1100e120391a4720f7fb1d6f13a0540ba4f0c8109fd957",
+          "bytes": 244455
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-dust-light.pdf",
+          "sha256": "00cd9e5bbcdbd5e7b60b230eca77a47a006f1178f3af19e28b70992d8f84134f",
+          "bytes": 99615
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-dust-dark.png",
+          "sha256": "09bc0bb328bc311c8786519b46278fcb18a7f4bccd45a90caaaa75a5c0e669da",
+          "bytes": 236746
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-dust-dark.pdf",
+          "sha256": "d48adc309d8934df6bfa39db42cdfe0953666f80c5a268984674a1068dd25cad",
+          "bytes": 99524
+        },
+        {
+          "file": "talks/stills/d01-overview-dust.png",
+          "sha256": "85892a5e008f4c4c7c6d6ed0297bd7423f21322119f343569687fc103068e843",
+          "bytes": 297591
+        },
+        {
+          "file": "talks/stills/d01-overview-dust.pdf",
+          "sha256": "228a433255ce4e2a5961aba42c2e60ddb8e8e69fa1eba3e227be66fb2ddc9537",
+          "bytes": 109406
+        }
+      ]
+    },
+    {
+      "slug": "d01-overview-radiometry",
+      "status": "schematic of the simulation scope, not to scale",
+      "caption": "Where this chapter sits in the physical observation: the light arriving at the aperture and the counts in the detector pixels, at full strength, with the rest of the map dimmed ({ref}`full map <fig-explainer-d01-overview>`). An original schematic of the physical system this book's libraries simulate, not an identity, a convention or an instrument design.",
+      "alt": "The observation map with the light arriving at the aperture and the counts in the detector pixels at full strength, its Radiometry tag drawn bold and keyed as this chapter, and every other part faded toward the background. A two-row schematic. Top row, left to right: a side view titled target system, side view, observer to the right, of a star with a planet inside a tilted, hatched dust disk, labeled star, planet and exozodiacal dust, with a dotted sky plane; yellow, cyan and purple rays labeled starlight, reflected and scattered leave the system toward the right, cross paired slash marks labeled interstellar distance, not to scale, and converge on an edge-on telescope aperture inside a green dotted cloud labeled local zodiacal dust, which sends two green rays nearly parallel to the others into the aperture; the beam continues through a rail labeled pupil, focal mask, Lyot stop and detector, captioned generic coronagraph, not a flight design. A hollow arrow labeled read out leads down to a small pixelated raw frame, titled raw frame, synthetic, with a saturated central stellar leakage, a planet blob, a faint dust arc and a noisy floor labeled local zodi, uniform floor. Hollow arrows labeled reduce and infer with an assumed model lead left to a card of records, one per visit, listing epoch t sub k, event D sub k, offsets xi sub k and eta sub k, covariance C sub k and calibration revision, and then to a sky panel with an east and north compass, the star at the center, four cyan measured positions, one ringed and labeled current visit, and a bundle of thin pink posterior orbit tracks, tight along the measured arc and fanning out on the opposite side. Small outlined tags name the chapter for each part: Geometry at the system, Dust at both dust clouds, Radiometry at the read out, Optics at the coronagraph and Records above the record card. A key at the top separates light arrows from data arrows and explains the tags, and a badge reads schematic of the simulation scope, not to scale.",
+      "params": {
+        "highlight": "radiometry",
+        "parts": [
+          "path",
+          "local_zodi",
+          "aperture",
+          "frame",
+          "readout"
+        ]
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-radiometry-light.png",
+          "sha256": "018c57678a133727a722bdecf63f4869052b4e555eb50cde3848735ec926c1de",
+          "bytes": 249340
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-radiometry-light.pdf",
+          "sha256": "fa848d28522a3bdac874ae026a8132de392100d69c2cc6733bf0d76812bbcbaa",
+          "bytes": 99888
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-radiometry-dark.png",
+          "sha256": "a0bb2a8788be1b529cb1a728a7f7b670be3a2e11567a7fb1e6bc95ef74cb0513",
+          "bytes": 241719
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-radiometry-dark.pdf",
+          "sha256": "fae7e6731359c5c4f4e4941ed5adc163ec10244bf05b9cbcee7a4ade4f5ac6dd",
+          "bytes": 99786
+        },
+        {
+          "file": "talks/stills/d01-overview-radiometry.png",
+          "sha256": "e61f77b3e2d05a677a606100552c288502299e5d82d49dbf63380fd917346d4e",
+          "bytes": 303223
+        },
+        {
+          "file": "talks/stills/d01-overview-radiometry.pdf",
+          "sha256": "5e27208faa3b922f397a2c538971e9595f45c337b471ccf07fb2053eaae94bed",
+          "bytes": 108003
+        }
+      ]
+    },
+    {
+      "slug": "d01-overview-optics",
+      "status": "schematic of the simulation scope, not to scale",
+      "caption": "Where this chapter sits in the physical observation: the aperture, the coronagraph planes and the detector image, at full strength, with the rest of the map dimmed ({ref}`full map <fig-explainer-d01-overview>`). An original schematic of the physical system this book's libraries simulate, not an identity, a convention or an instrument design.",
+      "alt": "The observation map with the aperture, the coronagraph planes and the detector image at full strength, its Optics tag drawn bold and keyed as this chapter, and every other part faded toward the background. A two-row schematic. Top row, left to right: a side view titled target system, side view, observer to the right, of a star with a planet inside a tilted, hatched dust disk, labeled star, planet and exozodiacal dust, with a dotted sky plane; yellow, cyan and purple rays labeled starlight, reflected and scattered leave the system toward the right, cross paired slash marks labeled interstellar distance, not to scale, and converge on an edge-on telescope aperture inside a green dotted cloud labeled local zodiacal dust, which sends two green rays nearly parallel to the others into the aperture; the beam continues through a rail labeled pupil, focal mask, Lyot stop and detector, captioned generic coronagraph, not a flight design. A hollow arrow labeled read out leads down to a small pixelated raw frame, titled raw frame, synthetic, with a saturated central stellar leakage, a planet blob, a faint dust arc and a noisy floor labeled local zodi, uniform floor. Hollow arrows labeled reduce and infer with an assumed model lead left to a card of records, one per visit, listing epoch t sub k, event D sub k, offsets xi sub k and eta sub k, covariance C sub k and calibration revision, and then to a sky panel with an east and north compass, the star at the center, four cyan measured positions, one ringed and labeled current visit, and a bundle of thin pink posterior orbit tracks, tight along the measured arc and fanning out on the opposite side. Small outlined tags name the chapter for each part: Geometry at the system, Dust at both dust clouds, Radiometry at the read out, Optics at the coronagraph and Records above the record card. A key at the top separates light arrows from data arrows and explains the tags, and a badge reads schematic of the simulation scope, not to scale.",
+      "params": {
+        "highlight": "optics",
+        "parts": [
+          "aperture",
+          "instrument",
+          "frame"
+        ]
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-optics-light.png",
+          "sha256": "9944714c73ddf38f9520600c3d96d874668b9c3c712a886221ad977995e60de4",
+          "bytes": 247283
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-optics-light.pdf",
+          "sha256": "ed0382018fef4dcd19c7e746277233ee918c7d6d0a2813e8c1dafd8d1cbe6271",
+          "bytes": 98009
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-optics-dark.png",
+          "sha256": "22e119b1505bb1f2579c5d452a03c25b776dc376e06acbdfe82f130569c95696",
+          "bytes": 239646
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-optics-dark.pdf",
+          "sha256": "af891579153c93d0e55f999fb30734012ebb7cfdd91d51935130847cbab2aef1",
+          "bytes": 97911
+        },
+        {
+          "file": "talks/stills/d01-overview-optics.png",
+          "sha256": "32e705e25d79e4a2d08f28b939d89db963444ffc3b715c4271a24c4e85e3aa8b",
+          "bytes": 302839
+        },
+        {
+          "file": "talks/stills/d01-overview-optics.pdf",
+          "sha256": "3f333b8529dcbddf2d9aac7d708da1cd7609c86a04fe357705f91b37a7f4fd24",
+          "bytes": 106140
+        }
+      ]
+    },
+    {
+      "slug": "d01-overview-inference",
+      "status": "schematic of the simulation scope, not to scale",
+      "caption": "Where this chapter sits in the physical observation: the raw frame, the records and the inferred orbit, at full strength, with the rest of the map dimmed ({ref}`full map <fig-explainer-d01-overview>`). An original schematic of the physical system this book's libraries simulate, not an identity, a convention or an instrument design.",
+      "alt": "The observation map with the raw frame, the records and the inferred orbit at full strength, its Records tag drawn bold and keyed as this chapter, and every other part faded toward the background. A two-row schematic. Top row, left to right: a side view titled target system, side view, observer to the right, of a star with a planet inside a tilted, hatched dust disk, labeled star, planet and exozodiacal dust, with a dotted sky plane; yellow, cyan and purple rays labeled starlight, reflected and scattered leave the system toward the right, cross paired slash marks labeled interstellar distance, not to scale, and converge on an edge-on telescope aperture inside a green dotted cloud labeled local zodiacal dust, which sends two green rays nearly parallel to the others into the aperture; the beam continues through a rail labeled pupil, focal mask, Lyot stop and detector, captioned generic coronagraph, not a flight design. A hollow arrow labeled read out leads down to a small pixelated raw frame, titled raw frame, synthetic, with a saturated central stellar leakage, a planet blob, a faint dust arc and a noisy floor labeled local zodi, uniform floor. Hollow arrows labeled reduce and infer with an assumed model lead left to a card of records, one per visit, listing epoch t sub k, event D sub k, offsets xi sub k and eta sub k, covariance C sub k and calibration revision, and then to a sky panel with an east and north compass, the star at the center, four cyan measured positions, one ringed and labeled current visit, and a bundle of thin pink posterior orbit tracks, tight along the measured arc and fanning out on the opposite side. Small outlined tags name the chapter for each part: Geometry at the system, Dust at both dust clouds, Radiometry at the read out, Optics at the coronagraph and Records above the record card. A key at the top separates light arrows from data arrows and explains the tags, and a badge reads schematic of the simulation scope, not to scale.",
+      "params": {
+        "highlight": "inference",
+        "parts": [
+          "frame",
+          "records",
+          "orbit",
+          "data"
+        ]
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-inference-light.png",
+          "sha256": "d8f2c68f9b7dced3d604675e10d5468606d4666b8902f6f2cd6e314ae1be07be",
+          "bytes": 254362
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-inference-light.pdf",
+          "sha256": "e14d721ce04f427cf8b0c6bf66b26678f3b101b1348ff4e373587b6925f3f7e2",
+          "bytes": 99105
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-inference-dark.png",
+          "sha256": "4dbcd18a6fd8c0bfd367468656aa1317b217f314c1f5759cedfa693b0425fa40",
+          "bytes": 248434
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-inference-dark.pdf",
+          "sha256": "20c2c7f21fb4ac3d1e49051b00c0ceb08aae53218e2d3db07c7f5336aca3b5d8",
+          "bytes": 99001
+        },
+        {
+          "file": "talks/stills/d01-overview-inference.png",
+          "sha256": "1584a5af38b223647497849065625ca141f6fe5d95a8318434ea6a6c4b8d4d12",
+          "bytes": 313713
+        },
+        {
+          "file": "talks/stills/d01-overview-inference.pdf",
+          "sha256": "54d594abca379931a0c291a6035797882c2cae184b4d5f84fc153ee3ac46d60a",
+          "bytes": 107211
+        }
+      ]
+    },
+    {
+      "slug": "d01-overview-tutorial",
+      "status": "schematic of the simulation scope, not to scale",
+      "caption": "Where this tutorial sits in the physical observation: the scene, the instrument and the raw frame, at full strength, with the rest of the map dimmed ({ref}`full map <fig-explainer-d01-overview>`). An original schematic of the physical system this book's libraries simulate, not an identity, a convention or an instrument design.",
+      "alt": "The observation map with the scene, the instrument and the raw frame at full strength, a bold key line reading full strength: this tutorial, and every other part faded toward the background. A two-row schematic. Top row, left to right: a side view titled target system, side view, observer to the right, of a star with a planet inside a tilted, hatched dust disk, labeled star, planet and exozodiacal dust, with a dotted sky plane; yellow, cyan and purple rays labeled starlight, reflected and scattered leave the system toward the right, cross paired slash marks labeled interstellar distance, not to scale, and converge on an edge-on telescope aperture inside a green dotted cloud labeled local zodiacal dust, which sends two green rays nearly parallel to the others into the aperture; the beam continues through a rail labeled pupil, focal mask, Lyot stop and detector, captioned generic coronagraph, not a flight design. A hollow arrow labeled read out leads down to a small pixelated raw frame, titled raw frame, synthetic, with a saturated central stellar leakage, a planet blob, a faint dust arc and a noisy floor labeled local zodi, uniform floor. Hollow arrows labeled reduce and infer with an assumed model lead left to a card of records, one per visit, listing epoch t sub k, event D sub k, offsets xi sub k and eta sub k, covariance C sub k and calibration revision, and then to a sky panel with an east and north compass, the star at the center, four cyan measured positions, one ringed and labeled current visit, and a bundle of thin pink posterior orbit tracks, tight along the measured arc and fanning out on the opposite side. Small outlined tags name the chapter for each part: Geometry at the system, Dust at both dust clouds, Radiometry at the read out, Optics at the coronagraph and Records above the record card. A key at the top separates light arrows from data arrows and explains the tags, and a badge reads schematic of the simulation scope, not to scale.",
+      "params": {
+        "highlight": "tutorial",
+        "parts": [
+          "system",
+          "disk",
+          "path",
+          "local_zodi",
+          "aperture",
+          "instrument",
+          "readout",
+          "frame"
+        ]
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-tutorial-light.png",
+          "sha256": "8ede6fd188d1fad34981d5b6d99541bebd4066a0bcc21bb227886a0d534bca8c",
+          "bytes": 264066
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-tutorial-light.pdf",
+          "sha256": "28c52c6286d86c41cf758840b08cef51601b7c2d1bd6b4e45e7a8a827c80e907",
+          "bytes": 99233
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-tutorial-dark.png",
+          "sha256": "6a3ccd1405faee0d6633b332ae1cfaadb125e5193df22abcd4971e736a639208",
+          "bytes": 256280
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-overview-tutorial-dark.pdf",
+          "sha256": "3758ad06e19ca3f71aa8231c6b9321211b39a9718a71a53ac890729bd873dc2d",
+          "bytes": 99157
+        },
+        {
+          "file": "talks/stills/d01-overview-tutorial.png",
+          "sha256": "eb202e70a11e72fd88070bada1cd30e9f976a14de59f68e0372d397eb0705e7e",
+          "bytes": 323806
+        },
+        {
+          "file": "talks/stills/d01-overview-tutorial.pdf",
+          "sha256": "4b544b5d741a22b454e88af39407b072e54afebb468c5105bbdde113df43b983",
+          "bytes": 107390
+        }
+      ]
+    },
+    {
+      "slug": "d01-relay-1",
+      "status": "schematic; model brightness, noiseless",
+      "caption": "Step one of five: one scene. Left, the star, planet and exozodiacal disk side on, the observer to the right ({ref}`geometry-illumination`); right, the same disk's model surface brightness on the sky, east to the left and north up as the compass marks, with the star and planet positions marked. Sky offsets follow the proposed observer profile of {ref}`geometry-observer-basis` (north, east, toward the observer, with the node angle measured from north toward east); the library outputs, which label the same rotated components right ascension and declination, are mapped into it by exchanging those two components. Noiseless model. An original schematic of the physical system this book's libraries simulate, not an identity, a convention or an instrument design.",
+      "alt": "Two panels. Left: a side view of a star, a planet on its orbit and a hatched, tilted dust disk, with rays labeled starlight, reflected and scattered leaving to the right toward the observer. Right: a log-scaled sky image of the inclined dust ring with the star at the center, the planet marked, and east and north arrows.",
+      "params": {
+        "profile": "geometry chapter observer profile (proposed): (X, Y, Z) = (north, east, toward observer), r = R_Z(Omega) R_X(i) R_Z(omega_p) r_perifocal, offsets (xi, eta) = (east, north) = (Y, X) / d; library (RA, Dec) outputs mapped by exchanging their two sky components",
+        "scene": {
+          "dist_pc": 10.0,
+          "a_AU": 3.0,
+          "e": 0.05,
+          "i_deg": 60.0,
+          "W_deg": 30.0,
+          "w_deg": 0.0,
+          "M0_deg": 0.0,
+          "disk_incl_deg": 60.0,
+          "disk_pa_deg": 30.0,
+          "disk_r_in_AU": 1.0,
+          "disk_r_out_AU": 5.0,
+          "wavelength_nm": 550.0
+        },
+        "t_epoch_jd": 1186.0,
+        "t_visits_jd": [
+          870.0,
+          1030.0,
+          1186.0,
+          1345.0
+        ],
+        "frame": {
+          "n_pix": 25,
+          "pixel_arcsec": 0.04,
+          "oversample": 5,
+          "local_zodi": 10.0,
+          "exozodi_peak": 40.0,
+          "planet_total": 700.0,
+          "psf_sigma_pix": 0.8,
+          "leak_core": 2500.0,
+          "display_max": 300.0,
+          "leak_core_pix": 1.0,
+          "speckle_amp": 70.0,
+          "n_speckles": 6,
+          "speckle_radius_pix": 2.6,
+          "seed": 20260925
+        },
+        "draws": {
+          "n": 30,
+          "n_prior": 6000000,
+          "chunk": 500000,
+          "prior_a_frac": 0.15,
+          "prior_i_deg": 15.0,
+          "prior_W_deg": 15.0,
+          "prior_e_max": 0.6,
+          "astrometry_sigma_arcsec": 0.012,
+          "seed": 7
+        }
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-1-light.png",
+          "sha256": "5e463bd283871451dd071f20a9cc26c549d8772fa8443d7d704fe6945446b2c1",
+          "bytes": 128638
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-1-light.pdf",
+          "sha256": "e60c55c0aaa32f4e57ced406a05b22126e0ca833e093f98652973fba8534eb8a",
+          "bytes": 47677
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-1-dark.png",
+          "sha256": "c79111da90ebdf05e3533f96a40508fb935aa2b1a106d28966081a138fe44c2a",
+          "bytes": 126629
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-1-dark.pdf",
+          "sha256": "93fd54c7475abf324a1ae6a01ce6cd0f0aa0a28f35b855c57071f6621c0f2cf0",
+          "bytes": 47680
+        },
+        {
+          "file": "talks/stills/d01-relay-1.png",
+          "sha256": "63a989a235aeff5a605d841fccba02c3d807925cd39727bff7a8c1f8aaa9c343",
+          "bytes": 168990
+        },
+        {
+          "file": "talks/stills/d01-relay-1.pdf",
+          "sha256": "ff572e8314c3076bb74439b4f573751be32d43318d51377272db2c7e3234bbe4",
+          "bytes": 71983
+        }
+      ]
+    },
+    {
+      "slug": "d01-relay-2",
+      "status": "schematic, not to scale",
+      "caption": "Step two of five: the sky scene from step one, then its light entering a generic telescope aperture together with the local zodiacal light of the cloud around the observer, a foreground along the same line of sight, and a generic coronagraph ending on a detector ({ref}`radiometry-response-ownership`). Not a flight design. An original schematic of the physical system this book's libraries simulate, not an identity, a convention or an instrument design.",
+      "alt": "Two panels. Left: the sky image of the dust ring from the previous step, with east and north arrows. Right: yellow, cyan and purple rays, and two green rays from a dotted cloud nearly parallel to them, enter an edge-on aperture, then a rail of pupil, focal mask, Lyot stop and detector.",
+      "params": {
+        "profile": "geometry chapter observer profile (proposed): (X, Y, Z) = (north, east, toward observer), r = R_Z(Omega) R_X(i) R_Z(omega_p) r_perifocal, offsets (xi, eta) = (east, north) = (Y, X) / d; library (RA, Dec) outputs mapped by exchanging their two sky components",
+        "scene": {
+          "dist_pc": 10.0,
+          "a_AU": 3.0,
+          "e": 0.05,
+          "i_deg": 60.0,
+          "W_deg": 30.0,
+          "w_deg": 0.0,
+          "M0_deg": 0.0,
+          "disk_incl_deg": 60.0,
+          "disk_pa_deg": 30.0,
+          "disk_r_in_AU": 1.0,
+          "disk_r_out_AU": 5.0,
+          "wavelength_nm": 550.0
+        },
+        "t_epoch_jd": 1186.0,
+        "t_visits_jd": [
+          870.0,
+          1030.0,
+          1186.0,
+          1345.0
+        ],
+        "frame": {
+          "n_pix": 25,
+          "pixel_arcsec": 0.04,
+          "oversample": 5,
+          "local_zodi": 10.0,
+          "exozodi_peak": 40.0,
+          "planet_total": 700.0,
+          "psf_sigma_pix": 0.8,
+          "leak_core": 2500.0,
+          "display_max": 300.0,
+          "leak_core_pix": 1.0,
+          "speckle_amp": 70.0,
+          "n_speckles": 6,
+          "speckle_radius_pix": 2.6,
+          "seed": 20260925
+        },
+        "draws": {
+          "n": 30,
+          "n_prior": 6000000,
+          "chunk": 500000,
+          "prior_a_frac": 0.15,
+          "prior_i_deg": 15.0,
+          "prior_W_deg": 15.0,
+          "prior_e_max": 0.6,
+          "astrometry_sigma_arcsec": 0.012,
+          "seed": 7
+        }
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-2-light.png",
+          "sha256": "ff5e57fe554b25bc0c8c83e6a5affee79004b029189962ff275050a8faa145a9",
+          "bytes": 144871
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-2-light.pdf",
+          "sha256": "8816394c5bb1d9cd1559714e1692d423099aec10de45f8d19f34bbf9482def05",
+          "bytes": 68177
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-2-dark.png",
+          "sha256": "ea51fac308d875cbd1672e5d42b960dcd1beed5e73917732897e677cd1e8922a",
+          "bytes": 138361
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-2-dark.pdf",
+          "sha256": "524cb8f6820484a36825d4e0e7b68a21abc1ace3977ffa2130fd509b62ba609b",
+          "bytes": 68157
+        },
+        {
+          "file": "talks/stills/d01-relay-2.png",
+          "sha256": "13658d9e14506bf4087282e3d51133525d056bbb9ce2202a2e1e33fefd675cd6",
+          "bytes": 179382
+        },
+        {
+          "file": "talks/stills/d01-relay-2.pdf",
+          "sha256": "00a7fb424f1ded73138ffa3b7984eca3d0b9356d665df78ad7977e715745fa17",
+          "bytes": 86237
+        }
+      ]
+    },
+    {
+      "slug": "d01-relay-3",
+      "status": "synthetic frame, amplitudes schematic",
+      "caption": "Step three of five: the instrument from step two, then a synthetic raw frame of one visit in which planet light, stellar leakage, exozodiacal light and the uniform local zodiacal floor share the detector pixels ({ref}`radiometry-detector-counts`). One Poisson realization of schematic amplitudes. The raw frame carries no compass: how detector rows and columns map to east and north depends on the roll and on the pending image-coordinate decision ({ref}`optics-roll-rotation`), so its pixels are placed as the sky would appear at zero roll under one possible mapping. An original schematic of the physical system this book's libraries simulate, not an identity, a convention or an instrument design.",
+      "alt": "Two panels. Left: the instrument from the previous step. Right: a pixelated raw frame in a dark-to-bright colormap with a bright center labeled stellar leakage, a blob labeled planet, a faint arc labeled exozodi and a floor labeled local zodi, uniform floor.",
+      "params": {
+        "profile": "geometry chapter observer profile (proposed): (X, Y, Z) = (north, east, toward observer), r = R_Z(Omega) R_X(i) R_Z(omega_p) r_perifocal, offsets (xi, eta) = (east, north) = (Y, X) / d; library (RA, Dec) outputs mapped by exchanging their two sky components",
+        "scene": {
+          "dist_pc": 10.0,
+          "a_AU": 3.0,
+          "e": 0.05,
+          "i_deg": 60.0,
+          "W_deg": 30.0,
+          "w_deg": 0.0,
+          "M0_deg": 0.0,
+          "disk_incl_deg": 60.0,
+          "disk_pa_deg": 30.0,
+          "disk_r_in_AU": 1.0,
+          "disk_r_out_AU": 5.0,
+          "wavelength_nm": 550.0
+        },
+        "t_epoch_jd": 1186.0,
+        "t_visits_jd": [
+          870.0,
+          1030.0,
+          1186.0,
+          1345.0
+        ],
+        "frame": {
+          "n_pix": 25,
+          "pixel_arcsec": 0.04,
+          "oversample": 5,
+          "local_zodi": 10.0,
+          "exozodi_peak": 40.0,
+          "planet_total": 700.0,
+          "psf_sigma_pix": 0.8,
+          "leak_core": 2500.0,
+          "display_max": 300.0,
+          "leak_core_pix": 1.0,
+          "speckle_amp": 70.0,
+          "n_speckles": 6,
+          "speckle_radius_pix": 2.6,
+          "seed": 20260925
+        },
+        "draws": {
+          "n": 30,
+          "n_prior": 6000000,
+          "chunk": 500000,
+          "prior_a_frac": 0.15,
+          "prior_i_deg": 15.0,
+          "prior_W_deg": 15.0,
+          "prior_e_max": 0.6,
+          "astrometry_sigma_arcsec": 0.012,
+          "seed": 7
+        }
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-3-light.png",
+          "sha256": "ad151e617573a2255c6a7efc004176f616e84dd1d1a6b4618587d4fba0e73b57",
+          "bytes": 135696
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-3-light.pdf",
+          "sha256": "efe0bcc86aaf7c7beaf0baeb3df56938a160855019a8dfd6105eb4a1d95de40f",
+          "bytes": 58894
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-3-dark.png",
+          "sha256": "aa0a0b110ed235cfc7cf478883e8e04180005f4a701718993515b4e85fdd6474",
+          "bytes": 129473
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-3-dark.pdf",
+          "sha256": "e19490468d1db80e06c8626bd36eee99ebbc6cc795b56583d8d340c68e193987",
+          "bytes": 58881
+        },
+        {
+          "file": "talks/stills/d01-relay-3.png",
+          "sha256": "f05c80710a758190499d9b0c82294a1c14bda2e3bea572469c0298ab92c0be5b",
+          "bytes": 167490
+        },
+        {
+          "file": "talks/stills/d01-relay-3.pdf",
+          "sha256": "95b84903555feb6c9535f38dae02a24fc2fc58fa7c013b21aabd9305cb4aaa6d",
+          "bytes": 90038
+        }
+      ]
+    },
+    {
+      "slug": "d01-relay-4",
+      "status": "schematic",
+      "caption": "Step four of five: the raw frame from step three, then the record that visit $k$ reduces to: its epoch $t_k$, reporting event $D_k$, east and north offsets $(\\xi_k,\\eta_k)$, their covariance $C_k$ and its calibration revision ({ref}`records-reporting-law`, {ref}`records-covariance`, {ref}`records-identities`). The card lists what a record carries, not values. An original schematic of the physical system this book's libraries simulate, not an identity, a convention or an instrument design.",
+      "alt": "Two panels. Left: the raw frame from the previous step. Right: a record card listing epoch t sub k, event D sub k, offsets xi sub k and eta sub k, covariance C sub k and calibration revision.",
+      "params": {
+        "profile": "geometry chapter observer profile (proposed): (X, Y, Z) = (north, east, toward observer), r = R_Z(Omega) R_X(i) R_Z(omega_p) r_perifocal, offsets (xi, eta) = (east, north) = (Y, X) / d; library (RA, Dec) outputs mapped by exchanging their two sky components",
+        "scene": {
+          "dist_pc": 10.0,
+          "a_AU": 3.0,
+          "e": 0.05,
+          "i_deg": 60.0,
+          "W_deg": 30.0,
+          "w_deg": 0.0,
+          "M0_deg": 0.0,
+          "disk_incl_deg": 60.0,
+          "disk_pa_deg": 30.0,
+          "disk_r_in_AU": 1.0,
+          "disk_r_out_AU": 5.0,
+          "wavelength_nm": 550.0
+        },
+        "t_epoch_jd": 1186.0,
+        "t_visits_jd": [
+          870.0,
+          1030.0,
+          1186.0,
+          1345.0
+        ],
+        "frame": {
+          "n_pix": 25,
+          "pixel_arcsec": 0.04,
+          "oversample": 5,
+          "local_zodi": 10.0,
+          "exozodi_peak": 40.0,
+          "planet_total": 700.0,
+          "psf_sigma_pix": 0.8,
+          "leak_core": 2500.0,
+          "display_max": 300.0,
+          "leak_core_pix": 1.0,
+          "speckle_amp": 70.0,
+          "n_speckles": 6,
+          "speckle_radius_pix": 2.6,
+          "seed": 20260925
+        },
+        "draws": {
+          "n": 30,
+          "n_prior": 6000000,
+          "chunk": 500000,
+          "prior_a_frac": 0.15,
+          "prior_i_deg": 15.0,
+          "prior_W_deg": 15.0,
+          "prior_e_max": 0.6,
+          "astrometry_sigma_arcsec": 0.012,
+          "seed": 7
+        }
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-4-light.png",
+          "sha256": "4b2a1b7a5717ac9387b2b9984d0e33befe0cca3f7e383fd38ef3f1ae7ffec19a",
+          "bytes": 80740
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-4-light.pdf",
+          "sha256": "47a1a4e993876b6a638cce4dae8b8b243ce6e85e35fbdd973e81d1afcfda81fd",
+          "bytes": 41762
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-4-dark.png",
+          "sha256": "74a5cb8a161ad9ecb07ccc63905e9ef4f104c291a6f7962870c8fdefb13cda4a",
+          "bytes": 80726
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-4-dark.pdf",
+          "sha256": "97551b3a810c5d66b55fff29aaa16c92c963284f2400dc846a66f46d6d2678f1",
+          "bytes": 41754
+        },
+        {
+          "file": "talks/stills/d01-relay-4.png",
+          "sha256": "ebc27ac349e0cd4a7c637806469a8021e4f4d0e4638957089242d426e109ba03",
+          "bytes": 100355
+        },
+        {
+          "file": "talks/stills/d01-relay-4.pdf",
+          "sha256": "2e8aa8b60d2f2d7254f57760932b26ffcf19204df6280ec92290181739125f40",
+          "bytes": 79269
+        }
+      ]
+    },
+    {
+      "slug": "d01-relay-5",
+      "status": "simulated positions, posterior draws",
+      "caption": "Step five of five: the record card from step four, then the planet positions measured on four visits, with crosshairs of plus and minus one standard deviation, and posterior orbit draws given them ({ref}`records-reporting-law`); the ringed position is the visit of the raw frame in steps three and four. The sky panel is shown east to the left and north up, as its compass marks. The prior takes eccentricity uniform on [0, 0.6], the argument of periapsis and the mean anomaly at epoch uniform on the circle, and the semimajor axis, inclination and node angle Gaussian about the simulated values (standard deviations of 15 percent, 15 degrees and 15 degrees); six million prior samples are weighted by the Gaussian likelihood of the measured positions and thirty draws are taken by systematic resampling, so the draws gather along the measured arc and fan out on the unobserved one. Sky offsets follow the proposed observer profile of {ref}`geometry-observer-basis` (north, east, toward the observer, with the node angle measured from north toward east); the library outputs, which label the same rotated components right ascension and declination, are mapped into it by exchanging those two components. An original schematic of the physical system this book's libraries simulate, not an identity, a convention or an instrument design.",
+      "alt": "Two panels. Left: the record card from the previous step. Right: a sky panel with east and north arrows, the star at the center, four cyan measured positions, one ringed and labeled current visit, and a bundle of thin pink posterior orbit ellipses, tight where they pass through the measured positions and fanning out on the opposite side.",
+      "params": {
+        "profile": "geometry chapter observer profile (proposed): (X, Y, Z) = (north, east, toward observer), r = R_Z(Omega) R_X(i) R_Z(omega_p) r_perifocal, offsets (xi, eta) = (east, north) = (Y, X) / d; library (RA, Dec) outputs mapped by exchanging their two sky components",
+        "scene": {
+          "dist_pc": 10.0,
+          "a_AU": 3.0,
+          "e": 0.05,
+          "i_deg": 60.0,
+          "W_deg": 30.0,
+          "w_deg": 0.0,
+          "M0_deg": 0.0,
+          "disk_incl_deg": 60.0,
+          "disk_pa_deg": 30.0,
+          "disk_r_in_AU": 1.0,
+          "disk_r_out_AU": 5.0,
+          "wavelength_nm": 550.0
+        },
+        "t_epoch_jd": 1186.0,
+        "t_visits_jd": [
+          870.0,
+          1030.0,
+          1186.0,
+          1345.0
+        ],
+        "frame": {
+          "n_pix": 25,
+          "pixel_arcsec": 0.04,
+          "oversample": 5,
+          "local_zodi": 10.0,
+          "exozodi_peak": 40.0,
+          "planet_total": 700.0,
+          "psf_sigma_pix": 0.8,
+          "leak_core": 2500.0,
+          "display_max": 300.0,
+          "leak_core_pix": 1.0,
+          "speckle_amp": 70.0,
+          "n_speckles": 6,
+          "speckle_radius_pix": 2.6,
+          "seed": 20260925
+        },
+        "draws": {
+          "n": 30,
+          "n_prior": 6000000,
+          "chunk": 500000,
+          "prior_a_frac": 0.15,
+          "prior_i_deg": 15.0,
+          "prior_W_deg": 15.0,
+          "prior_e_max": 0.6,
+          "astrometry_sigma_arcsec": 0.012,
+          "seed": 7
+        }
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-5-light.png",
+          "sha256": "ba14c7b31ba7322ae2620383a41a4f638a22bed4620484dc186e5287a50b803c",
+          "bytes": 184667
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-5-light.pdf",
+          "sha256": "a1fb6bcced3928ca3a37acaf01619a4c9d05263053d8dfdc55858a3528cfecc7",
+          "bytes": 67494
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-5-dark.png",
+          "sha256": "328ed0675b33b9bf026cb6bf67716224a6d4c4b0db13b302e8692ce05d120081",
+          "bytes": 183598
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d01-relay-5-dark.pdf",
+          "sha256": "fce75a74b845f992bc03b2f660a0370db6103fd8b59803fbb786aa00ff3bef6f",
+          "bytes": 67506
+        },
+        {
+          "file": "talks/stills/d01-relay-5.png",
+          "sha256": "fef431231720c20505b4b54d4bb86b2024eedc9728afcd959c3d2e28acc52e55",
+          "bytes": 331944
+        },
+        {
+          "file": "talks/stills/d01-relay-5.pdf",
+          "sha256": "bcd26100905aba1b4eb24ed4d58fd1d317a940edad7f6074e4c714c30e73703d",
+          "bytes": 92802
+        }
+      ]
+    }
+  ],
+  "animations": []
+}
