@@ -2,16 +2,16 @@
   "module": "d13_angular_grids",
   "script": "tools/explainers/d13_angular_grids.py",
   "build_command": "python tools/build_explainer_figures.py --only d13",
-  "source_hash": "1e9f0a89dd19",
+  "source_hash": "540cf3beae7c",
   "source_sha256": {
-    "tools/explainers/d13_angular_grids.py": "bd28fecb4fbc210021a521d5e5ad90a7716f3c39a745d45b2c1b6ab1b2ded764",
+    "tools/explainers/d13_angular_grids.py": "2245eb74755d5ca657b0a0fc3f6386f27025280b94288136d536630a151f021d",
     "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
     "tools/explainers/_export.py": "b62dc95b9442fd3062fe8b1446626b4aea0e896263564843ab38c84fcf3e1dfc"
   },
   "stamp_date": "2026-09-25",
   "revisions": {
     "spohnbook": {
-      "commit": "ddaab96",
+      "commit": "adf999d",
       "dirty": true
     },
     "eyepiece": {
@@ -92,33 +92,33 @@
       "outputs": [
         {
           "file": "docs/conventions/figures/explainer-d13-angular-grids-light.png",
-          "sha256": "ec2c805210fcf11618310a726ca07d48e8043863eb320ee9fbb4c9db1afa04e8",
-          "bytes": 248870
+          "sha256": "77ce7907b5cb2c25065b69b5f39e31e78b724c4f8119c654c1bda96522854cac",
+          "bytes": 249500
         },
         {
           "file": "docs/conventions/figures/explainer-d13-angular-grids-light.pdf",
-          "sha256": "f2bb9bdf86a334565d13c98432a3450982d7bf2c7d905fef9be45a359c00e210",
-          "bytes": 63437
+          "sha256": "aee3a6844b7ac182cbae657b1668de20a935b1de2a1a484c7adc14b949bda274",
+          "bytes": 63872
         },
         {
           "file": "docs/conventions/figures/explainer-d13-angular-grids-dark.png",
-          "sha256": "47f414ed2a13240f066abeed2e0dce1af9b03078c3d7fbe6d2ea8c4ec7a719f7",
-          "bytes": 247857
+          "sha256": "1616cbc5a4bd359d67fd9c256b905019ef1a66e6c9495fe0ea2b10e3e5617202",
+          "bytes": 248494
         },
         {
           "file": "docs/conventions/figures/explainer-d13-angular-grids-dark.pdf",
-          "sha256": "5e851695d57d446025cfea0b7f2bfa0e40c524772df945eb60f197db9f31efa8",
-          "bytes": 63440
+          "sha256": "5af72a6ec0a38d70386a0a88c42e34e929d96dcdad3fdb4cb6d7c78657ad8cd9",
+          "bytes": 63877
         },
         {
           "file": "talks/stills/d13-angular-grids.png",
-          "sha256": "45fc399097f8d129db8c5926c489aaee68bb643c2477018e8262697a7ca5961f",
-          "bytes": 196827
+          "sha256": "adfedcb0eceaf79c6b66cb4eb929f76ba6366d1c4452618f419963b9cfdcd513",
+          "bytes": 197379
         },
         {
           "file": "talks/stills/d13-angular-grids.pdf",
-          "sha256": "118c5c410b594e4d049e4b2549c0927d91f61e892fa376f97e8327b5ff26458a",
-          "bytes": 59505
+          "sha256": "564bdfafcc2288b70c5dfe26d344c2c68c5441aba32e9ecc182c1b0c5752b8dc",
+          "bytes": 59942
         }
       ]
     }

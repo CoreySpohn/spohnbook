@@ -398,9 +398,8 @@ def test_manim_clips_use_the_matplotlib_encoder_command(tmp_path):
 
 @pytest.mark.manim
 def test_manim_readability_flags_small_crowded_and_outside_text():
-    import manim
-
     em = _manim_module()
+    import manim
     venue = em.Venue(ex.DOC, "light", 1080, 540, 10)
 
     class Check(em.ExplainerScene):

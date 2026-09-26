@@ -428,11 +428,12 @@ def build_strip(layout, cast):
     overlay.axis("off")
 
     axes = _panel_axes(fig, layout, g)
-    grid = np.array([axes[row] for row in ROW_KEYS], dtype=object)
-    images = [[data["power"][row][k] for k in range(3)] for row in ROW_KEYS]
-    result = ep.compare_grid(
+    # All six panels go to one compare_row call, so they share one norm.
+    flat = [ax for row in ROW_KEYS for ax in axes[row]]
+    images = [data["power"][row][k] for row in ROW_KEYS for k in range(3)]
+    result = ep.compare_row(
         images,
-        axes=grid,
+        axes=flat,
         norm="log",
         floor=p["power_floor"],
         extent=extent,
@@ -440,8 +441,8 @@ def build_strip(layout, cast):
         vmin=p["power_floor"],
         vmax=p["power_ceiling"],
     )
-    # One colorbar for both rows, beside the right column: with handed-in
-    # axes compare_grid hangs its colorbar beside the last cell only.
+    # One colorbar for both rows, beside the right column. The unreleased
+    # eyepiece compare_grid with a cax argument would replace this re-hang.
     result.artists["cbar"].remove()
     top_y = g["rows"]["fixed"] + size
     bottom_y = g["rows"]["native"]
@@ -453,7 +454,7 @@ def build_strip(layout, cast):
             (top_y - bottom_y) / height,
         ]
     )
-    cbar = fig.colorbar(result.artists["image"][0][0], cax=cax)
+    cbar = fig.colorbar(result.artists["image"][0], cax=cax)
     cbar.set_label("fraction of the source power per pixel")
 
     lw = 0.9 * cast.layout.lw
