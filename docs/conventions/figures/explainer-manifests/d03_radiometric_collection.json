@@ -2,16 +2,16 @@
   "module": "d03_radiometric_collection",
   "script": "tools/explainers/d03_radiometric_collection.py",
   "build_command": "python tools/build_explainer_figures.py --only d03",
-  "source_hash": "fb548785702b",
+  "source_hash": "8195a9a4a8b9",
   "source_sha256": {
-    "tools/explainers/d03_radiometric_collection.py": "6d06f6703f8cc3e46ceb245fd414af6351450d5c88c79c480ee448923b31e85b",
+    "tools/explainers/d03_radiometric_collection.py": "c79dcded5886ac145d4fbda1544507602d001686ffa1c26e63ee421b734547c3",
     "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
-    "tools/explainers/_export.py": "1dae7e6f79963cd53c3f8a4fbff06d493d0d674b97daf4d5916f31a15742c115"
+    "tools/explainers/_export.py": "b62dc95b9442fd3062fe8b1446626b4aea0e896263564843ab38c84fcf3e1dfc"
   },
   "stamp_date": "2026-09-25",
   "revisions": {
     "spohnbook": {
-      "commit": "6c3d11b",
+      "commit": "ddaab96",
       "dirty": true
     },
     "eyepiece": {
@@ -74,33 +74,76 @@
       "outputs": [
         {
           "file": "docs/conventions/figures/explainer-d03-radiometric-collection-light.png",
-          "sha256": "6858533014747701d42132af168433ff9ed5bd57afe98699937b0501b4b10cf2",
-          "bytes": 269050
+          "sha256": "405574b6bd7fdc869327945cf4e6402e17db122b06a479666b97133fc28276f8",
+          "bytes": 268630
         },
         {
           "file": "docs/conventions/figures/explainer-d03-radiometric-collection-light.pdf",
-          "sha256": "607b9e0bb2a62aa2887333885c30c7a4faa7fd2bc866ae03dd8df949a8a2fa5a",
-          "bytes": 321310
+          "sha256": "555d5ea1a30ee12119f0805ef63a6da9dcf10ed2a7619b6d702f89b112eae4f4",
+          "bytes": 321283
         },
         {
           "file": "docs/conventions/figures/explainer-d03-radiometric-collection-dark.png",
-          "sha256": "d8365d15092289f277a602a414061c09c39f9c247ddb853a90095f65005f75bb",
-          "bytes": 264282
+          "sha256": "972ce93ecf26ff41445c61a23cbcef2072c96f6fa49e7ac81c976175c2d8ff44",
+          "bytes": 263905
         },
         {
           "file": "docs/conventions/figures/explainer-d03-radiometric-collection-dark.pdf",
-          "sha256": "775f249c2a0de79f0c116bd02038f62596f271f2a0014bddadd9bee1dd4f9e9a",
-          "bytes": 321270
+          "sha256": "c1f9d9d39385fed526bc8178ec8b9a1a6632b82c7593f931ab9f69ba0a261f05",
+          "bytes": 321239
         },
         {
           "file": "talks/stills/d03-radiometric-collection.png",
-          "sha256": "22d8d4de3c130ed38475b38ad428c65597d3517684302b73093ecbbda3aa9e8b",
-          "bytes": 215163
+          "sha256": "9a294613a6debe0c6b2029349b3dfe178087c1b16bd694a902d2ab864ddb00ac",
+          "bytes": 214893
         },
         {
           "file": "talks/stills/d03-radiometric-collection.pdf",
-          "sha256": "89bbab706fb083e1d35a1649d1809945852fb340e5efde0a7857646d862ab962",
-          "bytes": 201587
+          "sha256": "53170a5333e5b2726a43a0f91e307aae0e8a5b114a50ff54869f223ace480f05",
+          "bytes": 201275
+        }
+      ]
+    },
+    {
+      "slug": "d03-collection-where",
+      "status": "schematic, not to scale",
+      "caption": "Where each factor of one pixel's count lives ({ref}`radiometry-pixel-brightness`, {ref}`radiometry-response-ownership`). Side views with light traveling to the right, one row per kind of source. Top, a point source at direction $\\boldsymbol{\\theta}$ with photon flux density $\\Phi_\\lambda$ sends parallel starlight into an aperture of area $A$; the optics transmit $T_{\\rm opt}(\\lambda)$; the image spreads over several pixels, and $P_p(\\lambda,\\boldsymbol{\\theta})$ is the share in pixel $p$ of a point source at direction $\\boldsymbol{\\theta}$; the detector converts photons to electrons with QE $q_p(\\lambda)$, so the electron rate per unit wavelength in $p$ is $A\\Phi_\\lambda T_{\\rm opt}P_p(\\lambda,\\boldsymbol{\\theta})q_p$. Bottom, an extended source with brightness $I_\\lambda(\\boldsymbol{\\theta})$. Straight lines through the lens center carry the dashed sky cell onto pixel $p$; the shaded cone with its vertex at the lens center is the solid angle $\\Omega_p$ of that cell. This idealized footprint is the cell of $\\Phi_{\\lambda,p}=\\int_{\\Omega_p}I_\\lambda\\,d\\Omega$. A direction one pixel pitch from the cell center, half a pitch beyond its edge, has its image centered on the neighboring pixel, on the opposite side of the axis because the image is inverted, and the spread of that image still reaches into $p$; light from inside the cell likewise spreads out of $p$. The pixel therefore receives $\\int I_\\lambda P_p(\\lambda,\\boldsymbol{\\theta})\\,d\\Omega$ over all directions, which replaces $\\Phi_\\lambda P_p$ in the expected-count integral. The part of each profile beside the pixel column that falls inside $p$ is shaded more heavily. Right, pixel $p$ face-on at one wavelength: an illustrative Airy image of an unobscured circular aperture, integrated over pixels one $\\lambda/D$ wide and shown on a logarithmic scale; the profiles at left are cuts through the same Airy pattern before pixel integration. The next figure, {ref}`the spectral integral for pixel p <fig-explainer-d03-collection-wavelength>`, opens with this face-on panel as its left panel. An original schematic of the chapter's expected-count integral, not to scale and not an instrument prescription.",
+      "alt": "Two side-view rows and a face-on panel. Top row, titled point source, A Phi lambda T opt P p of lambda and theta q p in p: a yellow star labeled point source Phi lambda at theta, in photon per second per square meter per nanometer, sends two parallel yellow rays, cut by scale breaks and labeled parallel starlight, to a vertical aperture bar labeled aperture A. A lens focuses them through a plate labeled optics T opt of lambda onto a column of seven detector pixels labeled detector QE q p of lambda, whose center pixel p is outlined. A gray profile beside the column peaks at pixel p, and its part inside p is shaded more heavily; the label reads image spread, share in p of a source at theta, P p of lambda and theta. Bottom row, titled extended source, integral of I lambda P p of lambda and theta d Omega replaces Phi lambda P p: a dotted green patch labeled extended source I lambda, in photon per second per square meter per nanometer per steradian, with a dashed sky cell of p, marked idealized. A lightly shaded cone labeled Omega p narrows from the cell to its vertex at the lens center, where an arc spans it; dotted gray lines from the cell edges cross at that vertex and end on the edges of pixel p. A green dot labeled outside Omega p sits above the cell; its green ray, with a small head, passes through the lens center and ends on the pixel just below p. The gray profile beside the column now peaks on that neighboring pixel, and its tail inside p is shaded more heavily, labeled its image reaches into p. A badge reads schematic, not to scale. Right: a face-on 7 by 7 pixel window titled face-on, P p of lambda and theta in p, with a spread point-source image at one wavelength on a log color scale and the center pixel p outlined.",
+      "params": {
+        "psf": "unobscured Airy, 1 lambda/D per pixel, 7 by 7 window",
+        "profile": "cut through the same Airy image, one wavelength",
+        "cell_mapping": "chief ray through the lens center, inverted"
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d03-collection-where-light.png",
+          "sha256": "5e815ae2cd550bf6ae0efc2d68062e3c0b3461a639f2a3e9c9a81c8b03ab560c",
+          "bytes": 158909
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d03-collection-where-light.pdf",
+          "sha256": "b9e07438b245f75fac308b7c31c14c364fa3b10b9eacedfe7a17458838da2c6b",
+          "bytes": 75250
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d03-collection-where-dark.png",
+          "sha256": "d0529365b9156aa5b75ea70ba939c49416be0cb1122f66380a9650f3455b95d4",
+          "bytes": 154273
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d03-collection-where-dark.pdf",
+          "sha256": "4dbd6f2668c160c2adbaa97a6f30cc7e29ce37ebb162cb50cab690f26078f839",
+          "bytes": 75213
+        },
+        {
+          "file": "talks/stills/d03-collection-where.png",
+          "sha256": "260fbc182eda285504d097bf67dfbfcb3977facd00e8e31fe374afa4e1acf78d",
+          "bytes": 202742
+        },
+        {
+          "file": "talks/stills/d03-collection-where.pdf",
+          "sha256": "378d098285154a78cb6de6a4efce9389362c280bf7e3f3cad74c9b5f08584e6f",
+          "bytes": 78188
         }
       ]
     },
@@ -113,33 +156,33 @@
       "outputs": [
         {
           "file": "docs/conventions/figures/explainer-d03-collection-wavelength-light.png",
-          "sha256": "7994e7ff898a9a4e14da0d10d4c2e744c723593abf3742b55aba3ed07aacec12",
-          "bytes": 100929
+          "sha256": "13b8485babb7d230e12e13644c8060411961d4a434a8eaf0140d15c67baadf8a",
+          "bytes": 100487
         },
         {
           "file": "docs/conventions/figures/explainer-d03-collection-wavelength-light.pdf",
-          "sha256": "8512690c5185847129540dcdbd2631ffcaa9327150e2fc43c5aae9201d8325c6",
-          "bytes": 97251
+          "sha256": "7a7013ef2eba22584606e2119a0c4285fc729c328cf9d3c04ab55fd7a0a82917",
+          "bytes": 97225
         },
         {
           "file": "docs/conventions/figures/explainer-d03-collection-wavelength-dark.png",
-          "sha256": "9279c8c0810d0b7aa00ef08a67134a728d7facb4e40e37bdc38d4af6b982ec83",
-          "bytes": 99629
+          "sha256": "8160cdd952df325857b1f76fd73674b9af1578e95723d9cfdd2c53960bacb79d",
+          "bytes": 99173
         },
         {
           "file": "docs/conventions/figures/explainer-d03-collection-wavelength-dark.pdf",
-          "sha256": "38fd6fb9fdcaef80e4b90b8c799e47b087c775e7e4a92a06d43ee5c5686c129c",
-          "bytes": 97240
+          "sha256": "dd17638bddab614e83e0123bca295893b0679dd13e5b08cd747efc1ffa3bfe8a",
+          "bytes": 97214
         },
         {
           "file": "talks/stills/d03-collection-wavelength.png",
-          "sha256": "144ecbf7caf06fefb7b809b50683ee44b3b0d2cb60a442c6e3215979cd6770e4",
-          "bytes": 168200
+          "sha256": "84858ca59c1e124e18de032568ebd0eb5f291003b30ed04c313e0cb54e08599e",
+          "bytes": 167933
         },
         {
           "file": "talks/stills/d03-collection-wavelength.pdf",
-          "sha256": "2327804a37f8a6384471379c313adf13c0949431c9597549ec05676a555fecb8",
-          "bytes": 105934
+          "sha256": "0847af2870e8d2820a43bf2a2e13ec7ac60e2ddb5c329fd020c5f23c6444e7a0",
+          "bytes": 105907
         }
       ]
     },
@@ -152,33 +195,33 @@
       "outputs": [
         {
           "file": "docs/conventions/figures/explainer-d03-collection-electrons-light.png",
-          "sha256": "bf8998836b2076feb800658ffd74b3606ea342723f269924dee5806d2291f87a",
-          "bytes": 113713
+          "sha256": "ae929965b3c0908e3dc136f043e8fab7a842d0a0fb7bb5eb95701f1a967188c8",
+          "bytes": 113257
         },
         {
           "file": "docs/conventions/figures/explainer-d03-collection-electrons-light.pdf",
-          "sha256": "8fab73027d17d106e68c8a77f18d4b9e6e75f0224da7aa218ea429116cae2ef6",
-          "bytes": 75899
+          "sha256": "bdc49cec172ef8a2fa2efa2a99fa02d394454503cf747a68cf27d8aa3f8a81b5",
+          "bytes": 75872
         },
         {
           "file": "docs/conventions/figures/explainer-d03-collection-electrons-dark.png",
-          "sha256": "20862b383793289c2d2b997b782263d7c718765ff355c113b94a598794d4b86f",
-          "bytes": 112488
+          "sha256": "e03a7d8151040092db5854769bd44ca348b5b36c6b4861c821c52294de40d832",
+          "bytes": 112013
         },
         {
           "file": "docs/conventions/figures/explainer-d03-collection-electrons-dark.pdf",
-          "sha256": "fd6316a7211fec375d79d3b7a38201d58ce1f85f9be64e6e76dc4050b56df539",
-          "bytes": 75894
+          "sha256": "0e89d2ac5374c4d8a6577d427df45cf5d9423163dd71e82f25ec495a6de7c96f",
+          "bytes": 75867
         },
         {
           "file": "talks/stills/d03-collection-electrons.png",
-          "sha256": "840d39745cb2e24c8ab38553163cd9b14710445133b2e93e4dc6767ae82057af",
-          "bytes": 184159
+          "sha256": "8c80f8ff8a157d2bd49ef7b997b8a7c5b19a47831407eb044c32e026c84cd598",
+          "bytes": 183916
         },
         {
           "file": "talks/stills/d03-collection-electrons.pdf",
-          "sha256": "44ca04584dcfc5bbefda65828b85b7cd9e027b37e835f5909516b6c528a7b52a",
-          "bytes": 80738
+          "sha256": "683016edfaa4ed747cf85bd33c5f9725d58de37c97d109c916da2b66b5d3d499",
+          "bytes": 80715
         }
       ]
     },
@@ -203,33 +246,33 @@
       "outputs": [
         {
           "file": "docs/conventions/figures/explainer-d03-four-pixel-reference-light.png",
-          "sha256": "a7c8e2f4ce1c6b7121a3814e5e2898417cfa45640f2d3e962230e7494068c8d5",
-          "bytes": 141106
+          "sha256": "2711de38072dfa276458a612c936eb2f5a6b58f40f36b05fdeb4074c16709205",
+          "bytes": 140449
         },
         {
           "file": "docs/conventions/figures/explainer-d03-four-pixel-reference-light.pdf",
-          "sha256": "10ab36cb21afd5254f6ac158cb200e9d9748a9d932595fc467a7a90f10e30cf1",
-          "bytes": 219344
+          "sha256": "a8efb5f20614d9718d2931e5f15dd0491f55203e0ef118f1daf64dabad1c9fb6",
+          "bytes": 219505
         },
         {
           "file": "docs/conventions/figures/explainer-d03-four-pixel-reference-dark.png",
-          "sha256": "5eef6c250d58db309ba601b71726c4ee8c2dc5010194a07c72e3b948e6c5208e",
-          "bytes": 139314
+          "sha256": "0c76d1d30af8118d2766fa79ad0e94799b6d421db07ada820ea7934dea42512e",
+          "bytes": 138662
         },
         {
           "file": "docs/conventions/figures/explainer-d03-four-pixel-reference-dark.pdf",
-          "sha256": "2e4bc808293562b7a752732c5a178e1e0441193b228ac47aa25c0f001a390d96",
-          "bytes": 219328
+          "sha256": "12820fb8171f57848fe8d2431476fd1d20085175186942acbb5489eea174e73f",
+          "bytes": 219489
         },
         {
           "file": "talks/stills/d03-four-pixel-reference.png",
-          "sha256": "a3abbfea39ac2e497150f01d60a7cfb56f39969e357bd600176519c3cb478b5d",
-          "bytes": 194176
+          "sha256": "c4d9f208052d46afe86a1e1cea11a6f7b0dbe1a62e6c642d3f2f2b1ee5f64a88",
+          "bytes": 193842
         },
         {
           "file": "talks/stills/d03-four-pixel-reference.pdf",
-          "sha256": "198027ea8cdae02ad9db1ad6c675a52850c4cd07a88fda938c2bc7c9db282d5a",
-          "bytes": 203927
+          "sha256": "bd7537047abc779b595088ef6f500644a8552e33ed2d56ec408300f2a16fc586",
+          "bytes": 204088
         }
       ]
     }

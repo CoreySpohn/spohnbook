@@ -289,3 +289,382 @@ def test_caption_claims_about_the_forecasts(forecast):
     peak = max(near(c) for c in range(-150, 160, 5))
     assert near(median) < 0.5 * peak
     assert "bimodal" in d08.FORECAST_CAPTION
+
+
+# The three-piece relay: boundary, record under a reporting law, campaign loop.
+
+# The three relay slugs, their builders and the short names used below.
+SLUGS = {
+    "boundary": ("d08-information-boundary", d08.build_boundary),
+    "reporting": ("d08-record-reporting-law", d08.build_reporting_law),
+    "campaign": ("d08-campaign-timeline", d08.build_campaign),
+}
+PIECES = {name: build for name, (_, build) in SLUGS.items()}
+
+
+def test_split_slugs_are_registered_with_their_builders():
+    specs = {spec.slug: spec for spec in d08.FIGURES}
+    for slug, build in SLUGS.values():
+        assert specs[slug].build is build
+        assert specs[slug].venues == ("doc", "slide")
+    # The overview and the forecast keep their slugs.
+    assert "d08-experiment-record-model" in specs
+    assert "d08-fit-forecast-timeline" in specs
+
+
+def _ends(patch):
+    """Tail and head of an arrow patch, in data coordinates."""
+    (x0, y0), (x1, y1) = patch._posA_posB
+    return (x0, y0), (x1, y1)
+
+
+def _collect(fig):
+    ax = fig.axes[0]
+    texts = [t for t in fig.findobj(matplotlib.text.Text) if t.get_text()]
+    return {
+        "texts": {t.get_gid(): t.get_text() for t in texts if t.get_gid()},
+        "text_pos": {t.get_gid(): t.get_position() for t in texts if t.get_gid()},
+        "all_text": [t.get_text() for t in texts],
+        "patches": {p.get_gid(): p for p in ax.patches if p.get_gid()},
+        "lines": {ln.get_gid(): ln for ln in ax.lines if ln.get_gid()},
+        "arrows": [
+            p for p in ax.patches if isinstance(p, matplotlib.patches.FancyArrowPatch)
+        ],
+        "images": sorted(ax.get_images(), key=lambda im: -im.get_extent()[2]),
+        "ax": ax,
+    }
+
+
+@pytest.fixture(scope="module")
+def pieces():
+    out = {}
+    with exporter.venue("light", ex.DOC) as cast:
+        for name, build in PIECES.items():
+            fig = build(ex.DOC, cast)
+            fig.canvas.draw()
+            out[name] = _collect(fig)
+            out[name]["fig"] = fig
+    yield out
+    for piece in out.values():
+        plt.close(piece["fig"])
+
+
+@pytest.mark.parametrize("mode", ["light", "dark"])
+@pytest.mark.parametrize("layout", [ex.DOC, ex.SLIDE], ids=["doc", "slide"])
+@pytest.mark.parametrize("name", list(PIECES), ids=[s for s, _ in SLUGS.values()])
+def test_split_labels_carry_no_stroked_halo(name, layout, mode):
+    with exporter.venue(mode, layout) as cast:
+        fig = PIECES[name](layout, cast)
+        stroked = [
+            t.get_text()
+            for t in fig.findobj(matplotlib.text.Text)
+            if t.get_path_effects()
+        ]
+        size = tuple(fig.get_size_inches())
+        plt.close(fig)
+    assert stroked == []
+    assert size[0] == pytest.approx(layout.width_in)
+
+
+def test_boundary_only_the_record_crosses_into_the_model_zone(pieces):
+    # The model and policy zone lies right of the second divider and above
+    # the simulation-only evaluation band.
+    p = pieces["boundary"]
+    in_zone = lambda xy: xy[0] > 10.4 and xy[1] > 3.25  # noqa: E731
+    blocked = {p["patches"]["blocked-truth"], p["patches"]["blocked-scores"]}
+    entering = [
+        a for a in p["arrows"] if in_zone(_ends(a)[1]) and not in_zone(_ends(a)[0])
+    ]
+    allowed = [a for a in entering if a not in blocked]
+    assert len(allowed) == 1
+    glyph = p["patches"]["record-glyph"]
+    tail = _ends(allowed[0])[0]
+    right_edge = glyph.get_x() + glyph.get_width()
+    assert tail[0] == pytest.approx(right_edge, abs=0.1)
+    assert glyph.get_y() <= tail[1] <= glyph.get_y() + glyph.get_height()
+    # The scores arrow is the one crossed arrow into the zone; the truth arrow
+    # is cut where it would leave the simulated world.
+    assert p["patches"]["blocked-scores"] in entering
+    # The crossed truth arrow aims at the inference model, its head across
+    # the zone line, and is struck through just after it leaves the world.
+    (tx, _), (hx, hy) = _ends(p["patches"]["blocked-truth"])
+    assert tx < 4.6
+    box = p["patches"]["inference-box"]
+    assert hx > 10.4
+    assert hx == pytest.approx(box.get_x(), abs=0.2)
+    assert box.get_y() <= hy <= box.get_y() + box.get_height()
+    (cx,) = p["lines"]["blocked-truth-cross"].get_xdata()
+    assert 4.6 < cx < 5.5
+
+
+def test_boundary_truth_reaches_only_detector_and_evaluation(pieces):
+    p = pieces["boundary"]
+    truth = p["patches"]["truth-record"]
+    noise = p["patches"]["noise-draw"]
+    lane = p["patches"]["truth-lane"]
+    evaluation = p["patches"]["evaluation-box"]
+    right = truth.get_x() + truth.get_width()
+    for arrow in (noise, lane):
+        (x0, _), _ = _ends(arrow)
+        assert x0 == pytest.approx(right, abs=0.15)
+    _, (nx, ny) = _ends(noise)
+    assert 6.1 <= nx <= 6.36 and ny < 5.2  # the detector's lower edge
+    _, (lx, _) = _ends(lane)
+    assert lx == pytest.approx(evaluation.get_x(), abs=0.15)
+    joined = " ".join(p["all_text"])
+    assert "no path: truth never" in joined
+    assert "no path:\nscores" in joined
+    divider = p["texts"]["evaluation-divider-label"]
+    assert divider.replace("\n", "") == "below: simulation-only scoring"
+
+
+def test_record_glyph_uses_the_chapter_symbols(pieces):
+    joined = " ".join(pieces["boundary"]["all_text"])
+    for symbol in (r"$R_k$", r"$t_k$", r"$D_k$", r"$(\xi_k, \eta_k)$", r"$C_k$"):
+        assert symbol in joined
+    assert "if reported:" in joined
+    assert "when reported" in d08.BOUNDARY_CAPTION
+
+
+def _inside(patch, texts):
+    x0, y0 = patch.get_x(), patch.get_y()
+    x1, y1 = x0 + patch.get_width(), y0 + patch.get_height()
+    return sorted(
+        t.get_text()
+        for t in texts
+        if x0 <= t.get_position()[0] <= x1 and y0 <= t.get_position()[1] <= y1
+    )
+
+
+def test_carried_elements_are_drawn_identically(pieces):
+    # The carried panel of a relay is the same constructor at the same size.
+    def card(name, gid):
+        p = pieces[name]
+        patch = p["patches"][gid]
+        texts = p["ax"].texts
+        return (patch.get_width(), patch.get_height(), _inside(patch, texts))
+
+    boundary, reporting = (
+        card("boundary", "record-glyph"),
+        card("reporting", "record-glyph"),
+    )
+    assert boundary[:2] == reporting[:2]
+    # The same card, with the example's fields swapped in.
+    assert set(boundary[2]) - set(reporting[2]) == {r"$(\xi_k, \eta_k)$,  $C_k$"}
+    assert set(reporting[2]) - set(boundary[2]) == {r"$F_k$,  $\sigma^2$"}
+    swap = pieces["reporting"]["texts"]["swap-note"].replace("\n", " ")
+    assert "flux F in place of the offsets" in swap
+    assert "in place of $C_k$" in swap
+    assert card("boundary", "policy-box") == card("campaign", "policy-box")
+    for name in ("reporting", "campaign"):
+        assert "information-" in pieces[name]["texts"]["carried-tag"]
+        assert "boundary figure" in pieces[name]["texts"]["carried-tag"]
+
+
+@pytest.fixture(scope="module")
+def reporting(pieces):
+    p = pieces["reporting"]
+    ax = p["ax"]
+    fluxes = {}
+    for k in (1, 2):
+        (marker,) = [ln for ln in ax.lines if ln.get_gid() == f"flux-visit{k}"]
+        fluxes[k] = marker
+    bars = [
+        c
+        for c in ax.collections
+        if isinstance(c, matplotlib.collections.LineCollection)
+    ]
+    return {
+        **p,
+        "pixels": [im.get_array().data.copy() for im in p["images"]],
+        "markers": fluxes,
+        "bars": bars,
+    }
+
+
+def _page_to_flux(reporting):
+    # The axis scale read back from the drawn 0 and 100 tick labels.
+    x0 = reporting["text_pos"]["f-tick-0"][0]
+    x100 = reporting["text_pos"]["f-tick-100"][0]
+    assert reporting["texts"]["f-tick-0"] == "0"
+    assert reporting["texts"]["f-tick-100"] == "100"
+    return lambda x: 100.0 * (x - x0) / (x100 - x0)
+
+
+def test_reporting_markers_sit_at_the_hand_computed_flux(reporting):
+    to_flux = _page_to_flux(reporting)
+    assert len(reporting["pixels"]) == 2
+    for k, pixels in enumerate(reporting["pixels"], start=1):
+        flux = _aperture_sum(pixels)
+        (x,) = reporting["markers"][k].get_xdata()
+        assert to_flux(x) == pytest.approx(flux, abs=1e-9)
+        label = reporting["texts"][f"flux-label-visit{k}"]
+        assert f"$F_{k}$" in label
+        assert _number(label.split("=")[1]) == pytest.approx(round(flux, 1))
+    f1 = _aperture_sum(reporting["pixels"][0])
+    f2 = _aperture_sum(reporting["pixels"][1])
+    assert f1 > 30.0 >= f2
+
+
+def test_reporting_threshold_and_sigma_are_drawn_to_scale(reporting):
+    to_flux = _page_to_flux(reporting)
+    line = reporting["lines"]["threshold-line"]
+    xs = set(line.get_xdata())
+    assert len(xs) == 1
+    assert to_flux(xs.pop()) == pytest.approx(30.0)
+    assert _number(reporting["texts"]["threshold-label"].split("=")[1]) == 30.0
+    # Every error bar spans F -/+ sigma, with sigma = 2 e- times sqrt(9).
+    sigma = 2.0 * math.sqrt(9)
+    assert _number(reporting["texts"]["sigma-label"].split("=")[1]) == pytest.approx(
+        sigma
+    )
+    spans = []
+    for coll in reporting["bars"]:
+        for seg in coll.get_segments():
+            (xa, ya), (xb, yb) = seg
+            if ya == pytest.approx(yb) and xa != xb:
+                spans.append(abs(to_flux(xb) - to_flux(xa)))
+    assert len(spans) == 2
+    assert spans == pytest.approx([2.0 * sigma, 2.0 * sigma])
+    # The detection is filled and solid; the visit 2 flux, computed but not
+    # released under report-only-on-detection, is hollow and dashed.
+    solid, hollow = reporting["markers"][1], reporting["markers"][2]
+    assert matplotlib.colors.same_color(solid.get_markerfacecolor(), solid.get_color())
+    assert not matplotlib.colors.same_color(
+        hollow.get_markerfacecolor(), hollow.get_markeredgecolor()
+    )
+    styles = [c.get_linestyle() for c in reporting["bars"]]
+    assert sum(ls[0][1] is not None for ls in styles) == 1
+    assert "released only" in reporting["texts"]["flux-note-visit2"]
+    assert "only forced photometry releases it" in d08.REPORTING_CAPTION
+    # The detection lies right of the threshold, the nondetection left of it.
+    x_l = line.get_xdata()[0]
+    assert reporting["markers"][1].get_xdata()[0] > x_l
+    assert reporting["markers"][2].get_xdata()[0] < x_l
+
+
+def test_reporting_cards_follow_each_law(reporting):
+    texts = reporting["texts"]
+    f1 = _aperture_sum(reporting["pixels"][0])
+    f2 = _aperture_sum(reporting["pixels"][1])
+    assert texts["record-visit1-D"].startswith("1")
+    assert _number(texts["record-visit1-F"]) == pytest.approx(round(f1, 1))
+    assert texts["record-visit2-D"].startswith("0")
+    assert texts["record-visit2-F"] == "not reported"
+    assert texts["record-forced-D"].startswith("0")
+    assert _number(texts["record-forced-F"]) == pytest.approx(round(f2, 1))
+    assert _number(texts["record-forced-F"]) < 30.0
+    assert "report only" in texts["law-report-on-detection"]
+    assert "forced photometry" in texts["law-forced"]
+    assert "different experiment" in texts["law-forced"]
+    # Subscripts on the cards match the axis labels.
+    names = set(reporting["all_text"])
+    assert {"$D_1$", "$F_1$", "$D_2$", "$F_2$"} <= names
+    # Both law headers sit above the wide visit 1 card, over its two halves.
+    patches, pos = reporting["patches"], reporting["text_pos"]
+    wide = patches["card-visit1"]
+    top = wide.get_y() + wide.get_height()
+    for gid, card in (
+        ("law-report-on-detection", "card-visit2"),
+        ("law-forced", "card-forced"),
+    ):
+        x, y = pos[gid]
+        assert y > top
+        c = patches[card]
+        assert c.get_x() < x < c.get_x() + c.get_width()
+        assert wide.get_x() < x < wide.get_x() + wide.get_width()
+    # The carried card is linked to each record card it describes.
+    glyph = patches["record-glyph"]
+    for key in ("visit1", "visit2", "forced"):
+        line = reporting["lines"][f"record-link-{key}"]
+        ys = list(line.get_ydata())
+        assert ys[0] in (glyph.get_y(), glyph.get_y() + glyph.get_height())
+        c = patches[f"card-{key}"]
+        assert ys[-1] == pytest.approx(
+            c.get_y() + (c.get_height() if key != "visit1" else 0.0)
+        )
+    # The forced-photometry card is the dashed one.
+    dashed = [
+        p
+        for p in reporting["ax"].patches
+        if isinstance(p, matplotlib.patches.Rectangle)
+        and p.get_linestyle() in ("--", "dashed")
+    ]
+    assert len(dashed) == 1
+
+
+def test_reporting_captions_quote_the_printed_numbers(reporting):
+    f1 = round(_aperture_sum(reporting["pixels"][0]), 1)
+    f2 = round(_aperture_sum(reporting["pixels"][1]), 1)
+    caption, alt = d08.REPORTING_CAPTION, d08.REPORTING_ALT
+    assert f"$F$ = {f1:.1f} e" in caption
+    assert f"$F$ = {f2:.1f} e" in caption
+    assert "$\\sigma$ = 6.0" in caption
+    assert "$L$ = 30" in caption
+    assert "background of 20" in caption and "noise of 2" in caption
+    assert "sums the 9 dotted pixels" in caption
+    assert f"F sub 1 = {f1:.1f} electrons" in alt
+    assert f"F sub 2 = {f2:.1f} electrons" in alt
+    assert "sigma = 6.0 electrons" in alt
+    assert "L = 30 electrons" in alt
+
+
+def test_campaign_events_follow_the_chapter_order(pieces):
+    # Admission, acquisition, completion, release, inference, then policy.
+    p = pieces["campaign"]
+    patches, lines = p["patches"], p["lines"]
+
+    def x_of_line(gid):
+        (x,) = set(lines[gid].get_xdata())
+        return x
+
+    reserved = patches["reserved-k"]
+    exposure = patches["exposure-k"]
+    r0, r1 = reserved.get_x(), reserved.get_x() + reserved.get_width()
+    e0, e1 = exposure.get_x(), exposure.get_x() + exposure.get_width()
+    # Occupied facility time and science exposure are different quantities.
+    assert r0 < e0 < e1 < r1
+    order = [
+        x_of_line("event-decide-k"),
+        r0,
+        e0,
+        e1,
+        x_of_line("event-complete-k"),
+        patches["event-release-k"].get_x(),
+        x_of_line("event-infer-k"),
+        x_of_line("event-decide-k1"),
+        patches["reserved-k1"].get_x(),
+    ]
+    assert order == sorted(order)
+    # Actual cost and the reserved interval are distinct: completion falls
+    # after the exposure and strictly before the reservation ends.
+    assert e1 < x_of_line("event-complete-k") < r1
+    revise = patches["event-revise-k"].get_x()
+    assert revise > x_of_line("event-decide-k1")
+    assert x_of_line("event-infer-later") > revise
+
+
+def test_campaign_arrows_run_forward_in_time_except_the_crossed_one(pieces):
+    p = pieces["campaign"]
+    causal = {gid: a for gid, a in p["patches"].items() if gid.startswith("causal-")}
+    assert len(causal) == 7
+    for gid, arrow in causal.items():
+        (x0, _), (x1, _) = _ends(arrow)
+        assert x1 >= x0, gid
+    # Release happens after completion: its arrow leaves at or after the tick.
+    (tail_x, _), _ = _ends(causal["causal-release-k"])
+    complete = p["lines"]["event-complete-k"].get_xdata()[0]
+    assert tail_x >= complete
+    # A dotted marker at the decision for visit k+1 separates before from after.
+    marker = p["lines"]["time-marker-decide-k1"]
+    assert set(marker.get_xdata()) == {p["lines"]["event-decide-k1"].get_xdata()[0]}
+    assert "may use only records already released" in d08.CAMPAIGN_CAPTION
+    assert "only then" not in d08.CAMPAIGN_CAPTION
+    blocked = p["patches"]["blocked-revision"]
+    (bx0, by0), (bx1, by1) = _ends(blocked)
+    assert bx1 < bx0 and by1 > by0
+    assert bx0 > marker.get_xdata()[0] > bx1 - 0.3
+    # It points from the revised product back at the decision for visit k+1.
+    decide = p["lines"]["event-decide-k1"].get_xdata()[0]
+    assert bx1 == pytest.approx(decide, abs=0.3)
+    assert "no path back" in " ".join(p["all_text"])

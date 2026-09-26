@@ -1,0 +1,172 @@
+{
+  "module": "d11_barycenter_rv",
+  "script": "tools/explainers/d11_barycenter_rv.py",
+  "build_command": "python tools/build_explainer_figures.py --only d11",
+  "source_hash": "8fec86e5f7f0",
+  "source_sha256": {
+    "tools/explainers/d11_barycenter_rv.py": "3cb542a6a8eee1fa2c4f3e101feb0c79cbb7500cc203106545b3640d4d26b717",
+    "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
+    "tools/explainers/_export.py": "b62dc95b9442fd3062fe8b1446626b4aea0e896263564843ab38c84fcf3e1dfc"
+  },
+  "stamp_date": "2026-09-25",
+  "revisions": {
+    "spohnbook": {
+      "commit": "ddaab96",
+      "dirty": true
+    },
+    "eyepiece": {
+      "commit": "05e03c0",
+      "dirty": false
+    },
+    "hwostyle": {
+      "commit": "18e2644",
+      "dirty": false
+    }
+  },
+  "package_versions": {
+    "eyepiece": "0.4.1.dev22+g05e03c0b7",
+    "hwostyle": "1.1.1.dev8+g183fc366e.d20260811",
+    "hwoutils": "1.9.1.dev5+g453bf3fd0.d20260911",
+    "matplotlib": "3.11.0",
+    "numpy": "2.2.6"
+  },
+  "ffmpeg": "ffmpeg version 4.4.6 Copyright (c) 2000-2025 the FFmpeg developers",
+  "layouts": {
+    "doc": {
+      "name": "doc",
+      "width_in": 7.2,
+      "height_in": 3.6,
+      "dpi": 200,
+      "font_pt": 10.0,
+      "small_pt": 8.5,
+      "title_pt": 11.0,
+      "lw": 1.2,
+      "marker_pt": 7.0,
+      "stamp_pt": 6.0,
+      "frame_budget": 30,
+      "anim_dpi": 150
+    },
+    "slide": {
+      "name": "slide",
+      "width_in": 16.0,
+      "height_in": 9.0,
+      "dpi": 120,
+      "font_pt": 20.0,
+      "small_pt": 16.0,
+      "title_pt": 26.0,
+      "lw": 2.4,
+      "marker_pt": 14.0,
+      "stamp_pt": 9.0,
+      "frame_budget": null,
+      "anim_dpi": 120
+    }
+  },
+  "figures": [
+    {
+      "slug": "d11-barycenter-rv",
+      "status": "proposed observer profile and RV sign (pending); mass ratio exaggerated, planet disk enlarged",
+      "caption": "The star and the planet both orbit their common barycenter, and the sign of the stellar radial velocity follows from the star's reflex motion ({ref}`geometry-origin-mass-phase`, {ref}`geometry-radial-velocity`). Top: side views from the east, north up and the observer to the right along $+Z$, of the chapter's worked signed example ({ref}`geometry-rv-worked-example`): a circular relative orbit with $i=90^\\circ$ and $\\Omega=\\omega_p=M_0=0$, so the orbit lies in the north and line-of-sight plane and is seen face-on. The barycenter is the crossed circle. The relative vector $\\mathbf r=\\mathbf r_p-\\mathbf r_\\star$ runs from the star to the planet through the barycenter, with $\\mathbf r_\\star=-\\frac{M_p}{M_\\star+M_p}\\mathbf r$, so the star (dashed orbit) and the planet (solid orbit) are always on opposite sides of it. Velocity arrows share one scale. At $t_0$ the planet is north of the star and moves toward the observer, $\\dot Z>0$; the star moves away, so its recession velocity $v_{r,\\star}=-\\dot Z_\\star$ is positive, and the planet is at quadrature. A quarter period later the planet is nearest the observer, at $+Z$, with its unlit side toward the observer, and three quarters later it is farthest, at $-Z$, with its lit side toward the observer; both times the star moves across the line of sight and its radial velocity is zero, so brightness alone does not fix the sign. Bottom: $v_{r,\\star}$ over one period in units of $K_\\star=\\frac{M_p}{M_\\star+M_p}\\frac{na\\sin i}{\\sqrt{1-e^2}}$, $v_{r,\\star}/K_\\star=\\cos(\\nu+\\omega_p)+e\\cos\\omega_p$, with the three states and $t_0+P/2$, where the star approaches at $-K_\\star$, marked. The bracket uses the planet's argument of periastron. The literature writes this curve with the star's argument of periastron ({ref}`Lovis and Fischer 2010, Sec. 2.1, eqs. 10-12 <source-lovis2010>`). If the same node convention and orbital phase are retained, the stellar periapsis argument is $\\omega_\\star=\\omega_p+\\pi$, and rewriting the bracket with $\\omega_\\star$ introduces a minus sign. A familiar RV formula using an unlabeled $\\omega$ is therefore insufficient evidence of compatibility: its body, node, observer direction and velocity sign must travel together, and the literature form gives $+K_\\star$ at $t_0$ only under its own conventions. For the Earth and Sun, $v_{r,\\star}(t_0)=+K_\\star=+0.08946$ m/s (about 9 cm/s). The recorded limitations include a report of an implementation with the opposite sign at $t_0$ ({ref}`limitations-geometry`). Positive recession and the observer profile are proposed conventions, pending at the conventions stage. Two-body reflex motion with the systemic velocity removed. The drawn mass ratio is exaggerated to $M_p/M_\\star=0.5$ (the Earth and Sun have $3.0\\times10^{-6}$) so the star's orbit is visible; the planet disk is enlarged and lit on its star-facing half. Computed from the chapter's reflex relations, not from a library.",
+      "alt": "Four panels. The top row has three side views, titled t equals t sub 0, v r equal to plus K, quadrature, half lit; t equals t sub 0 plus a quarter period, v r equal to zero, planet nearest the observer, plus Z, dark side to us; and t equals t sub 0 plus three quarters of a period, v r equal to zero, planet farthest, minus Z, lit side to us. Each shows a crossed circle labeled barycenter on a vertical dash-dot sky plane, a small dashed yellow circle that is the star's orbit, a larger cyan circle that is the planet's orbit, an arrow at the bottom pointing right labeled to observer, plus Z, the yellow star and the half-lit cyan planet on opposite sides of the barycenter, a gray vector r from the star to the planet, and velocity arrows v star in yellow and v p in cyan. In the first panel the planet is at the top moving right, toward the observer, and the star is below the barycenter moving left, away from the observer. In the second the planet is right of the barycenter, its lit half facing away from the observer, moving down, and the star moves up. In the third the planet is left of the barycenter, its lit half facing the observer, moving up, and the star moves down. The bottom panel plots v r star equals minus Z-dot star against time over one period as a yellow cosine from plus K through minus K back to plus K, with open circles at plus K at time zero, labeled quadrature, zero at a quarter period, labeled planet nearest, plus Z, minus K at half a period, labeled negative equals approach, star moving toward the observer, and zero at three quarters, labeled planet farthest, minus Z. Text marks positive as recession, the star moving away, and gives the Earth and Sun value as plus 0.08946 meters per second, about 9 centimeters per second. A badge says the observer profile and RV sign are proposed and pending, and that the mass ratio is exaggerated to 0.5 against 3.0 times ten to the minus six for the Earth and Sun.",
+      "params": {
+        "orbit": {
+          "a": 1.0,
+          "e": 0.0,
+          "i_deg": 90.0,
+          "Omega_deg": 0.0,
+          "omega_deg": 0.0
+        },
+        "drawn_mass_ratio": 0.5,
+        "state_fracs": [
+          0.0,
+          0.25,
+          0.75
+        ],
+        "velocity_scale": 0.8,
+        "earth_sun_k_m_s": 0.08945787
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d11-barycenter-rv-light.png",
+          "sha256": "771bb5dd8ac9a93eafc0da1b43507226a8fa3a2b604f0b4289c56de78216ebfa",
+          "bytes": 211978
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d11-barycenter-rv-light.pdf",
+          "sha256": "60c98a183e1449452b360015eb368fa618f28349cb13f38452c25fc0bc77b360",
+          "bytes": 60035
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d11-barycenter-rv-dark.png",
+          "sha256": "66c7f16d490d0d80c335425a200f0cd132b82475e7191080edba520607b2694a",
+          "bytes": 208824
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d11-barycenter-rv-dark.pdf",
+          "sha256": "2daf1c7c39352f33d4d5706f5630d0137cc0ec1b5e6c689b0005f41a8b89f98e",
+          "bytes": 60013
+        },
+        {
+          "file": "talks/stills/d11-barycenter-rv.png",
+          "sha256": "4586c7112582c05d9887722420c1028755a797de566632156d4de32bcf8e40d8",
+          "bytes": 267120
+        },
+        {
+          "file": "talks/stills/d11-barycenter-rv.pdf",
+          "sha256": "62413c28fc496cd1ec3a6bc48e3d8adb641768a9014c5ef45f31f7542bdf02b5",
+          "bytes": 61577
+        }
+      ]
+    }
+  ],
+  "animations": [
+    {
+      "slug": "d11-reflex-clock",
+      "status": "proposed observer profile and RV sign (pending); mass ratio exaggerated, planet disk enlarged",
+      "ground": "rate",
+      "caption": "One orbital period at equal time steps, with the camera fixed: the side view from the east of the worked signed example (left) and the stellar radial velocity (right) ({ref}`geometry-radial-velocity`, {ref}`geometry-rv-worked-example`). The star and the planet circle their barycenter on opposite sides. The dotted segment at the star is the line-of-sight part of its velocity, $\\dot Z_\\star$ along $+Z$; the dot on the curve is its negative, the recession velocity $v_{r,\\star}=-\\dot Z_\\star$, in units of $K_\\star$. It is largest where the star moves straight away from the observer, most negative where it moves straight toward the observer, and zero where it moves across the line of sight. Time starts at $t_0$, at quadrature. Positive recession and the observer profile are proposed conventions, pending. The drawn mass ratio is exaggerated to $M_p/M_\\star=0.5$; the planet disk is enlarged. Computed from the chapter's reflex relations, not from a library.",
+      "alt": "Animation of one orbital period with a fixed camera. Left: a side view from the east with the observer to the right; a yellow star and a half-lit cyan planet circle a crossed-circle barycenter on opposite sides, joined by a gray vector r, with yellow and cyan velocity arrows and a dotted yellow horizontal segment at the star showing the line-of-sight part of its velocity. Right: a yellow cosine curve of the stellar radial velocity against time over one period, positive labeled recession, with the marked states and a dot and a dotted cursor moving along it. Readouts give the time in periods and v r over K; the dot starts at plus one, when the star moves away from the observer and its dotted segment points left, passes zero when the planet is nearest the observer and the segment vanishes, reaches minus one when the segment points right, toward the observer, and passes zero again when the planet is farthest.",
+      "params": {
+        "orbit": {
+          "a": 1.0,
+          "e": 0.0,
+          "i_deg": 90.0,
+          "Omega_deg": 0.0,
+          "omega_deg": 0.0
+        },
+        "drawn_mass_ratio": 0.5,
+        "state_fracs": [
+          0.0,
+          0.25,
+          0.75
+        ],
+        "velocity_scale": 0.8,
+        "earth_sun_k_m_s": 0.08945787
+      },
+      "frames": {
+        "doc": 28,
+        "talk": 230
+      },
+      "revision": {
+        "commit": "ddaab96",
+        "dirty": true
+      },
+      "outputs": [
+        {
+          "file": "docs/_static/explainers/explainer-d11-reflex-clock-light.mp4",
+          "sha256": "1ca79bff1911a1cbc3773174c8b9a349f51d2f407801f87be79decb00a0b5177",
+          "bytes": 201862
+        },
+        {
+          "file": "docs/_static/explainers/explainer-d11-reflex-clock-dark.mp4",
+          "sha256": "434ab69f1cc3474c1e065250d5ec1feff65c61c71cddf8959554f0ea68a8c1ca",
+          "bytes": 207476
+        },
+        {
+          "file": "talks/animations/d11-reflex-clock.mp4",
+          "sha256": "988763bec4759d86d04fbc35f29fedda12b4d249990589521c1427ab8e53c652",
+          "bytes": 907387
+        }
+      ]
+    }
+  ]
+}

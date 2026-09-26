@@ -334,3 +334,296 @@ def test_readout_values_are_the_command_in_nanometers():
     values = [f["c"] * P["static_ripple_nm"] for f in d04.frame_schedule(ex.DOC)]
     assert f"{min(values):+.2f}" == "-2.00"
     assert f"{max(values):+.2f}" == "+0.00"
+
+
+# The light at every plane
+
+
+@pytest.fixture(scope="module")
+def light():
+    state = d04.propagate(d04.static_coeffs(0.0))
+    return state, d04.plane_fields(state)
+
+
+@pytest.fixture(scope="module")
+def light_figure():
+    with exporter.venue("light", ex.DOC) as cast:
+        fig = d04.build_light(ex.DOC, cast)
+    yield fig
+    plt.close(fig)
+
+
+def axes_by_gid(fig):
+    found = fig.findobj(matplotlib.axes.Axes)
+    return {ax.get_gid(): ax for ax in found if ax.get_gid()}
+
+
+def test_light_figure_is_a_new_slug_and_the_old_ones_stay():
+    slugs = [spec.slug for spec in d04.FIGURES]
+    assert slugs[:2] == ["d04-optical-planes", "d04-opd-perturbation"]
+    assert "d04-light-every-plane" in slugs
+    assert [spec.slug for spec in d04.ANIMATIONS] == ["d04-plane-tour"]
+    # The existing specs keep the original parameter set.
+    for spec in d04.FIGURES[:2]:
+        assert spec.params is d04.PARAMS
+
+
+def test_entrance_field_is_the_aperture_times_the_ripple_phase(light):
+    # E = A exp(+i 2 pi W/lambda): the phase is at most 2 pi a0/lambda,
+    # printed as 0.011 rad.
+    state, fields = light
+    o = d04.optics()
+    expected = o["aperture"] * np.exp(2j * math.pi * state["opd"] / P["wavelength_nm"])
+    assert np.allclose(state["entrance_field"], expected, atol=1e-12)
+    peak = 2 * math.pi * 1.0 / 550.0
+    assert f"{peak:.3f}" == "0.011"
+    assert d04.entrance_phase_peak() == pytest.approx(peak)
+    inside = o["aperture"] > 0
+    phase = np.angle(state["entrance_field"][inside])
+    assert np.max(np.abs(phase)) <= peak + 1e-12
+    assert np.max(np.abs(phase)) > 0.99 * peak
+    # The drawn entrance column is the same field padded to 2 D.
+    n = P["npup"]
+    lo = (fields["entrance"].shape[0] - n) // 2
+    assert fields["entrance"].shape[0] == 2 * n
+    assert np.allclose(fields["entrance"][lo : lo + n, lo : lo + n], expected)
+
+
+def test_focal_field_is_the_continuous_transform_of_the_entrance_field(light):
+    # F[E](u) = sum E exp(-i 2 pi u x) dx^2, relative to sqrt of the
+    # unocculted peak, checked in NumPy at a few display samples.
+    state, fields = light
+    o = d04.optics()
+    u = d04.fpm_coords()
+    peak = (o["aperture"].sum() * (1.0 / P["npup"]) ** 2) ** 2
+    for i, j in ((48, 48), (40, 60), (72, 30)):
+        expected = dft(state["entrance_field"], o["pupil_coords"], u[j], u[i])
+        assert fields["focal_before"][i, j] == pytest.approx(
+            expected / math.sqrt(peak), rel=1e-9, abs=1e-12
+        )
+
+
+def test_display_grid_of_the_vortex_plane_matches_the_image_extent():
+    # 96 samples at 0.25 lambda/D span the image grid's 24 lambda/D, so the
+    # focal panels share one page scale; the ticks at -10, 0, 10 fit inside.
+    u = d04.fpm_coords()
+    assert np.diff(u) == pytest.approx(0.25)
+    assert u.size == 96
+    assert ep_extent(u) == pytest.approx(ep_extent(d04.optics()["focal_coords"]))
+    assert ep_extent(u)[1] == pytest.approx(12.0)
+    assert max(d04.LIGHT_TICKS["focal"]) < 12.0
+    # The pupil panels span 2 D, from -1 to 1, the outer ticks.
+    assert ep_extent(d04.optics()["wide_coords"])[1] == pytest.approx(1.0)
+    assert max(d04.LIGHT_TICKS["pupil"]) == pytest.approx(1.0)
+
+
+def ep_extent(coords):
+    step = coords[1] - coords[0]
+    return (coords[0] - step / 2, coords[-1] + step / 2)
+
+
+def test_airy_rings_alternate_in_sign_before_the_vortex(light):
+    # The caption says the field before the vortex is essentially the real
+    # Airy pattern: phase 0 in the core and pi in the first bright ring,
+    # between the zeros at 1.22 and 2.23 lambda/D (2 J1(pi r)/(pi r) < 0).
+    from scipy.special import j1
+
+    _, fields = light
+    u = d04.fpm_coords()
+    uu, vv = np.meshgrid(u, u)
+    r = np.hypot(uu, vv)
+    airy = 2 * j1(np.pi * r) / (np.pi * r)
+    phase = np.angle(fields["focal_before"])
+    core = r < 0.8
+    ring = (r > 1.45) & (r < 2.0)
+    assert np.all(airy[ring] < 0)
+    assert np.all(np.abs(phase[core]) < 0.05)
+    assert np.all(np.abs(np.abs(phase[ring]) - math.pi) < 0.05)
+
+
+def test_vortex_changes_only_the_phase_by_six_theta(light):
+    _, fields = light
+    before, after = fields["focal_before"], fields["focal_after"]
+    assert np.allclose(np.abs(after), np.abs(before), rtol=1e-12)
+    u = d04.fpm_coords()
+    uu, vv = np.meshgrid(u, u)
+    turn = np.angle(after / before)
+    expected = np.angle(np.exp(6j * np.arctan2(vv, uu)))
+    assert np.allclose(np.angle(np.exp(1j * (turn - expected))), 0.0, atol=1e-9)
+    # Six windings around a circle about the axis.
+    angles = np.linspace(0.0, 2 * math.pi, 721)
+    samples = [
+        turn[
+            int(np.argmin(np.abs(u - 5 * math.sin(a)))),
+            int(np.argmin(np.abs(u - 5 * math.cos(a)))),
+        ]
+        for a in angles
+    ]
+    steps = np.angle(np.exp(1j * np.diff(samples)))
+    assert round(steps.sum() / (2 * math.pi)) == 6
+
+
+def test_stop_multiplies_and_the_image_is_the_transform_of_what_passes(light):
+    state, fields = light
+    o = d04.optics()
+    stop = d04.pad_to_thumbnail(o["stop"])
+    assert np.allclose(fields["lyot_after"], fields["lyot_before"] * stop)
+    xw, yw = np.meshgrid(o["wide_coords"], o["wide_coords"])
+    assert np.all(fields["lyot_after"][np.hypot(xw, yw) > 0.41] == 0)
+    # The image field is the NumPy transform of the stopped Lyot field.
+    peak = (o["aperture"].sum() * (1.0 / P["npup"]) ** 2) ** 2
+    u = o["focal_coords"]
+    _, _, (i, j) = peak_near(state["intensity"], 6.0, 0.0, 2.0)
+    for a, b in ((i, j), (24, 24), (10, 35)):
+        expected = dft(fields["lyot_after"], o["wide_coords"], u[b], u[a])
+        assert fields["image"][a, b] == pytest.approx(
+            expected / math.sqrt(peak), rel=1e-8, abs=1e-14
+        )
+    assert np.allclose(np.abs(fields["image"]) ** 2, state["intensity"], rtol=1e-9)
+
+
+def test_energy_through_the_stop_matches_the_first_order_ripple_share(light):
+    # Caption: about 4e-5 of the entrance energy passes; the ripple's share
+    # is (2 pi a0/lambda)^2/2 = 6.5e-5 and the stop keeps 0.64 of the
+    # aperture area; the leakage without the ripple is under 5 percent.
+    _, fields = light
+    o = d04.optics()
+    entrance = np.sum(o["aperture"] ** 2)
+    passed = np.sum(np.abs(fields["lyot_after"]) ** 2) / entrance
+    share = (2 * math.pi * 1.0 / 550.0) ** 2 / 2
+    area = (0.4 / 0.5) ** 2
+    assert f"{share:.1e}" == "6.5e-05"
+    assert f"{area:.2f}" == "0.64"
+    assert f"{passed:.0e}" == "4e-05"
+    assert 0.9 < passed / (share * area) < 1.0
+    clean = d04.plane_fields(d04.propagate((0.0, 0.0)))
+    leak = np.sum(np.abs(clean["lyot_after"]) ** 2) / entrance
+    assert leak < 0.05 * passed
+
+
+def test_amplitude_floor_matches_the_intensity_floor():
+    # Amplitude 1e-5 is intensity 1e-10, the image scale's floor.
+    assert d04.amplitude_floor() ** 2 == pytest.approx(P["intensity_floor"])
+    assert d04.amplitude_floor() == pytest.approx(1e-5)
+
+
+def test_light_panels_draw_the_named_quantities(light, light_figure):
+    state, fields = light
+    axes = axes_by_gid(light_figure)
+    floor = d04.amplitude_floor()
+    for key in d04.LIGHT_COLUMNS:
+        (amp,) = axes[f"amplitude-{key}"].get_images()
+        (phase,) = axes[f"phase-{key}"].get_images()
+        for image in (amp, phase):
+            assert image.get_interpolation() == "nearest"
+            assert image.origin == "lower"
+        drawn = np.ma.filled(amp.get_array().astype(float), np.nan)
+        if key == "image":
+            assert np.allclose(drawn, d04.floored(state["intensity"]))
+            assert amp.norm.vmin == pytest.approx(1e-10)
+            assert amp.norm.vmax == pytest.approx(1e-4)
+        else:
+            assert np.allclose(drawn, np.clip(np.abs(fields[key]), floor, None))
+            assert amp.norm.vmin == pytest.approx(1e-5)
+            assert amp.norm.vmax == pytest.approx(1.0)
+        # Phase appears exactly where |E|^2 reaches the threshold.
+        drawn_phase = np.ma.filled(phase.get_array().astype(float), np.nan)
+        lit = np.abs(fields[key]) ** 2 >= P["phase_min_intensity"]
+        assert np.array_equal(np.isfinite(drawn_phase), lit)
+        assert np.allclose(drawn_phase[lit], np.angle(fields[key][lit]))
+        assert phase.norm.vmin == pytest.approx(-math.pi)
+        assert phase.norm.vmax == pytest.approx(math.pi)
+
+
+def test_light_keys_print_the_scales_they_draw(light_figure):
+    axes = axes_by_gid(light_figure)
+    expected = {
+        "key-amplitude": ([1e-4, 1e-2, 1.0], (1e-5, 1.0)),
+        "key-phase": ([-math.pi, 0.0, math.pi], (-math.pi, math.pi)),
+        "key-intensity": ([1e-10, 1e-7, 1e-4], (1e-10, 1e-4)),
+    }
+    for gid, (ticks, limits) in expected.items():
+        ax = axes[gid]
+        assert np.allclose(ax.get_yticks(), ticks)
+        assert np.allclose(ax.get_ylim(), limits)
+
+
+def test_light_figure_text_has_no_stroke_and_names_the_printed_numbers(light_figure):
+    texts = [t for t in light_figure.findobj(matplotlib.text.Text) if t.get_text()]
+    assert all(not t.get_path_effects() for t in texts)
+    words = " ".join(t.get_text() for t in texts)
+    assert "$\\leq$0.011" in words
+    assert "e^{i6\\theta}" in words
+    assert all(t.get_fontsize() >= 6.0 for t in texts)
+
+
+def test_gap_labels_mark_the_inverse_transform_into_the_lyot_plane(light_figure):
+    # The model reaches the Lyot plane with cmft_bwd, the inverse of the
+    # clause's exp(-i 2 pi u x) transform; the other two gaps are forward.
+    gaps = dict(zip(d04.LIGHT_COLUMNS[1:], d04.LIGHT_GAPS, strict=True))
+    assert gaps["lyot_before"] == "$\\mathcal{F}^{-1}$"
+    assert gaps["focal_before"] == gaps["image"] == "$\\mathcal{F}$"
+    words = [t.get_text() for t in light_figure.findobj(matplotlib.text.Text)]
+    assert words.count("$\\mathcal{F}^{-1}$") == 1
+    assert words.count("$\\mathcal{F}$") == 2
+    assert "FT" not in words
+
+
+def test_vortex_operand_is_the_train_figures_mask_thumbnail(light_figure):
+    (image,) = axes_by_gid(light_figure)["operand-vortex"].get_images()
+    assert image.get_interpolation() == "nearest"
+    assert image.origin == "lower"
+    assert np.array_equal(image.get_array(), d04.optics()["mask_phase"])
+    assert image.norm.vmin == pytest.approx(-math.pi)
+    assert image.norm.vmax == pytest.approx(math.pi)
+
+
+def test_train_keeps_the_element_names_and_starlight(light_figure):
+    words = [t.get_text() for t in light_figure.findobj(matplotlib.text.Text)]
+    for name in d04.LIGHT_ELEMENTS.values():
+        assert name in words
+    assert "starlight" in words
+    assert "$|E|$ rel. incident" in words
+    assert "$|E|$ rel. $\\sqrt{I_{\\rm peak}}$" in words
+    assert "amplitude\n$|E|$" in words
+    assert "phase\n[rad]" in words
+
+
+def test_amplitude_map_is_monotone_in_lightness_in_both_modes():
+    # Background at the floor, the pupil-role cyan in the middle, and a top
+    # that continues the same direction of lightness.
+    for mode in ("light", "dark"):
+        with exporter.venue(mode, ex.DOC) as cast:
+            cmap = d04.amplitude_cmap(cast)
+            pupil = ex.image_cmap("pupil")
+            lum = [
+                float(np.dot(cmap(v)[:3], (0.2126, 0.7152, 0.0722)))
+                for v in np.linspace(0, 1, 11)
+            ]
+            assert np.allclose(cmap(0.0), pupil(0.0))
+            assert np.allclose(cmap(0.5)[:3], pupil(1.0)[:3], atol=0.01)
+            steps = np.diff(lum)
+            assert np.all(steps < 0) or np.all(steps > 0)
+
+
+def test_notes_are_enlarged_and_the_bound_fits_its_panel(light_figure):
+    small = ex.DOC.small_pt
+    notes = [
+        t
+        for t in light_figure.findobj(matplotlib.text.Text)
+        if t.get_fontstyle() == "italic"
+        and t.get_text().startswith(("gray", "the", "solid"))
+    ]
+    assert len(notes) == 3
+    assert all(t.get_fontsize() == pytest.approx(1.08 * small) for t in notes)
+    axes = axes_by_gid(light_figure)
+    panel = axes["phase-entrance"]
+    (bound,) = [t for t in panel.texts if "0.011" in t.get_text()]
+    # At the enlarged note size, inside its panel.
+    assert bound.get_fontsize() == pytest.approx(1.08 * small)
+    light_figure.canvas.draw()
+    renderer = light_figure.canvas.get_renderer()
+    box = bound.get_bbox_patch().get_window_extent(renderer)
+    frame = panel.get_window_extent(renderer)
+    assert box.x0 >= frame.x0 - 1.0
+    assert box.x1 <= frame.x1 + 1.0

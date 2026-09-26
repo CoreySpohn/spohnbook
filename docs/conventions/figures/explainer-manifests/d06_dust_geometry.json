@@ -2,16 +2,16 @@
   "module": "d06_dust_geometry",
   "script": "tools/explainers/d06_dust_geometry.py",
   "build_command": "python tools/build_explainer_figures.py --only d06",
-  "source_hash": "375d2e200ccb",
+  "source_hash": "c8d519e308f6",
   "source_sha256": {
-    "tools/explainers/d06_dust_geometry.py": "b23d87fa11efed5d96412c98dcea9ed7b600849719f9964bf66d932ea75eb105",
+    "tools/explainers/d06_dust_geometry.py": "a687057eee417ed4cd6b800f2393eb7a572c0f8a865349e9ad010c0d86bccf11",
     "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
     "tools/explainers/_export.py": "b62dc95b9442fd3062fe8b1446626b4aea0e896263564843ab38c84fcf3e1dfc"
   },
   "stamp_date": "2026-09-25",
   "revisions": {
     "spohnbook": {
-      "commit": "58b2bdd",
+      "commit": "ddaab96",
       "dirty": true
     },
     "eyepiece": {
@@ -105,33 +105,33 @@
       "outputs": [
         {
           "file": "docs/conventions/figures/explainer-d06-dust-two-systems-light.png",
-          "sha256": "34cf67676ee49a3bd62b8ff38e2bfd61c8ee350ccbbde79340b6fdb46af9930a",
-          "bytes": 388252
+          "sha256": "d8d46acf2f503f9911b9fc85de9abbd726d6ba5593436fbab6cadc8f5fcd2a31",
+          "bytes": 389615
         },
         {
           "file": "docs/conventions/figures/explainer-d06-dust-two-systems-light.pdf",
-          "sha256": "c9f4adb8405982e5aa2c0d07b498d53648443f41788a805f5631ef1c669105c9",
-          "bytes": 94698
+          "sha256": "e0f88b173a85eb72b6e7217b1a1a52c5089e95ca71dc385431fbc5b776c135e6",
+          "bytes": 95089
         },
         {
           "file": "docs/conventions/figures/explainer-d06-dust-two-systems-dark.png",
-          "sha256": "306285b01a15c02a952dd3242aaac148d5628007bb80ee48af426421d55b8d52",
-          "bytes": 379988
+          "sha256": "8cc160aec3bcec61aef4ef88a33bb507f8064a27349b6b922c680eb71e04cdac",
+          "bytes": 381104
         },
         {
           "file": "docs/conventions/figures/explainer-d06-dust-two-systems-dark.pdf",
-          "sha256": "42dd96c98b6d9b3660f6b12ee37831d936d1e8daec7cc45ed7bcda897f7ea4f9",
-          "bytes": 94566
+          "sha256": "44b98a5c1b3955d83cced3aec5fcff29a46ff2b0e4ffe15acc3d9b465ad4843b",
+          "bytes": 94976
         },
         {
           "file": "talks/stills/d06-dust-two-systems.png",
-          "sha256": "0dd4132932752dfaa586e808733f279817318488ca14c857655114dd848ea0a9",
-          "bytes": 346079
+          "sha256": "d8fe3889d1580d0192091d274572182831919f2ba7d3ff67814c152fc140e1d3",
+          "bytes": 346391
         },
         {
           "file": "talks/stills/d06-dust-two-systems.pdf",
-          "sha256": "b7c7ba8b9fd2e97fcd55f9bd15b85501b30e89be4d76481520ba722259a8ba65",
-          "bytes": 75122
+          "sha256": "39958b0c9cc15bb5123ec304e45910febc6f3092f12b50790049eab09d686483",
+          "bytes": 75519
         }
       ]
     }
@@ -188,24 +188,24 @@
         "talk": 99
       },
       "revision": {
-        "commit": "58b2bdd",
+        "commit": "ddaab96",
         "dirty": true
       },
       "outputs": [
         {
           "file": "docs/_static/explainers/explainer-d06-dust-inclination-sweep-light.mp4",
-          "sha256": "6e27d525bb7f2dd1754c49c2395b127d07911199e52b73dbe950ce72618f18be",
-          "bytes": 268185
+          "sha256": "1e6d78fc0d7d64786e1226cf9f5e0849d6330126f37c95db9fbef95b86d7d465",
+          "bytes": 267611
         },
         {
           "file": "docs/_static/explainers/explainer-d06-dust-inclination-sweep-dark.mp4",
-          "sha256": "2bad4082970fe65f8bc313db3bf832332699209b89b04c330af02e93e5939e53",
-          "bytes": 273878
+          "sha256": "d180af23e992dbf404908128d208e8d0334cf1f18695ee0426dc06276234e73a",
+          "bytes": 274411
         },
         {
           "file": "talks/animations/d06-dust-inclination-sweep.mp4",
-          "sha256": "bdd09283f4d1dbd9b59d773975c763b2fefa8a60d15c33e78c04a5941f5faa9a",
-          "bytes": 519522
+          "sha256": "1f9691d3f67f5c08947565cf5e9a3c7aac5b0ad8ff6050398a4f051502a99bc2",
+          "bytes": 519894
         }
       ]
     }

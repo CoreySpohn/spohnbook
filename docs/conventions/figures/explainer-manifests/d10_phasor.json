@@ -1,0 +1,112 @@
+{
+  "module": "d10_phasor",
+  "script": "tools/explainers/d10_phasor.py",
+  "build_command": "python tools/build_explainer_figures.py --only d10",
+  "source_hash": "c66beb2f1679",
+  "source_sha256": {
+    "tools/explainers/d10_phasor.py": "ea21c498bb4f811bfc7b65e015bfd7e8b63ead06de6f71b9cc0a346455443c7f",
+    "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
+    "tools/explainers/_export.py": "b62dc95b9442fd3062fe8b1446626b4aea0e896263564843ab38c84fcf3e1dfc"
+  },
+  "stamp_date": "2026-09-25",
+  "revisions": {
+    "spohnbook": {
+      "commit": "ddaab96",
+      "dirty": true
+    },
+    "eyepiece": {
+      "commit": "05e03c0",
+      "dirty": false
+    },
+    "hwostyle": {
+      "commit": "18e2644",
+      "dirty": false
+    }
+  },
+  "package_versions": {
+    "eyepiece": "0.4.1.dev22+g05e03c0b7",
+    "hwostyle": "1.1.1.dev8+g183fc366e.d20260811",
+    "hwoutils": "1.9.1.dev5+g453bf3fd0.d20260911",
+    "matplotlib": "3.11.0",
+    "numpy": "2.2.6"
+  },
+  "ffmpeg": null,
+  "layouts": {
+    "doc": {
+      "name": "doc",
+      "width_in": 7.2,
+      "height_in": 3.6,
+      "dpi": 200,
+      "font_pt": 10.0,
+      "small_pt": 8.5,
+      "title_pt": 11.0,
+      "lw": 1.2,
+      "marker_pt": 7.0,
+      "stamp_pt": 6.0,
+      "frame_budget": 30,
+      "anim_dpi": 150
+    },
+    "slide": {
+      "name": "slide",
+      "width_in": 16.0,
+      "height_in": 9.0,
+      "dpi": 120,
+      "font_pt": 20.0,
+      "small_pt": 16.0,
+      "title_pt": 26.0,
+      "lw": 2.4,
+      "marker_pt": 14.0,
+      "stamp_pt": 9.0,
+      "frame_budget": null,
+      "anim_dpi": 120
+    }
+  },
+  "figures": [
+    {
+      "slug": "d10-surface-to-phasor",
+      "status": "schematic, not to scale; worked numbers",
+      "caption": "From a mirror surface to a signed intensity change, in five steps. (1) A deformable-mirror surface moves by h away from the incoming starlight, the path-increasing direction. (2) At normal reflection the light travels h farther on the way in and h farther on the way out, so the OPD is W = 2h ({ref}`Hecht 2017, Sec. 9.4.2, text before eq. 9.44 <source-hecht2017>`); the incoming and outgoing rays are drawn apart for clarity. The OPD is a path difference, not a surface height, and the conversion is made once, at the hardware ({ref}`optics-coherent-phase`). (3) At the marked mirror point the field is an arrow in the complex plane, and the OPD turns it by 2 pi W/lambda, counterclockwise for a positive OPD under the proposed coherent profile, in which E becomes E exp(+i 2 pi W/lambda). The drawn step, h = lambda/16 and so W = lambda/8, turns the arrow by pi/4; the turned arrow is the output of the physicaloptix PhaseScreen applied to a unit field. (4) The field at one image pixel is a sum of the turned arrows from every point of the pupil, so the change adds a field delta E to the nominal field E_0 there. The numbers in this panel are the chapter's worked example, not a result of panel 3: E_0 = 0.2 and delta E = -0.1, both real, point in opposite directions, and the sum is E = 0.1, marked by the dot on the real axis. The arrows for delta E and E are drawn above and below the axis only for visibility. The dotted circle marks where the sum would end for other phases of the same delta E. (5) The brightness of the pixel is the squared length of its arrow: 0.04 before and 0.01 after. The change, Delta I = 2 Re(conj(E_0) delta E) + |delta E|^2 = -0.04 + 0.01 = -0.03, is negative while both intensities stay nonnegative ({ref}`optics-signed-intensity`); clipping it at zero before adding it to the nominal intensity would leave 0.04 and erase the cancellation. Panels 1, 2, 4 and 5 are identities for scalar, monochromatic, coherent light at normal incidence; the sense of rotation in panel 3 is the book's proposed pairing, not an adopted standard. Schematic, not to scale: the drawn step is exaggerated.",
+      "alt": "A strip of five numbered panels. Panel 1, the surface moves by h: a gray mirror in side view whose face has a smooth, flat-bottomed dip, a dash-dot line labeled at rest across the dip, a double-headed arrow labeled h equals lambda over 16 between the rest line and the bottom of the dip, a dot on the dip, and a yellow arrow labeled starlight approaching from the left. Panel 2, the path grows by W equals 2h: the same mirror, tagged the mirror from 1, with a yellow ray labeled in going right into the dip and a ray labeled out coming back, each with a shaded extra segment between the rest line and the dip, labeled h beside it, and the label W equals lambda over 8. Panel 3, the phase turns by 2 pi W over lambda: a complex plane with a dotted arc of the unit circle, a yellow arrow labeled before along the real axis and a dark arrow labeled after at 45 degrees, joined by a counterclockwise arc labeled phi equals pi over 4, and the note E times exp of plus i 2 pi W over lambda, this book's sign convention. A thin vertical line separates panel 3 from panel 4, under the note pupil point to image pixel: the pixel's field is a sum of many turned arrows. Panel 4, at one pixel the fields add as arrows: a yellow arrow labeled E0 equals 0.2 along the real axis, a gray arrow labeled delta E equals minus 0.1 running back from its tip, drawn just above the axis, and a dark arrow labeled E equals 0.1 from the origin, drawn just below the axis, with a dot on the real axis at 0.1 and a dotted circle of radius 0.1 around the tip of E0 labeled delta E at other phases. Notes read offset for visibility; all three fields are real, and worked numbers from the chapter, not from panel 3. Panel 5, brightness equals arrow length squared: a yellow bar of 0.04 labeled the magnitude of E0 squared, a dark bar of 0.01 labeled the magnitude of E squared, and a blue hatched bar below zero, minus 0.03, labeled Delta I, with the note the pixel dims. A badge reads schematic, not to scale.",
+      "params": {
+        "wavelength_nm": 550.0,
+        "surface_h_waves": "1/16",
+        "e0": 0.2,
+        "delta_e": -0.1,
+        "npup": 8
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d10-surface-to-phasor-light.png",
+          "sha256": "22d1a890e69fc1c5cab775ebc0123d10e70e38c5108b32ee47ba6da7567d791a",
+          "bytes": 134579
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d10-surface-to-phasor-light.pdf",
+          "sha256": "eb6126bf6749b661c16dfbe8c065a7e920857108ccf583960fef781d86c15207",
+          "bytes": 51481
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d10-surface-to-phasor-dark.png",
+          "sha256": "62c2426a0976d6fae906691e969899afb5ecb833e931edb51b8f78deb7eceff7",
+          "bytes": 132105
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d10-surface-to-phasor-dark.pdf",
+          "sha256": "b4c4185d981c15111c30d50bae99a4fef2859906e1645c8b222f78d8fe604685",
+          "bytes": 51471
+        },
+        {
+          "file": "talks/stills/d10-surface-to-phasor.png",
+          "sha256": "a1855e881fa727c8dcb7adf004d490dad465bdd9c16c8df9f14fe51d81d3c7f7",
+          "bytes": 208734
+        },
+        {
+          "file": "talks/stills/d10-surface-to-phasor.pdf",
+          "sha256": "b913d8a739284861748d9d187159abbb8551b62e660ecf27a08939d47a25e261",
+          "bytes": 53200
+        }
+      ]
+    }
+  ],
+  "animations": []
+}

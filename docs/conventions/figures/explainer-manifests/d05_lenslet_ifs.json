@@ -2,16 +2,16 @@
   "module": "d05_lenslet_ifs",
   "script": "tools/explainers/d05_lenslet_ifs.py",
   "build_command": "python tools/build_explainer_figures.py --only d05",
-  "source_hash": "4506a97479ec",
+  "source_hash": "349db4e148b8",
   "source_sha256": {
-    "tools/explainers/d05_lenslet_ifs.py": "54746fad8cff53c2eb3deca29ef95065dd7dcb6e202882d9d33ca33a5d7a7280",
+    "tools/explainers/d05_lenslet_ifs.py": "5d6cb15944e9c0a7df9d77732e010ef5b3b5b465015c5b82e184aef118fab92a",
     "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
     "tools/explainers/_export.py": "b62dc95b9442fd3062fe8b1446626b4aea0e896263564843ab38c84fcf3e1dfc"
   },
   "stamp_date": "2026-09-25",
   "revisions": {
     "spohnbook": {
-      "commit": "58b2bdd",
+      "commit": "ddaab96",
       "dirty": true
     },
     "eyepiece": {
@@ -65,8 +65,8 @@
     {
       "slug": "d05-lenslet-ifs-instrument",
       "status": "schematic side view; simulated array panels",
-      "caption": "A lenslet integral field spectrograph, from entrance image to detector traces (clause `optics-ifs-products`). (a) Schematic side view of the lenslet architecture, after {ref}`Rizzo et al. 2017, Sec. 2.1, Fig. 1 <source-rizzo2017>`: a square lenslet array in the entrance focal plane focuses each cell onto a pinhole, and a collimator, prism and camera re-image every pinhole onto the detector, dispersed along detector +x. The prism deviates every wavelength toward its base, the shorter ones more, so 713 nm lands highest; broadband light before the prism is drawn gray. (b) Simulated entrance image, log stretch, with every square collection cell. Each cell integrates the entrance flux of one lenslet, which becomes one spaxel of the extracted cube ({ref}`Rizzo et al. 2017, Sec. 2.2 <source-rizzo2017>`); the two outlined cells are grid neighbors. (c) The boxed region of (b) on its cube pixel grid. The optical center belongs to the cube and sits at its geometric center (31.5, 31.5). The example implementation drawn here, coronachrome, places lenslet (0, 0) at (32, 32), half a pixel away on each axis; the {ref}`limitations page <limitations-optics>` records that difference. (d) Simulated detector response to unit flux in every wavelength bin of the two lenslets, log stretch. Each open circle is the centroid of one bin footprint, one per wavelength bin from 605 to 713 nm, and the line through them is the geometric trace. The box outlines the detector pixels of the 651 nm bin of lenslet 24. The detector trace origin, where lenslet (0, 0) lands at the 660 nm reference wavelength, is a third reference point. The three origins are separate calibrated quantities: taking one for another shifts every spaxel, and so every planet position, by half a pixel, or misplaces every bin footprint on the detector. The footprints of the two neighbors share detector rows. The instrument is synthetic, not an instrument prescription: a 7-by-7 grid clocked by arctan(1/2), 13.4 detector pixels per lenslet pitch, Moffat PSFlets, and ten bins at resolving power 50.",
-      "alt": "Four panels. Top: a side-view schematic of a lenslet integral field spectrograph, with light arriving from the left onto a column of small lenses in the entrance focal plane, one highlighted lens focusing onto a pinhole, then a collimator, a prism with its apex up that bends the gray broadband beam down toward its base into rays from 605 nanometers (bent most, lowest) to 713 nanometers (bent least, highest), a camera, and a detector, with an arrow marking detector +x upward. Middle left: a simulated entrance image with a rotated grid of square lenslet cells; lenslet 24, grid (0, 0), and lenslet 31, grid (1, 0), are outlined. Middle right: a zoom on the cube pixel grid showing the optical center at (31.5, 31.5) and the lenslet-grid origin at (32, 32). Bottom: a simulated detector image with two parallel horizontal traces, one per lenslet, each marked by ten centroid circles from 605 to 713 nanometers, a box around the 651 nanometer bin footprint, its centroid, and tick marks at the detector trace origin (60, 60).",
+      "caption": "A lenslet integral field spectrograph, from entrance image to detector traces (clause `optics-ifs-products`). (a) Schematic side view of the lenslet architecture, after {ref}`Rizzo et al. 2017, Sec. 2.1, Fig. 1 <source-rizzo2017>`: a square lenslet array in the entrance focal plane focuses each cell onto a pinhole, and a collimator, prism and camera re-image every pinhole onto the detector, dispersed along detector +x. The prism deviates every wavelength toward its base, the shorter ones more, so 713 nm lands highest; broadband light before the prism is drawn gray. (b) Simulated entrance image, log stretch, with every square collection cell. Each cell integrates the entrance flux of one lenslet, which becomes one spaxel of the extracted cube ({ref}`Rizzo et al. 2017, Sec. 2.2 <source-rizzo2017>`); the two outlined cells, lenslets 24 and 31, are grid neighbors. (c) Simulated detector response to unit flux in every wavelength bin of the two lenslets, log stretch. Each open circle is the centroid of one bin footprint, one per wavelength bin from 605 to 713 nm, and the line through them is the geometric trace. The box outlines the detector pixels of the 651 nm bin of lenslet 24. The footprints of the two neighbors share detector rows. The reference origins of the entrance plane and the detector are drawn in {ref}`the next figure <fig-explainer-d05-lenslet-ifs-origins>`. The instrument is synthetic, not an instrument prescription: a 7-by-7 grid clocked by arctan(1/2), 13.4 detector pixels per lenslet pitch, Moffat PSFlets, and ten bins at resolving power 50.",
+      "alt": "Three panels. Top: a side-view schematic of a lenslet integral field spectrograph, with light arriving from the left onto a column of small lenses in the entrance focal plane, one highlighted lens focusing onto a pinhole, then a collimator, a prism with its apex up that bends the gray broadband beam down toward its base into rays from 605 nanometers (bent most, lowest) to 713 nanometers (bent least, highest), a camera, and a detector, with an arrow marking detector +x upward. Bottom left: a simulated entrance image with a rotated grid of square lenslet cells; the neighboring cells of lenslets 24 and 31 are outlined. Bottom right: a simulated detector image with two parallel horizontal traces, one per lenslet, each marked by ten centroid circles from 605 to 713 nanometers, with a box around the 651 nanometer bin footprint of lenslet 24 and its centroid.",
       "params": {
         "pitch_m": 0.000174,
         "pixsize_m": 1.3e-05,
@@ -112,33 +112,113 @@
       "outputs": [
         {
           "file": "docs/conventions/figures/explainer-d05-lenslet-ifs-instrument-light.png",
-          "sha256": "216efe95786e1f5e9a461a6d690c8eb85bec7c6d92c6e80d9d06580fdbdb3951",
-          "bytes": 328537
+          "sha256": "1f31f4f542ae558e3b40d724d281c79b99929602ef691665f8b94eb6554f2306",
+          "bytes": 252827
         },
         {
           "file": "docs/conventions/figures/explainer-d05-lenslet-ifs-instrument-light.pdf",
-          "sha256": "7683e28169163c4fd070e82d11478fd2e1d849f031adb7742b17f3014e7427cf",
-          "bytes": 59713
+          "sha256": "908ef00aff40c22198a4e0e0d71657fa030a3f361034607a6eac80facb92d1c6",
+          "bytes": 51622
         },
         {
           "file": "docs/conventions/figures/explainer-d05-lenslet-ifs-instrument-dark.png",
-          "sha256": "8f12e99bd22c9fbe493b23225e1ac6af790df4b4aaa90045675a7b24c7142b94",
-          "bytes": 323770
+          "sha256": "52f6ad105f9d0f4a80aa98f69821acce1853e66f585bea8498e09ae1c7222615",
+          "bytes": 250077
         },
         {
           "file": "docs/conventions/figures/explainer-d05-lenslet-ifs-instrument-dark.pdf",
-          "sha256": "d5bea46938206a823c4e3ff709084b414dbc6efcc9ac2503455c553ead682c46",
-          "bytes": 59724
+          "sha256": "1d48469ef1b0b9b988a439192d1c5e82f743d50a81b08732299176b06a21f621",
+          "bytes": 51628
         },
         {
           "file": "talks/stills/d05-lenslet-ifs-instrument.png",
-          "sha256": "0da4ca83b7e778c656b4f4eae89f2b56d94bad84c2a1c722163ed4597561c555",
-          "bytes": 246545
+          "sha256": "5ef05d92d8e2d4734520bd238ed66082401b6e17671f8f8a10c04e27f254413e",
+          "bytes": 246179
         },
         {
           "file": "talks/stills/d05-lenslet-ifs-instrument.pdf",
-          "sha256": "0cd9096b798f57971367cfcece67ce492c366a8a78014e3778c8706fef12ceef",
-          "bytes": 63298
+          "sha256": "c40bbd145d5be0d58199665f982bf456bed4cba91bfca1347e783e9f11d19d28",
+          "bytes": 63063
+        }
+      ]
+    },
+    {
+      "slug": "d05-lenslet-ifs-origins",
+      "status": "simulated; grid and trace origins as coronachrome implements them",
+      "caption": "Three reference origins of a lenslet integral field spectrograph, each in its own frame (clause `optics-ifs-products`; pixel origins as in clause `optics-pixel-directions`). (a) The simulated entrance image of {ref}`the previous figure <fig-explainer-d05-lenslet-ifs-instrument>`, with the region drawn in (b) boxed. (b) The boxed region of (a) on its cube pixel grid, for a cube of $n_\\mathrm{cube}$ = 64 pixels on a side. The optical center belongs to the cube and sits at its geometric center (31.5, 31.5). The example implementation drawn here, coronachrome, places lenslet (0, 0) at (32, 32), half a pixel away on each axis; the {ref}`limitations page <limitations-optics>` records that difference. The arrow runs from the optical center to the lenslet-grid origin, +0.5 pixel on each axis. (c) Simulated detector response to unit flux in every wavelength bin of lenslet 24, grid (0, 0), log stretch. The detector trace origin is the point coronachrome anchors every trace to, the detector center $n_\\mathrm{det}/2$ = (60, 60) of the 120-pixel detector; the chapter sets no convention for this point. With no constant dispersion term, lenslet (0, 0) lands there at the 660 nm reference wavelength, which is not a bin center, so the origin lies between the centroids of the 651 nm and 663 nm bins. The three origins are separate calibrated quantities: taking one for another shifts every spaxel, and so every planet position, by half a cube pixel on each axis (1/12 of a lenslet pitch here), or misplaces every bin footprint on the detector. Simulated, with the synthetic instrument of the previous figure.",
+      "alt": "Three panels. Top left, small: the simulated entrance image with its rotated grid of square lenslet cells, the cells of lenslets 24 and 31 outlined, and a small box near the image center marking the zoomed region, tagged as carried from the previous figure. Top right: a zoom on the cube pixel grid, with a cross at the optical center (31.5, 31.5), labeled as the cube size minus one over two, a square at the lenslet-grid origin (32, 32), labeled as half the cube size in coronachrome, and an arrow from the cross to the square labeled +0.5 pixel on each axis. Bottom: a simulated detector image of one horizontal trace, lenslet 24, grid (0, 0), with ten centroid circles; a pair of tick marks at (60, 60), between the circles of the 651 and 663 nanometer bins, marks the detector trace origin, labeled as half the detector size in coronachrome, where lenslet (0, 0) lands at the 660 nanometer reference wavelength.",
+      "params": {
+        "pitch_m": 0.000174,
+        "pixsize_m": 1.3e-05,
+        "angle_rad": 0.46364760900080615,
+        "lam_ref_nm": 660.0,
+        "dispersion_coeffs": [
+          140.0,
+          0.0
+        ],
+        "psflet": {
+          "kind": "moffat",
+          "params": [
+            1.3,
+            2.5
+          ]
+        },
+        "n_lenslets": 7,
+        "detector_shape": [
+          120,
+          120
+        ],
+        "resolving_power": 50.0,
+        "band_nm": [
+          600.0,
+          720.0
+        ],
+        "fp_shape": [
+          64,
+          64
+        ],
+        "fp_px_per_lenslet": 6.0,
+        "footprint_half_px": 4,
+        "optical_center_px": [
+          31.5,
+          31.5
+        ],
+        "lenslets": [
+          24,
+          31,
+          43
+        ]
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d05-lenslet-ifs-origins-light.png",
+          "sha256": "eef184efbc00f0cee07bc83f722e78711f4cc08637123fbcbe6a084e60b9253a",
+          "bytes": 230717
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d05-lenslet-ifs-origins-light.pdf",
+          "sha256": "d388bc342ca11a30521927aea69d007ef5bad402491cef206442886680001da7",
+          "bytes": 52210
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d05-lenslet-ifs-origins-dark.png",
+          "sha256": "39e11bb2f317dff92807ceefcb8c909c943c54dc63d6c45975c970fcd1e3648c",
+          "bytes": 231764
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d05-lenslet-ifs-origins-dark.pdf",
+          "sha256": "9a73ab792b0e6273c9a95ae28eed3c34b968c99d9003bc8918dcad6000a62899",
+          "bytes": 52219
+        },
+        {
+          "file": "talks/stills/d05-lenslet-ifs-origins.png",
+          "sha256": "1832e28336257b80bdd8848bb556d23cb68f592e2c6896f5014df73848554171",
+          "bytes": 259927
+        },
+        {
+          "file": "talks/stills/d05-lenslet-ifs-origins.pdf",
+          "sha256": "c1f3e44a23564f5ad942303374a37d4f5315d75fb8b1db1fb71f1c5c1f911e3e",
+          "bytes": 65834
         }
       ]
     },
@@ -202,33 +282,33 @@
       "outputs": [
         {
           "file": "docs/conventions/figures/explainer-d05-lenslet-ifs-placement-light.png",
-          "sha256": "2f3a0580c27475a16a0353f541473bc857624bed031903ce64645f0be56c5797",
-          "bytes": 281366
+          "sha256": "832bb744b8c7e1fc367b7b47be6f492cc9beb7ecb923ce2787295d9e307445cd",
+          "bytes": 281273
         },
         {
           "file": "docs/conventions/figures/explainer-d05-lenslet-ifs-placement-light.pdf",
-          "sha256": "b1636c79cbbbe5e6e0aaf15aaa3981590cc19b44e744859605d496a12b80c862",
+          "sha256": "d9ddc3be4e4269d7039c28e1308607a6d10f287713b8955fac15fabbc021ff78",
           "bytes": 72403
         },
         {
           "file": "docs/conventions/figures/explainer-d05-lenslet-ifs-placement-dark.png",
-          "sha256": "9298eb81441f60f9b28d58b22a12019e3e18526fdd58ff4e7d1743f4d8c3bfc2",
-          "bytes": 279868
+          "sha256": "cf31ca0692f6be86a9e2bca8fc91d05ba71e7054b0af6b2377d8d3f5e2fcdf22",
+          "bytes": 279787
         },
         {
           "file": "docs/conventions/figures/explainer-d05-lenslet-ifs-placement-dark.pdf",
-          "sha256": "66b6683b3bc511a2ad38a8ed9fcb09ac98e0c2c9b052d9e64f4d0ef28e70e574",
+          "sha256": "9394fd596196210ee05cc743bedc2606aaba4273cdc6894d357e30199a6353f2",
           "bytes": 72413
         },
         {
           "file": "talks/stills/d05-lenslet-ifs-placement.png",
-          "sha256": "2726662cd9b0e71ed3013491897dfb95656f8172be469ccd50d95babdc6e204e",
-          "bytes": 210726
+          "sha256": "f6ccc2b941b33935d6df00a2a455ea70338b9b4ec8c721ba0430bc3a24b839c3",
+          "bytes": 210557
         },
         {
           "file": "talks/stills/d05-lenslet-ifs-placement.pdf",
-          "sha256": "7e549a53b409ab4a0eb7339ffbffdbe715f4af79fd6541938f0961da553ea5fd",
-          "bytes": 112218
+          "sha256": "a81ce16c67de80648570e0de63251af42d165aa142fec9440acb34ca8f1da224",
+          "bytes": 112223
         }
       ]
     },
@@ -284,33 +364,33 @@
       "outputs": [
         {
           "file": "docs/conventions/figures/explainer-d05-lenslet-ifs-extraction-light.png",
-          "sha256": "016d3ef38b03f975f7a7de587bf56d065a68273dd620cfb9ba75f83704a6031b",
-          "bytes": 228525
+          "sha256": "b81ee82525967c0edef0d0429c78ae6cd17f5b51616feb4b1e8d3184d097860e",
+          "bytes": 228427
         },
         {
           "file": "docs/conventions/figures/explainer-d05-lenslet-ifs-extraction-light.pdf",
-          "sha256": "0f279f34abf36e292100b12a36b6ef39803cefa9818c84ecbefe48ead80a2254",
-          "bytes": 52849
+          "sha256": "381a6b250be5c1e4f7002e90d75dff17666a742b0944b1b6de02912b32087ddf",
+          "bytes": 52851
         },
         {
           "file": "docs/conventions/figures/explainer-d05-lenslet-ifs-extraction-dark.png",
-          "sha256": "1fbf77761c5ec3b351ebd61a504734aa705653ad53bb07fe9966d3198f65f2a2",
-          "bytes": 228593
+          "sha256": "9f60af4ef3c6d6bbbaf7bd3720264d37414cccb210b2564c5155510c4770fc95",
+          "bytes": 228512
         },
         {
           "file": "docs/conventions/figures/explainer-d05-lenslet-ifs-extraction-dark.pdf",
-          "sha256": "4c62880b70f3b31e5547ce2c0595d3577da4fa6285e0e7128a2298a1207457de",
-          "bytes": 52880
+          "sha256": "c4d9dddcc5d6f23e01842835b1269b7ac631c95bb338563fb65e5ae47dfeb6d3",
+          "bytes": 52882
         },
         {
           "file": "talks/stills/d05-lenslet-ifs-extraction.png",
-          "sha256": "cf1767600bcf75a82e33ce5afa44963d9c1da60a01084e9c6c95475d29c0e552",
-          "bytes": 230678
+          "sha256": "8f49eaa8bd66f4095723c4c13990679250183a4cfacad3c52615786c86e09be4",
+          "bytes": 230524
         },
         {
           "file": "talks/stills/d05-lenslet-ifs-extraction.pdf",
-          "sha256": "2a9c101b66724a907418a55d44769ed78db2fbb06483db8f5205df15470c1742",
-          "bytes": 84376
+          "sha256": "5864ddf247860955a73094aa46c375d3e8fe7799ca5ee5a8b18d397a20e9a12b",
+          "bytes": 84377
         }
       ]
     }
@@ -369,24 +449,24 @@
         "talk": 17
       },
       "revision": {
-        "commit": "58b2bdd",
+        "commit": "ddaab96",
         "dirty": true
       },
       "outputs": [
         {
           "file": "docs/_static/explainers/explainer-d05-lenslet-ifs-scan-light.mp4",
-          "sha256": "f94d9a290a649c6818187c4540caab3a41498f9b9c67a1af281f118d61c70771",
-          "bytes": 192506
+          "sha256": "d597ec983a7aaa9f6a364fdcdd762e768f4f9aaf04fbaca7b4ad3d330c48e349",
+          "bytes": 196138
         },
         {
           "file": "docs/_static/explainers/explainer-d05-lenslet-ifs-scan-dark.mp4",
-          "sha256": "f1030fedd005aac1fdd3855f89bbd3768314b6a4b52ccee98fa8d71f93d568b0",
-          "bytes": 197567
+          "sha256": "b7f55320073a66b36750d7026af633e936cc0721bdb806bf5df56c346ac2a491",
+          "bytes": 210497
         },
         {
           "file": "talks/animations/d05-lenslet-ifs-scan.mp4",
-          "sha256": "1504ffdd92279b6073966b8ebe6d02e2193f2e943fefbc5a527f3ce29e41afec",
-          "bytes": 349284
+          "sha256": "fdc5dad0a9d007e87e6e17b3f587c8d87b2680688e66eda934b8925ef113ab45",
+          "bytes": 356573
         }
       ]
     }

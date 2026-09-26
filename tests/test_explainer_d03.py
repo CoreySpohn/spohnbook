@@ -5,6 +5,12 @@ from the exact SI value of the Planck constant and the definition of the
 jansky with 40-digit decimal arithmetic, never from hwoutils, and the test
 reads the text the builder actually drew. The figure's parameters must be
 those of the reference case code. The schematic figures print no numbers.
+
+The "where each factor lives" piece is checked for its geometry (straight
+lines through the lens center carry the sky cell onto pixel p, and a
+direction one pixel outside the cell lands on the neighbor), for the Airy
+profile that reaches into p, for the relay (its face-on panel is the one the
+wavelength figure carries), and for plain labels with no stroked halo.
 """
 
 import re
@@ -18,6 +24,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
+from matplotlib.patches import Ellipse, FancyArrowPatch, Rectangle
 from matplotlib.text import Text
 from scipy.special import j0, j1
 
@@ -147,6 +154,7 @@ def test_reference_figure_prints_exactly_the_checked_numbers(layout):
     "slug",
     [
         "d03-radiometric-collection",
+        "d03-collection-where",
         "d03-collection-wavelength",
         "d03-collection-electrons",
     ],
@@ -205,6 +213,7 @@ def test_psf_window_holds_less_than_all_light():
 def test_captions_name_their_clauses():
     labels = {
         "d03-radiometric-collection": "radiometry-response-ownership",
+        "d03-collection-where": "radiometry-pixel-brightness",
         "d03-collection-wavelength": "radiometry-response-ownership",
         "d03-collection-electrons": "radiometry-detector-counts",
         "d03-four-pixel-reference": "photon-electron-reference-experiment",
@@ -214,3 +223,249 @@ def test_captions_name_their_clauses():
     for slug, label in labels.items():
         assert f"`{label}`" in specs[slug].caption
         assert chr(0x2014) not in specs[slug].caption + specs[slug].alt
+
+
+# Relay piece 1: where each factor lives
+
+
+def _build(slug, layout, mode="light"):
+    spec = next(s for s in d03.FIGURES if s.slug == slug)
+    with exporter.venue(mode, layout) as cast:
+        return spec.build(layout, cast)
+
+
+def _by_gid(ax, gid):
+    return [a for a in ax.get_children() if a.get_gid() == gid]
+
+
+def _rows(fig):
+    """The point-source row, the extended-source row and the face-on panel."""
+    axes = fig.get_axes()
+    titles = [a.get_title(loc="left") for a in axes]
+    point = axes[next(i for i, t in enumerate(titles) if t.startswith("point"))]
+    extended = axes[next(i for i, t in enumerate(titles) if t.startswith("extended"))]
+    face = axes[next(i for i, t in enumerate(titles) if t.startswith("face-on"))]
+    return point, extended, face
+
+
+def _pixel_p(ax):
+    (rect,) = _by_gid(ax, "pixel-p")
+    y = rect.get_y()
+    return rect.get_x(), y, y + rect.get_height()
+
+
+def _lens_center(ax):
+    (lens,) = [a for a in ax.patches if type(a) is Ellipse]  # an Arc is an Ellipse
+    return lens.center
+
+
+@pytest.mark.parametrize("layout", [ex.DOC, ex.SLIDE], ids=["doc", "slide"])
+def test_where_names_every_factor_at_its_place(layout):
+    texts = _texts("d03-collection-where", layout)
+    joined = "\n".join(texts)
+    for symbol in (
+        r"$A$",
+        r"\Phi_\lambda",
+        r"T_{\rm opt}(\lambda)",
+        r"$P_p(\lambda,\boldsymbol{\theta})$",
+        r"$q_p(\lambda)$",
+        r"I_\lambda",
+        r"$\Omega_p$",
+        r"P_p(\lambda,\boldsymbol{\theta})\,d\Omega$ replaces $\Phi_\lambda P_p$",
+        r"$A\,\Phi_\lambda\,T_{\rm opt}\,P_p(\lambda,\boldsymbol{\theta})\,q_p$",
+    ):
+        assert symbol in joined, symbol
+    for label in ("aperture", "optics", "detector QE", "sky cell of $p$", "outside"):
+        assert label in joined, label
+    assert texts.count(r"pixel $p$") == 2  # one per row
+    assert "schematic, not to scale" in texts
+
+
+@pytest.mark.parametrize("layout", [ex.DOC, ex.SLIDE], ids=["doc", "slide"])
+def test_where_cell_maps_onto_pixel_p_through_the_lens_center(layout):
+    fig = _build("d03-collection-where", layout)
+    try:
+        _, ax, _ = _rows(fig)
+        px, p_lo, p_hi = _pixel_p(ax)
+        lx, ly = _lens_center(ax)
+        (cell,) = _by_gid(ax, "sky-cell")
+        cell_lo, cell_hi = cell.get_y(), cell.get_y() + cell.get_height()
+        cell_x = cell.get_x() + cell.get_width()
+        # The dashed cell and pixel p are centered on the lens axis.
+        assert abs(0.5 * (cell_lo + cell_hi) - ly) < 1e-9
+        assert abs(0.5 * (p_lo + p_hi) - ly) < 1e-9
+        lines = _by_gid(ax, "cell-edge")
+        assert len(lines) == 2
+        landed = set()
+        for line in lines:
+            xs, ys = (np.asarray(v, dtype=float) for v in line.get_data())
+            # Starts on a cell edge, passes the lens center, ends on the pixel.
+            assert xs[0] == pytest.approx(cell_x)
+            assert ys[0] == pytest.approx(cell_lo) or ys[0] == pytest.approx(cell_hi)
+            assert (xs[1], ys[1]) == pytest.approx((lx, ly))
+            assert xs[2] == pytest.approx(px)
+            # Straight: equal slope on both sides of the pivot (similar
+            # triangles, so the angle is kept).
+            before = (ys[1] - ys[0]) / (xs[1] - xs[0])
+            after = (ys[2] - ys[1]) / (xs[2] - xs[1])
+            assert after == pytest.approx(before, rel=1e-12)
+            # Inverted: the upper cell edge lands on the lower pixel edge.
+            want = p_lo if ys[0] > ly else p_hi
+            assert ys[2] == pytest.approx(want, abs=1e-12)
+            landed.add(round(ys[2], 9))
+        assert landed == {round(p_lo, 9), round(p_hi, 9)}
+    finally:
+        plt.close(fig)
+
+
+@pytest.mark.parametrize("layout", [ex.DOC, ex.SLIDE], ids=["doc", "slide"])
+def test_where_omega_cone_has_its_vertex_at_the_lens_center(layout):
+    fig = _build("d03-collection-where", layout)
+    try:
+        _, ax, _ = _rows(fig)
+        lx, ly = _lens_center(ax)
+        (cell,) = _by_gid(ax, "sky-cell")
+        (cone,) = _by_gid(ax, "omega-cone")
+        xy = np.asarray(cone.get_xy(), dtype=float)[:3]
+        right = cell.get_x() + cell.get_width()
+        top, bottom = cell.get_y() + cell.get_height(), cell.get_y()
+        assert sorted(map(tuple, xy.round(12))) == sorted(
+            [
+                (round(right, 12), round(bottom, 12)),
+                (round(right, 12), round(top, 12)),
+                (round(lx, 12), round(ly, 12)),
+            ]
+        )
+        texts = [t.get_text() for t in ax.texts]
+        assert r"$\Omega_p$" in texts
+    finally:
+        plt.close(fig)
+
+
+@pytest.mark.parametrize("layout", [ex.DOC, ex.SLIDE], ids=["doc", "slide"])
+def test_where_outside_direction_lands_on_the_neighbor(layout):
+    fig = _build("d03-collection-where", layout)
+    try:
+        _, ax, _ = _rows(fig)
+        px, p_lo, p_hi = _pixel_p(ax)
+        pitch = p_hi - p_lo
+        lx, ly = _lens_center(ax)
+        (cell,) = _by_gid(ax, "sky-cell")
+        (dot,) = _by_gid(ax, "outside-point")
+        ox, oy = (float(v[0]) for v in dot.get_data())
+        # Outside the dashed cell, on the far side from the landing pixel:
+        # one pitch (in angle) from the cell center, half beyond its edge.
+        cell_half = 0.5 * cell.get_height()
+        cell_x = cell.get_x() + cell.get_width()
+        assert (oy - ly) / (lx - ox) == pytest.approx(2.0 * cell_half / (lx - cell_x))
+        assert oy > cell.get_y() + cell.get_height()
+        # Its line through the lens center meets the detector plane at the
+        # center of the pixel below p: one pixel pitch in angle.
+        hit = ly + (ly - oy) * (px - lx) / (lx - ox)
+        assert hit == pytest.approx(ly - pitch, abs=1e-9)
+        # The drawn ray runs from the dot to that point, straight through
+        # the lens center.
+        (ray,) = [
+            a for a in _by_gid(ax, "outside-ray") if isinstance(a, FancyArrowPatch)
+        ]
+        (x0, y0), (x1, y1) = ray._posA_posB
+        assert (x0, y0) == pytest.approx((ox, oy))
+        assert (x1, y1) == pytest.approx((px, ly - pitch))
+        on_line = y0 + (y1 - y0) * (lx - x0) / (x1 - x0)
+        assert on_line == pytest.approx(ly, abs=1e-9)
+    finally:
+        plt.close(fig)
+
+
+def _airy_closed_form(r):
+    """[2 J1(pi r) / (pi r)]^2 with r in lambda/D, written out here."""
+    x = np.pi * np.asarray(r, dtype=float)
+    out = np.ones_like(x)
+    nz = x != 0.0
+    out[nz] = (2.0 * j1(x[nz]) / x[nz]) ** 2
+    return out
+
+
+@pytest.mark.parametrize("layout", [ex.DOC, ex.SLIDE], ids=["doc", "slide"])
+def test_where_profiles_are_airy_cuts_centered_where_the_rays_land(layout):
+    fig = _build("d03-collection-where", layout)
+    try:
+        point, extended, _ = _rows(fig)
+        for ax, gid, shift in (
+            (point, "profile-point", 0.0),
+            (extended, "profile-outside", -1.0),
+        ):
+            _, p_lo, p_hi = _pixel_p(ax)
+            pitch = p_hi - p_lo  # one lambda/D per pixel
+            center = 0.5 * (p_lo + p_hi) + shift * pitch
+            (line,) = _by_gid(ax, gid)
+            xs, ys = (np.asarray(v, dtype=float) for v in line.get_data())
+            height = xs - xs.min()
+            shape = _airy_closed_form((ys - center) / pitch)
+            np.testing.assert_allclose(height / height.max(), shape, atol=2e-3)
+            in_p = (ys >= p_lo) & (ys <= p_hi)
+            if shift == 0.0:
+                assert ys[np.argmax(xs)] == pytest.approx(center, abs=0.02 * pitch)
+            else:
+                # The neighbor's image reaches into p: at the shared edge,
+                # half a lambda/D from its center, the Airy intensity is
+                # [2 J1(pi/2) / (pi/2)]^2, about 0.52 of its peak.
+                edge = float(_airy_closed_form(0.5))
+                assert 0.51 < edge < 0.53
+                # Inside p the drawn tail is highest at that shared edge,
+                # within one sample of it, and close to the edge value.
+                step = ys[1] - ys[0]
+                k = np.argmax(np.where(in_p, height, -np.inf))
+                assert ys[k] - p_lo <= step + 1e-12
+                assert height[k] / height.max() == pytest.approx(edge, abs=0.03)
+    finally:
+        plt.close(fig)
+
+
+@pytest.mark.parametrize("layout", [ex.DOC, ex.SLIDE], ids=["doc", "slide"])
+def test_where_ends_on_the_panel_the_wavelength_figure_carries(layout):
+    where = _build("d03-collection-where", layout)
+    carried = _build("d03-collection-wavelength", layout)
+    try:
+        _, _, face = _rows(where)
+        left = carried.get_axes()[0]
+        # Both panels name the same response; only the title prefix differs.
+        assert "$P_p" in face.get_title(loc="left")
+        assert "$P_p" in left.get_title(loc="left")
+        (a,) = face.get_images()
+        (b,) = left.get_images()
+        np.testing.assert_array_equal(a.get_array(), b.get_array())
+        assert a.get_extent() == b.get_extent()
+        assert (a.norm.vmin, a.norm.vmax) == (b.norm.vmin, b.norm.vmax)
+        assert a.get_cmap().name == b.get_cmap().name
+        # Pixel p is outlined at the same place in both.
+        outline = [
+            (r.get_x(), r.get_y(), r.get_width())
+            for ax in (face, left)
+            for r in ax.patches
+            if isinstance(r, Rectangle)
+            and r.get_facecolor()[3] == 0.0
+            and r.get_width() == 1.0
+        ]
+        assert outline == [(-0.5, -0.5, 1.0)] * 2
+        # The piece is the first of the relay: nothing on it is carried.
+        texts = [t.get_text() for t in where.findobj(Text)]
+        assert not any("previous" in t for t in texts)
+    finally:
+        plt.close(where)
+        plt.close(carried)
+
+
+@pytest.mark.parametrize("mode", ["light", "dark"])
+@pytest.mark.parametrize("layout", [ex.DOC, ex.SLIDE], ids=["doc", "slide"])
+def test_where_labels_carry_no_stroked_halo(layout, mode):
+    fig = _build("d03-collection-where", layout, mode)
+    try:
+        stroked = [
+            t.get_text()
+            for t in fig.findobj(Text)
+            if t.get_text().strip() and t.get_path_effects()
+        ]
+        assert stroked == []
+    finally:
+        plt.close(fig)

@@ -2,16 +2,16 @@
   "module": "d04_optical_planes",
   "script": "tools/explainers/d04_optical_planes.py",
   "build_command": "python tools/build_explainer_figures.py --only d04",
-  "source_hash": "31abe34f8f72",
+  "source_hash": "af06a5770ae2",
   "source_sha256": {
-    "tools/explainers/d04_optical_planes.py": "4c5c485827f18f792fa39b56fbdfedfe6a345237f82b312c1005a916bd160dda",
+    "tools/explainers/d04_optical_planes.py": "57e203fc0e34501382167ccb7727a09f3729bf4a48316d175f5ef1570ca84c92",
     "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
-    "tools/explainers/_export.py": "1dae7e6f79963cd53c3f8a4fbff06d493d0d674b97daf4d5916f31a15742c115"
+    "tools/explainers/_export.py": "b62dc95b9442fd3062fe8b1446626b4aea0e896263564843ab38c84fcf3e1dfc"
   },
   "stamp_date": "2026-09-25",
   "revisions": {
     "spohnbook": {
-      "commit": "6c3d11b",
+      "commit": "ddaab96",
       "dirty": true
     },
     "eyepiece": {
@@ -30,7 +30,7 @@
     "matplotlib": "3.11.0",
     "numpy": "2.2.6"
   },
-  "ffmpeg": null,
+  "ffmpeg": "ffmpeg version 4.4.6 Copyright (c) 2000-2025 the FFmpeg developers",
   "layouts": {
     "doc": {
       "name": "doc",
@@ -65,7 +65,7 @@
     {
       "slug": "d04-optical-planes",
       "status": "schematic, not to scale; thumbnails simulated",
-      "caption": "An illustrative vortex coronagraph train, unfolded in side view with its mirrors drawn as transmissive elements; it is not a prescription for any mission. Each dashed line is a plane, a location along the beam; the glyph on it is the hardware element there; the framed thumbnail below is a sampled array of the quantity on that plane. The first three thumbnails show what an element applies, the next two what the light carries, and the last what the detector records. The beam envelope is schematic geometry, not to scale, and is not evidence of coronagraph performance. The thumbnails come from one propagated physicaloptix example: a 64 by 64 pupil grid, a 48 by 48 focal grid at 0.5 lambda/D, 550 nm, a charge-6 vortex (its phase winds six times through 2 pi around the axis; Mawet et al. 2005, ApJ 633, 1191; Foo et al. 2005, Opt. Lett. 30, 3308) and a Lyot stop, the pupil stop in the relayed pupil, of 0.8 D. The DM plane carries a 1 nm cosine ripple of 6 cycles per D standing in for a static wavefront error. The vortex phase is evaluated from its closed form, because the model does not output its internal focal-plane field. The pupil-plane thumbnails span 2 D: the path keeps only a D-wide array, which holds about 4 percent of the entrance energy at the Lyot plane, so the Lyot thumbnail evaluates the same vortex operator on a wider grid to show the light moved outside the pupil edge. Image intensities are relative to the unocculted on-axis peak $|\\mathcal{F}[A](0)|^2$, not to the brightest sample of the half-pixel-offset grid. Between the entrance pupil and the image plane the model carries a complex field: each element multiplies it and each gap marked FT is a Fourier transform. The relay from the entrance pupil to the DM plane is an identity in the model, which applies the DM to the entrance array, and the model reaches the Lyot plane with an inverse transform, so it does not invert the pupil as a physical relay would. An OPD W enters as exp(+i 2 pi W/lambda) under the proposed coherent profile ({ref}`optics-coherent-phase`). The OPD is a path difference, not a mirror surface height: at normal reflection a surface displacement h gives an OPD of 2h ({ref}`Hecht 2017, Sec. 9.4.2, eq. 9.44 <source-hecht2017>`). The intensity forms only at the image plane, and the detector applies its own boundary contract ({ref}`optics-signed-intensity`): here 1e7 photons per second in a pixel at the unocculted peak, a 1 s exposure, quantum efficiency 1, a Gaussian approximation to shot noise, 1 electron of read noise, and detector pixels equal to the focal samples. The thumbnails show each array with x right and y up; whether that is the view looking downstream or upstream, and how a relay's pupil inversion is recorded, belong to the pending {ref}`image coordinates and PSFlet origin decision <decision-image-coordinates-and-psflet-origin>`. The picture is an example implementation of the proposed profile. A backend built on response tables stores only a final-plane response and does not model the intermediate planes.",
+      "caption": "An illustrative vortex coronagraph train, unfolded in side view with its mirrors drawn as transmissive elements; it is not a prescription for any mission. Each dashed line is a plane, a location along the beam; the glyph on it is the hardware element there; the framed thumbnail below is a sampled array of the quantity on that plane. The first three thumbnails show what an element applies, the next two what the light carries, and the last what the detector records. The beam envelope is schematic geometry, not to scale, and is not evidence of coronagraph performance. The thumbnails come from one propagated physicaloptix example: a 64 by 64 pupil grid, a 48 by 48 focal grid at 0.5 lambda/D, 550 nm, a charge-6 vortex (its phase winds six times through 2 pi around the axis; Mawet et al. 2005, ApJ 633, 1191; Foo et al. 2005, Opt. Lett. 30, 3308) and a Lyot stop, the pupil stop in the relayed pupil, of 0.8 D. The DM plane carries a 1 nm cosine ripple of 6 cycles per D standing in for a static wavefront error. The vortex phase is evaluated from its closed form, because the model does not output its internal focal-plane field. The pupil-plane thumbnails span 2 D: the path keeps only a D-wide array, which holds about 4 percent of the entrance energy at the Lyot plane, so the Lyot thumbnail evaluates the same vortex operator on a wider grid to show the light moved outside the pupil edge. Image intensities are relative to the unocculted on-axis peak $|\\mathcal{F}[A](0)|^2$, not to the brightest sample of the half-pixel-offset grid. Between the entrance pupil and the image plane the model carries a complex field: each element multiplies it and each gap marked FT is a Fourier transform. The relay from the entrance pupil to the DM plane is an identity in the model, which applies the DM to the entrance array, and the model reaches the Lyot plane with an inverse transform, so it does not invert the pupil as a physical relay would. An OPD W enters as exp(+i 2 pi W/lambda) under the proposed coherent profile ({ref}`optics-coherent-phase`). The OPD is a path difference, not a mirror surface height: at normal reflection a surface displacement h gives an OPD of 2h ({ref}`Hecht 2017, Sec. 9.4.2, text before eq. 9.44 <source-hecht2017>`). The intensity forms only at the image plane, and the detector applies its own boundary contract ({ref}`optics-signed-intensity`): here 1e7 photons per second in a pixel at the unocculted peak, a 1 s exposure, quantum efficiency 1, a Gaussian approximation to shot noise, 1 electron of read noise, and detector pixels equal to the focal samples. The thumbnails show each array with x right and y up; whether that is the view looking downstream or upstream, and how a relay's pupil inversion is recorded, belong to the pending {ref}`image coordinates and PSFlet origin decision <decision-image-coordinates-and-psflet-origin>`. The picture is an example implementation of the proposed profile. A backend built on response tables stores only a final-plane response and does not model the intermediate planes.",
       "alt": "Side-view diagram of an unfolded optical train with five planes from left to right: entrance pupil, DM plane, focal plane, Lyot plane and image plane, each a dashed line across a gray beam. Starlight enters from the left; a relay lens pair between the entrance pupil and the DM plane and a single lens in each later gap are marked relay and FT. The beam is parallel at the pupils and focused at the focal and image planes, and it narrows at the Lyot stop. Below the beam the hardware is named: aperture, deformable mirror, vortex phase mask, Lyot stop and detector. Below that a row of square thumbnails, grouped as what the element applies, what the light carries and what the detector records, shows a filled disk of pupil transmission, vertical OPD fringes, a six-fold phase pattern with a cyclic key, a bright ring of field amplitude just outside a solid pupil-edge circle and a dashed stop circle, an image with two speckles either side of a dark center, and, after an arrow, simulated detector counts. A bracket under the first four marks the complex field, a mark between the fourth and fifth reads |E| squared taken here, and a second bracket marks the intensity and counts.",
       "params": {
         "npup": 64,
@@ -93,33 +93,33 @@
       "outputs": [
         {
           "file": "docs/conventions/figures/explainer-d04-optical-planes-light.png",
-          "sha256": "dff90b8c5f6e3a2a7ab90410428a11fe2951a60f71a1cb0ea00f6ef8f10534b6",
-          "bytes": 223284
+          "sha256": "f137f8d31ff9fddb0bb343d1bbe182df401dc685455536ac018922db0e90f7bf",
+          "bytes": 223387
         },
         {
           "file": "docs/conventions/figures/explainer-d04-optical-planes-light.pdf",
-          "sha256": "cf8c42d1aa575ded43f3cafa5a787e039d159ec09a0a7162e03a7750e1165a69",
-          "bytes": 316598
+          "sha256": "e60314205feec5fbbbc05cbf14c499f60fe02a993a4ff786758d287939506d3c",
+          "bytes": 315302
         },
         {
           "file": "docs/conventions/figures/explainer-d04-optical-planes-dark.png",
-          "sha256": "3d2e43b33d8210f7794ce3fe3c422bf360fef0ba0a15277fdc3c0b48deed8b0a",
-          "bytes": 216660
+          "sha256": "f01cda38072e4b37502dc12b03ce1fb3289fdd0d4839522bbe0f7cdb6fbd4d5a",
+          "bytes": 216761
         },
         {
           "file": "docs/conventions/figures/explainer-d04-optical-planes-dark.pdf",
-          "sha256": "a4f8a705e93c5c17ad3999ad75bbc41cccb1399e3de1223c8120560f811c957e",
-          "bytes": 316713
+          "sha256": "8a9f094af46f031a7de9487b6183cca2bc4e94f885de9916911f6779585c3ebb",
+          "bytes": 315418
         },
         {
           "file": "talks/stills/d04-optical-planes.png",
-          "sha256": "8777455faa3bb071bc203cd903f0e796a52502e19c5eee11e1cd45a06b63f3ef",
-          "bytes": 281031
+          "sha256": "130a4fcd5d3983795b981aaf7aa0297b4b1111b2647108084f54078348b29a65",
+          "bytes": 281116
         },
         {
           "file": "talks/stills/d04-optical-planes.pdf",
-          "sha256": "3bd1d89886dd2b31157444400a65d66e6fe7491b90cbf55998f93505812998cc",
-          "bytes": 298016
+          "sha256": "2672576adb211c671854e2e764929e1056da8b720081cda912ce6534c9b74300",
+          "bytes": 296715
         }
       ]
     },
@@ -154,33 +154,95 @@
       "outputs": [
         {
           "file": "docs/conventions/figures/explainer-d04-opd-perturbation-light.png",
-          "sha256": "2ad64f177306d2a062111bbaaa38d4663a798ec414fee3ff47c8b87a393e4416",
-          "bytes": 136580
+          "sha256": "06d06485ba5cbe2c0f1a380d5cd8010bf6fd4724b3b2e0dbc88875c44ba3afbf",
+          "bytes": 136643
         },
         {
           "file": "docs/conventions/figures/explainer-d04-opd-perturbation-light.pdf",
-          "sha256": "7cb2754a1af60daf009442a4b891da89ddd870894b6839c03cfbaf634bc7a105",
-          "bytes": 89900
+          "sha256": "7ffe582307ae7d4639db16aad2a46cd25c391484ad7e016b5cbab0e4b6d4623e",
+          "bytes": 88784
         },
         {
           "file": "docs/conventions/figures/explainer-d04-opd-perturbation-dark.png",
-          "sha256": "321017c4faf12af2c4d128e40c7fc756a0c074db05f5299f5fa9727993e11c57",
-          "bytes": 136724
+          "sha256": "282c18f7f628a56c615ffa5616226791df61625dddf0eabe4d04ca3120b5118b",
+          "bytes": 136769
         },
         {
           "file": "docs/conventions/figures/explainer-d04-opd-perturbation-dark.pdf",
-          "sha256": "5a42b681fd32c27bf4ea3f6f65169075b666cb37fb19fa58d59355492c2cabcf",
-          "bytes": 89886
+          "sha256": "d8b26424056f5642bfff5f3e49f23f1b489fd1a96c3ae922be8d8586c6469c74",
+          "bytes": 88771
         },
         {
           "file": "talks/stills/d04-opd-perturbation.png",
-          "sha256": "38e18fcbbfc312f5bfb32a6327ca3e425cf4ee42fc0c003e956033816dfc282b",
-          "bytes": 193743
+          "sha256": "611764e183678f0274253002f9dbab9f8c35704660a8b979ecf3c3ad33c015ca",
+          "bytes": 193794
         },
         {
           "file": "talks/stills/d04-opd-perturbation.pdf",
-          "sha256": "59e5018dbb2582d89d98a8037e8b3e5ecfb973a53bcb92ff3e58483dcc4fa059",
-          "bytes": 108301
+          "sha256": "5e9296cc06e64c1bc79d36582beacdfa3509603b49331cfb6cb727af57ffd46e",
+          "bytes": 107777
+        }
+      ]
+    },
+    {
+      "slug": "d04-light-every-plane",
+      "status": "simulated, noiseless optical model; train schematic",
+      "caption": "The light of the optical-planes train at every plane, before and after each element ({ref}`optics-coherent-phase`). The top row is the field amplitude |E| and the bottom row its phase. Amplitude uses the amplitude colormap on a log norm in every plane, extended past its cyan end toward the text color so that the brightest decade reads; phase uses the cyclic phase map in every plane. Pupil-plane amplitudes are relative to the incident amplitude and span 2 D; focal-plane amplitudes are relative to the square root of the unocculted on-axis peak and span 24 lambda/D, so the amplitude floor of 1e-5 matches the intensity floor of 1e-10. Each element multiplies the field. The entrance array carries the transmission A of a clear circular aperture times exp(+i 2 pi W/lambda) for the 1 nm ripple W of 6 cycles per D, a phase of at most 0.011 rad that a full-cycle phase scale cannot show. The vortex multiplies by exp(i 6 theta), with theta the focal-plane azimuth, drawn as the mask thumbnail of the train figure between the focal pair: it leaves |E| unchanged and winds the phase six times around the axis (Mawet et al. 2005, ApJ 633, 1191; Foo et al. 2005, Opt. Lett. 30, 3308). The Lyot stop of 0.8 D multiplies by its transmission. The gaps into the focal and image planes are the transform F of that clause, and the gap into the Lyot plane is its inverse. Before the vortex the focal field is, apart from the speckles of the ripple, the Airy pattern of the clear circular aperture, a real field whose rings alternate in sign (phase 0 and pi). For that clear circular aperture the vortex moves the starlight outside the pupil edge (solid circle) in the Lyot plane, and the stop (dashed circle) blocks it. The faint light inside the pupil, visible only on the log scale, is the ripple light that forms the speckles of the perturbation figure: about 4e-5 of the entrance energy passes the stop, close to the first-order share of the ripple, (2 pi a0/lambda)^2/2 = 6.5e-5, times the 0.64 of the aperture area that the stop keeps; the leakage of the sampled vortex without the ripple is under 5 percent of it. Only at the image plane is the intensity I = |E|^2 taken, on the log scale of the train and perturbation figures. Phase is drawn only where the intensity exceeds 3e-7 of the reference; gray marks pixels with too little light for a phase. The image comes from the propagated physicaloptix path of the train figure. The path keeps only a D-wide array, which holds about 4 percent of the entrance energy at the Lyot plane, so the Lyot pair evaluates the same vortex operator on a 2 D wide grid; its central D-wide block is the field the path carries. The focal pair is a matrix Fourier transform of the sampled entrance field onto a display grid of 0.25 lambda/D over the image extent, times the closed-form vortex phase, because the model's own vortex uses a multi-scale ladder and does not output its focal-plane field. The model reaches the Lyot plane with an inverse transform, so it does not invert the pupil as a physical relay would; the panels show x right and y up, and the viewing direction belongs to the pending {ref}`image coordinates and PSFlet origin decision <decision-image-coordinates-and-psflet-origin>`. The train above is schematic and not to scale; its planes sit over the columns that show their fields. The picture is a noiseless example implementation of the proposed coherent profile, not a performance claim.",
+      "alt": "The optical train from the optical-planes figure drawn in side view across the top: starlight enters from the left through the aperture, a relay to the deformable mirror, the vortex phase mask at the focal plane, the Lyot stop and the detector at the image plane, each element named in small gray text under the beam. Brackets join the planes to six columns of square panels below. The top row shows field amplitude on a log scale, labeled relative to the incident amplitude for the pupil planes and relative to the square root of the peak for the focal plane; the bottom row shows phase on a cyclic scale, with gray where there is no light. Left to right: a uniform disk of amplitude with a flat phase marked at most 0.011 (radians, from the row label); the focal field before the vortex, a bright core with rings whose phase alternates between dark and light; the same amplitude after the vortex, with the rings broken into colored spokes of phase; the Lyot-plane field before the stop, bright outside a solid pupil-edge circle and faint inside a dashed stop circle; the same field after the stop, faint light only inside the stop; and the image-plane intensity with two speckles either side of a star glyph, with phase shown only at the speckles. Between the columns are the labels F, times a small thumbnail of the six-fold vortex phase labeled e to the i 6 theta, F inverse, times stop, and F. Footnotes say that gray means no light, that the vortex changes only the phase, and that the faint light inside the stop is the ripple light that forms the speckles.",
+      "params": {
+        "npup": 64,
+        "nfoc": 48,
+        "pixscale_lod": 0.5,
+        "wavelength_nm": 550.0,
+        "aperture_radius_d": 0.5,
+        "lyot_radius_d": 0.4,
+        "vortex_charge": 6,
+        "gray_subsamples": 8,
+        "thumbnail_width_d": 2.0,
+        "static_ripple_cycles_per_d": 6.0,
+        "static_ripple_nm": 1.0,
+        "probe_ripple_cycles_per_d": 6.0,
+        "probe_ripple_nm": 1.0,
+        "detector_peak_rate_per_s": 10000000.0,
+        "detector_exposure_s": 1.0,
+        "detector_read_noise_e": 1.0,
+        "detector_seed": 4,
+        "intensity_floor": 1e-10,
+        "intensity_ceiling": 0.0001,
+        "delta_unit": 1e-05,
+        "phase_min_intensity": 3e-07,
+        "fpm_display_pixscale_lod": 0.25
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d04-light-every-plane-light.png",
+          "sha256": "f0c7e4789c6ca787394a56a3030c686640de32ff63d56cf8866be9584b89d5af",
+          "bytes": 301146
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d04-light-every-plane-light.pdf",
+          "sha256": "a8e251b5cf598a4c645a44360fc4a37d835873e2608c95a164da9c0e6754e7c9",
+          "bytes": 177314
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d04-light-every-plane-dark.png",
+          "sha256": "e7a2ab962268fce10ebaa10c5ec92292d8f3f07fb59fdc7a1735797a6874fe77",
+          "bytes": 297594
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d04-light-every-plane-dark.pdf",
+          "sha256": "61c5b0d6b236461887c61f4a38a91bc409e51bb2e1afb53847f0f98ddeed9b94",
+          "bytes": 178186
+        },
+        {
+          "file": "talks/stills/d04-light-every-plane.png",
+          "sha256": "6a06a49ab1a56d13ae38795517a01e18bfc038547ef8a1e33f4a82cc30f5d235",
+          "bytes": 375027
+        },
+        {
+          "file": "talks/stills/d04-light-every-plane.pdf",
+          "sha256": "d9a208b639c0d68d519fe2b23939b2fccb3bbda783c9f03bf18fb08e5ee89f7c",
+          "bytes": 224838
         }
       ]
     }
@@ -220,24 +282,24 @@
         "talk": 141
       },
       "revision": {
-        "commit": "6c3d11b",
+        "commit": "ddaab96",
         "dirty": true
       },
       "outputs": [
         {
           "file": "docs/_static/explainers/explainer-d04-plane-tour-light.mp4",
-          "sha256": "0dfcf3439cab2ade777b3aab48c68c2a0798f4edec4398bfdfaad583ac02ab75",
-          "bytes": 224293
+          "sha256": "b964afe3a00d606523809eefda037a0d71469f5b2fe4fe9589a0eba242277da3",
+          "bytes": 224220
         },
         {
           "file": "docs/_static/explainers/explainer-d04-plane-tour-dark.mp4",
-          "sha256": "e22229d6afa8e8c8c3ff266ddb7ca5dedff67bf9bce9aecfbd40246df271b362",
-          "bytes": 224117
+          "sha256": "7d372eeb3f87a8559892994c199f14a30a9213b79d717ef180c50c197817b65e",
+          "bytes": 224042
         },
         {
           "file": "talks/animations/d04-plane-tour.mp4",
-          "sha256": "6c1779dd504ce245d4733ba05f88d5f220a300b00408cf782e467c34c0940440",
-          "bytes": 457715
+          "sha256": "c427f6268f6a23175f47db04099e7226446de341dd6e0592f96e6447e675869f",
+          "bytes": 457809
         }
       ]
     }

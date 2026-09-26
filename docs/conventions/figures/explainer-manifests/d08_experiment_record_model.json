@@ -2,16 +2,16 @@
   "module": "d08_experiment_record_model",
   "script": "tools/explainers/d08_experiment_record_model.py",
   "build_command": "python tools/build_explainer_figures.py --only d08",
-  "source_hash": "2cc9ee067a0a",
+  "source_hash": "cb6e5af2f9fd",
   "source_sha256": {
-    "tools/explainers/d08_experiment_record_model.py": "f5aac9f1ff176629ff9cdddc41c8d8bb98df1e4f5a67c74953ce7c2d473f7e9c",
+    "tools/explainers/d08_experiment_record_model.py": "6a9de5548d9f7473dfb5ce103bd9fd780a1bbb67f15d14c1440ae2c1af7a1923",
     "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
-    "tools/explainers/_export.py": "1dae7e6f79963cd53c3f8a4fbff06d493d0d674b97daf4d5916f31a15742c115"
+    "tools/explainers/_export.py": "b62dc95b9442fd3062fe8b1446626b4aea0e896263564843ab38c84fcf3e1dfc"
   },
   "stamp_date": "2026-09-25",
   "revisions": {
     "spohnbook": {
-      "commit": "6c3d11b",
+      "commit": "ddaab96",
       "dirty": true
     },
     "eyepiece": {
@@ -83,33 +83,33 @@
       "outputs": [
         {
           "file": "docs/conventions/figures/explainer-d08-experiment-record-model-light.png",
-          "sha256": "c897085be533059ec5b1ae771253e5ccd91cdb54c847263c3cb34ca18cf7b43c",
-          "bytes": 300491
+          "sha256": "a063325f3d8a7612e6f6739b08b327e23cacba7d9d55025429f4676ddfbcc18a",
+          "bytes": 300600
         },
         {
           "file": "docs/conventions/figures/explainer-d08-experiment-record-model-light.pdf",
-          "sha256": "5bded087ed145c856970c0ccbd9aa7e2c582f674956992d5723ca4a226783d82",
-          "bytes": 198733
+          "sha256": "5f52bb4a2266ba09f1d66c2a9ac7ada2d34487a5d1787178c5d03c444b421dba",
+          "bytes": 198738
         },
         {
           "file": "docs/conventions/figures/explainer-d08-experiment-record-model-dark.png",
-          "sha256": "64dd0bb46ef4978217ed500dba2adf9b9ffa17d76cfd5a87e34e38aec6877b65",
-          "bytes": 292228
+          "sha256": "fc058218f42f31c3809cee9691e9a4a9357f3d3df2b85f35d948e6b43d60249b",
+          "bytes": 292297
         },
         {
           "file": "docs/conventions/figures/explainer-d08-experiment-record-model-dark.pdf",
-          "sha256": "47d40be20ac30a3f706ecd85cc2883ae6f24c146b2818a7dcdf0caac7d8a0541",
-          "bytes": 198641
+          "sha256": "00fe9607d59031f73213bbf6067caba02e51ea6191fedf4a7b580f413bb2f76d",
+          "bytes": 198645
         },
         {
           "file": "talks/stills/d08-experiment-record-model.png",
-          "sha256": "c3800a30e6a0c137124ffd3f71378b5be6df5d02639b7ebfeefc27b4423b322a",
-          "bytes": 277657
+          "sha256": "2725814e35a87e8079bc882c4be507e6f3099d1f034022c7c070131d46ac1bbf",
+          "bytes": 277810
         },
         {
           "file": "talks/stills/d08-experiment-record-model.pdf",
-          "sha256": "5e7af333a1040cc37880336c7f740a8efa5ff6f6cfbf4eec02f9edd89f7806a7",
-          "bytes": 191329
+          "sha256": "c9dda75d0eff5f74815abc9ae20e03df629379b65c4e6aad21f172d7d29f7068",
+          "bytes": 191330
         }
       ]
     },
@@ -145,33 +145,162 @@
       "outputs": [
         {
           "file": "docs/conventions/figures/explainer-d08-fit-forecast-timeline-light.png",
-          "sha256": "92df43cbff1aaf70772e625d4406b6b2e339c2b5d78199237abe779532f77c58",
-          "bytes": 248937
+          "sha256": "cd6b45c378e005c334174767a01567877d2a04cd83b353b693524e02ae5a4ee6",
+          "bytes": 249041
         },
         {
           "file": "docs/conventions/figures/explainer-d08-fit-forecast-timeline-light.pdf",
-          "sha256": "782a988c45bdcb3e5eba20c4ee050f568297456cd4e50573423491191d749066",
-          "bytes": 60793
+          "sha256": "ec2ae449e87bfbe97e18f63c285c7617c25070e0caa22cf660289ed3981acfc6",
+          "bytes": 60795
         },
         {
           "file": "docs/conventions/figures/explainer-d08-fit-forecast-timeline-dark.png",
-          "sha256": "2c7ad7d4febf272ea3f178efd6d10dd948490710a244a486b26fe46ea3f9abc9",
-          "bytes": 248886
+          "sha256": "08628a4a5794f75b9c660eb0b06a149ad6bdcf3ea777a2b26a43175adffcb8f1",
+          "bytes": 249033
         },
         {
           "file": "docs/conventions/figures/explainer-d08-fit-forecast-timeline-dark.pdf",
-          "sha256": "433d057136beb5e0ca00001da337354220d6f116d96b9f0e241c02d006406d18",
-          "bytes": 60767
+          "sha256": "0c8dc2d0bbe9309ebc4d70561b14f3ad52ffda19d0ce8aa2c81591adb7ef6d42",
+          "bytes": 60769
         },
         {
           "file": "talks/stills/d08-fit-forecast-timeline.png",
-          "sha256": "7cee397e5726151fab45f651354d89d8134bffeb94462724778104d1c15aefb0",
-          "bytes": 326925
+          "sha256": "33aa067f9abb19631c7b2760f3d78f5ecb265e29b077e0becd9abe5ca1bf5418",
+          "bytes": 327127
         },
         {
           "file": "talks/stills/d08-fit-forecast-timeline.pdf",
-          "sha256": "6c8e7c040b910d0884fd794b998ded2d9e053211127f1f06fba583dc09f050d9",
-          "bytes": 71662
+          "sha256": "885be0e834cda4a7fdd87b7f4a9e432cb651b7b86a0804017c9b629b7435e63e",
+          "bytes": 71658
+        }
+      ]
+    },
+    {
+      "slug": "d08-information-boundary",
+      "status": "schematic, proposed information boundary",
+      "caption": "The proposed information boundary of a simulated imaging experiment ({ref}`records-identities`, {ref}`records-campaign-causality`). The simulated world holds the scene and a truth record. Truth reaches the detector only through the simulated light and the noise draw, and reaches evaluation directly, for simulation-only scoring. The only arrow into the inference model is the acquired record $R_k$ of each visit $k$, which carries its epoch $t_k$ and reporting event $D_k$ and, when reported, the east and north offsets $(\\xi_k,\\eta_k)$ and their covariance $C_k$; what a record keeps under a reporting law is the subject of the next figure. The crossed arrow from the truth record aims at the inference model. Neither truth nor scores reach the inference model or the observing policy, which is a decision rule that chooses the next visit from the posterior, not a hypothesis. The figure is a schematic of a proposed convention, not an example implementation, and does not assert that the current tutorial or campaign software enforces every separation it shows.",
+      "alt": "Schematic in three labeled zones. Left, a dashed region named simulated world holds a star at the focus of an orbit, a planet on it, and a truth record box listing the true orbit and flux, the planet ID and the noise seed. Rays of starlight and planet light cross a scale break to a telescope aperture and a detector in the middle zone; a configured visit box, labeled a command, not data, points a thin arrow at the telescope. A dashed gray elbow arrow labeled noise draw runs from the truth record to the detector. A hollow arrow leads from the detector to one record card, record R sub k, listing t sub k and D sub k and, if reported, the offsets xi sub k and eta sub k and C sub k, and a second hollow arrow leads from the card across the zone line to the inference model box on the right, which feeds the observing policy box, a decision rule, whose next visit arrow returns to the configured visit. A red arrow from the truth record curves toward the inference model and is crossed out just after it leaves the simulated world, labeled no path: truth never reaches inference or policy. Below a dashed divider labeled below: simulation-only scoring, an evaluation box receives the posterior and, along the bottom, the truth record; a red crossed arrow from evaluation back to the inference model is labeled no path: scores.",
+      "params": {},
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d08-information-boundary-light.png",
+          "sha256": "3f99add092b67927d342cee4d3705bbc8073086ab4143a360f1ba157eb8a788c",
+          "bytes": 181457
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d08-information-boundary-light.pdf",
+          "sha256": "a72267b1cafe34030b677f8efa55c6738a924531fbd0b7d66ab9979ba2ce0418",
+          "bytes": 54622
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d08-information-boundary-dark.png",
+          "sha256": "fe411ab90abddd55fe2831cd5dc2590ace00754c50b5adf4cfd77601891e6692",
+          "bytes": 171781
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d08-information-boundary-dark.pdf",
+          "sha256": "95e8b464525a7cb482856831700ace500df9789bc77f432aa571b6d37f78181a",
+          "bytes": 54592
+        },
+        {
+          "file": "talks/stills/d08-information-boundary.png",
+          "sha256": "1c4fa8e8a7d67179baed63790c93784faef74381c362ec285cc0f97a701dc307",
+          "bytes": 227273
+        },
+        {
+          "file": "talks/stills/d08-information-boundary.pdf",
+          "sha256": "1c483cb6a31804c8aab486edca532240b33a3bfff5c53535f8432f858cd11612",
+          "bytes": 54350
+        }
+      ]
+    },
+    {
+      "slug": "d08-record-reporting-law",
+      "status": "schematic; simulated pixels",
+      "caption": "The record of a visit under a reporting law, in the chapter's scalar flux example ({ref}`records-reporting-law`). The record card $R_k$ is carried from the information-boundary figure and linked to each visit's record; here the flux $F_k$ stands in place of the offsets and $\\sigma^2$ in place of $C_k$. Each 9 by 9 cutout is a simulated raw readout: a known background of 20 e$^-$ per pixel, a pixel-integrated Gaussian planet image and independent Gaussian noise of 2 e$^-$ per pixel. The reduction subtracts the background and sums the 9 dotted pixels, those whose centers lie within 1.5 pixels of the fixed target position, so $F$ has the standard deviation $\\sigma$ = 6.0 e$^-$ before any selection; the error bars are $\\pm\\sigma$ on the axis scale. Both visits share one $F$ axis with the fixed, known threshold $L$ = 30 e$^-$, and $D = 1$ precisely when $F > L$. Visit 1 gives $F$ = 84.8 e$^-$ and the record $R = (D = 1, F)$ under either law. For visit 2 the reduction computes $F$ = 17.7 e$^-$, below $L$; only forced photometry releases it, so its marker is hollow and its bar dashed. Reporting only on detection keeps $R = (D = 0)$, a successful nondetection rather than a missing datum; forced photometry, a different experiment, reports the flux below the threshold ({ref}`Efron and Hastie 2016, Sec. 9.6 <source-efron2016>`). The diagram that follows states the reporting law in general. The figure is a schematic with simulated pixels that illustrates the chapter's example, not an example implementation.",
+      "alt": "Three columns. Left, two 9 by 9 pixel images of raw electrons, visit 1 with a bright planet and visit 2 fainter, each with the summed 3 by 3 pixels outlined by a dotted square. Hollow arrows lead from each image to its own horizontal F axis; both axes share one scale from 0 to 100 electrons, labeled F, the sum of the 9 dotted pixels minus the known background. A dashed vertical line crosses both axes at L = 30 electrons, fixed, with D = 0 written to its left and D = 1: F > L to its right. A filled cyan marker with a plus or minus sigma bar sits at F sub 1 = 84.8 electrons on the visit 1 axis, right of the line, with the note sigma = 6.0 electrons, fixed. A hollow cyan marker with a dashed bar sits at F sub 2 = 17.7 electrons on the visit 2 axis, left of the line, noted computed; released only by forced photometry. Right, two column headings, report only on detection and forced photometry, a different experiment, sit above a wide card, visit 1, either law, reading D sub 1 = 1, yes, and F sub 1 = 84.8 electrons. Below it the record card R sub k from the information-boundary figure lists t sub k, D sub k and, if reported, F sub k and sigma squared, noted flux F in place of the offsets and sigma squared in place of C sub k; thin lines link it to the visit 1 card and to both visit 2 cards below. Under report only on detection the visit 2 card reads D sub 2 = 0, no, and F sub 2 not reported; beside it, after the word or, a dashed forced photometry card reads D sub 2 = 0, no, and F sub 2 = 17.7 electrons.",
+      "params": {
+        "n_pix": 9,
+        "psf_sigma_px": 0.9,
+        "background_e": 20.0,
+        "pixel_noise_e": 2.0,
+        "aperture_radius_px": 1.5,
+        "threshold_e": 30.0,
+        "visit_flux_e": [
+          100.0,
+          20.0
+        ],
+        "noise_seed": 20260925
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d08-record-reporting-law-light.png",
+          "sha256": "ad94d5db7a38aa2df8132f7aa84cbf578a469baf8804d9fa8dd37efeafac1d78",
+          "bytes": 141840
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d08-record-reporting-law-light.pdf",
+          "sha256": "0bbf7f3a9ad690a8d61522be63d062054b8c82d6c046d7733a6f35dd1075ccba",
+          "bytes": 55448
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d08-record-reporting-law-dark.png",
+          "sha256": "91879c053ec06aaabf11a3098ad3a9a2669738062caea32987a0a0f778834841",
+          "bytes": 140749
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d08-record-reporting-law-dark.pdf",
+          "sha256": "f20c1a8941737acc2dc0d456c65223ae0a5f0ba92bc75f873c9bee62e8290541",
+          "bytes": 55461
+        },
+        {
+          "file": "talks/stills/d08-record-reporting-law.png",
+          "sha256": "64383b670f4b5cadb41121786aa9da8bcb10c6ad7806160e3c4bf5ec4749a570",
+          "bytes": 178900
+        },
+        {
+          "file": "talks/stills/d08-record-reporting-law.pdf",
+          "sha256": "c7d5dbe3e7521c8491ae92a5e1a44d0dc19e88fad13d490e5a115f9d448e629b",
+          "bytes": 62278
+        }
+      ]
+    },
+    {
+      "slug": "d08-campaign-timeline",
+      "status": "schematic, proposed convention, not to scale",
+      "caption": "The campaign loop on a time axis ({ref}`records-campaign-causality`; the acquisition interval and availability time of {ref}`records-identities`). The observing-policy box is carried from the information-boundary figure. The policy decides visit $k$; admission reserves a feasible facility interval, the outline, inside which the science exposure is the shorter bar; completion settles the actual cost, the tick, which need not fill the reserved interval; release makes the record $R_k$ available; inference consumes the released record; and the next decision, for visit $k+1$, may use only records already released. Every allowed arrow points forward in time. A later recalibration of visit $k$ is a new product revision, the dashed card $R_k'$: later updates may use it, but it never reaches a decision already made, which the crossed arrow marks against the dotted line at the decision for visit $k+1$. Thin arrows with open heads are commands and hollow arrows are data. Times and durations are schematic and not to scale. The figure is a schematic of a proposed convention, not an example implementation, and does not assert that current campaign software enforces this ordering.",
+      "alt": "A schematic time axis running left to right, not to scale, with four horizontal lanes labeled, from top to bottom, facility, telescope time; observing policy, a decision rule box noted as from the information-boundary figure; inference model; and records. A pink diamond in the policy lane labeled decides visit k sends a thin command arrow up to an outlined interval in the facility lane labeled visit k, noted admission reserves the interval, which holds a shorter gray bar labeled exposure and a thick tick after the exposure and before the end of the outline, noted completion settles the actual cost. From the tick a hollow arrow runs down to a record card R sub k in the records lane, noted release: R sub k available; another climbs to a pink square in the inference lane, noted inference consumes R sub k, and a third, labeled posterior, climbs to a second diamond, decides visit k plus 1, which sends a command arrow up to the interval visit k plus 1. A faint dotted vertical line marks the time of that decision. Along the records lane a hollow arrow noted recalibrated later leads past that line to a dashed card R sub k prime. From it a hollow arrow climbs forward to a later pink square noted later updates may use it, and a red crossed arrow pointing back to the earlier decision is labeled no path back in time.",
+      "params": {},
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d08-campaign-timeline-light.png",
+          "sha256": "38531b526d189211ef0471d44c58999990a8b0ed7c4bb0324dcfef026baa8b99",
+          "bytes": 137285
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d08-campaign-timeline-light.pdf",
+          "sha256": "cfdfe43df9875cdbe4b6503b393a34c4d60ce1b264c323fccc9e41fee3f5d807",
+          "bytes": 41225
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d08-campaign-timeline-dark.png",
+          "sha256": "45258c4d7ad721154950aad50a25ef00fcbdae3eaf84387b30c49ba95476a9b8",
+          "bytes": 132551
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d08-campaign-timeline-dark.pdf",
+          "sha256": "fee32289e228faeb321897c7dc2d7275faa49ea2c3934d49d1d2255f04d68816",
+          "bytes": 41203
+        },
+        {
+          "file": "talks/stills/d08-campaign-timeline.png",
+          "sha256": "4b76006adae4d1d4b7dc518021afd7eeafc5ed93f6ad2ef5c1b2ad8df94b9d42",
+          "bytes": 178617
+        },
+        {
+          "file": "talks/stills/d08-campaign-timeline.pdf",
+          "sha256": "c1551d725a5945edd8247c3fa70eacb18d203ce650ecc4b7ee1906280522e8b1",
+          "bytes": 41698
         }
       ]
     }

@@ -9,6 +9,7 @@ cameras, and the frame contracts of the two animations.
 """
 
 import math
+import os
 import sys
 from pathlib import Path
 
@@ -469,3 +470,346 @@ def test_paired_panels_share_one_page_scale(builder):
         plt.close(fig)
     assert len(scales) >= 2
     assert max(scales) == pytest.approx(min(scales), rel=0.03)
+
+
+# Three rotations: the strip and the clip
+
+
+def rz(a):
+    return np.array(
+        [[math.cos(a), -math.sin(a), 0], [math.sin(a), math.cos(a), 0], [0, 0, 1]]
+    )
+
+
+def rx(a):
+    return np.array(
+        [[1, 0, 0], [0, math.cos(a), -math.sin(a)], [0, math.sin(a), math.cos(a)]]
+    )
+
+
+def rodrigues(axis, angle):
+    """Active rotation by ``angle`` about the unit vector ``axis``."""
+    k = np.asarray(axis, float) / np.linalg.norm(axis)
+    kx = np.array([[0, -k[2], k[1]], [k[2], 0, -k[0]], [-k[1], k[0], 0]])
+    return np.eye(3) + math.sin(angle) * kx + (1 - math.cos(angle)) * kx @ kx
+
+
+def perifocal(nu):
+    r = A * (1 - E**2) / (1 + E * math.cos(nu))
+    return np.array([r * math.cos(nu), r * math.sin(nu), 0.0])
+
+
+# The orbit after each step, written out: the chapter's product with the
+# angles not yet applied set to zero.
+HAND_STEPS = (
+    np.eye(3),
+    rz(OM),
+    rz(OM) @ rx(INC),
+    rz(OM) @ rx(INC) @ rz(W),
+)
+NUS = np.linspace(0.0, 2 * math.pi, 9)
+
+
+def test_steps_are_the_chapter_product_with_later_angles_zero():
+    assert d02.ROTATION_STEPS == ("omega", "inclination", "periapsis")
+    for fractions, rot in zip(d02.STEP_FRACTIONS, HAND_STEPS, strict=True):
+        assert np.allclose(d02.staged_rotation(fractions), rot, atol=1e-14)
+        for nu in NUS:
+            want = rot @ perifocal(nu)
+            assert np.allclose(d02.staged_position(nu, fractions), want, atol=1e-14)
+    assert np.allclose(HAND_STEPS[-1], chapter_rotation(), atol=1e-14)
+
+
+def test_each_step_turns_about_the_axis_the_steps_before_placed():
+    z = np.array([0.0, 0.0, 1.0])
+    node = np.array([math.cos(OM), math.sin(OM), 0.0])
+    h = chapter_rotation() @ z
+    turns = (rodrigues(z, OM), rodrigues(node, INC), rodrigues(h, W))
+    for k, turn in enumerate(turns):
+        for nu in NUS:
+            before = d02.staged_position(nu, d02.STEP_FRACTIONS[k])
+            after = d02.staged_position(nu, d02.STEP_FRACTIONS[k + 1])
+            assert np.allclose(turn @ before, after, atol=1e-12)
+    # The tilt leaves the node line fixed; the last turn leaves the normal fixed.
+    for k, fixed in ((1, node), (2, h)):
+        axes_before = d02.staged_axes(d02.STEP_FRACTIONS[k])
+        axes_after = d02.staged_axes(d02.STEP_FRACTIONS[k + 1])
+        index = 0 if k == 1 else 1
+        assert np.allclose(axes_before[index], fixed, atol=1e-12)
+        assert np.allclose(axes_after[index], fixed, atol=1e-12)
+
+
+@pytest.mark.parametrize("step", [2, 3])
+def test_ascending_node_of_the_tilted_orbit_moves_toward_the_observer(step):
+    fractions = d02.STEP_FRACTIONS[step]
+    w = fractions[2] * W
+    nu_node = -w
+    p0 = d02.staged_position(nu_node, fractions)
+    p1 = d02.staged_position(nu_node + 1e-6, fractions)
+    assert p0[2] == pytest.approx(0.0, abs=1e-12)  # on the sky plane
+    assert p1[2] > 0.0  # later in time it is in front: Zdot > 0
+    node = np.array([math.cos(OM), math.sin(OM), 0.0])
+    assert np.allclose(p0 / np.linalg.norm(p0), node, atol=1e-9)
+
+
+@pytest.fixture(scope="module", params=[ex.DOC, ex.SLIDE], ids=["doc", "slide"])
+def strip_fig(request):
+    with exporter.venue("light", request.param) as cast:
+        fig = d02.build_three_rotations(request.param, cast)
+    yield fig
+    plt.close(fig)
+
+
+def test_strip_titles_print_the_elements(strip_fig):
+    titles = [ax.get_title() for ax in strip_fig.axes]
+    assert r"$\Omega=130\degree$" in titles[0]
+    assert r"$i=55\degree$" in titles[1]
+    assert r"$\omega_p=70\degree$" in titles[2]
+    assert (ORB["Omega_deg"], ORB["i_deg"], ORB["omega_deg"]) == (130.0, 55.0, 70.0)
+    for k, name in enumerate((r"$R_Z(\Omega)$", r"$R_X(i)$", r"$R_Z(\omega_p)$")):
+        assert titles[k].startswith(f"{k + 1}. {name}")
+
+
+@pytest.mark.parametrize("step", [0, 1, 2])
+def test_strip_orbits_are_the_states_before_and_after(strip_fig, step):
+    view = d02.STEP_VIEWS[step]
+    tag = f"d02-rot{step + 1}"
+    for key, fractions_index in (("front", step + 1), ("before-front", step)):
+        pts = _artists(strip_fig, f"{tag}-{key}").get_xydata()
+        ok = np.all(np.isfinite(pts), axis=1)
+        rot = HAND_STEPS[fractions_index]
+        nus = np.linspace(0.0, 2 * math.pi, len(pts))
+        want = np.array([_proj(rot @ perifocal(nu), view) for nu in nus])
+        assert ok.sum() > 10
+        assert np.allclose(pts[ok], want[ok], atol=1e-9)
+
+
+def test_strip_omega_arc_runs_north_to_the_node_counterclockwise(strip_fig):
+    pts = _artists(strip_fig, "d02-rot1-arc-Omega").get_xydata()
+    assert d02.STEP_VIEWS[0] == (90.0, 0.0)
+    angles = np.unwrap(np.arctan2(pts[:, 1], pts[:, 0]))
+    assert angles[0] == pytest.approx(math.pi / 2)  # north is up
+    assert np.all(np.diff(angles) > 0)  # counterclockwise: toward east (left)
+    assert angles[-1] - angles[0] == pytest.approx(OM)
+    peri = _proj(HAND_STEPS[1] @ perifocal(0.0), 90.0)
+    # The arc stays inside periapsis, so it never meets the periapsis mark.
+    assert np.linalg.norm(pts[-1]) < np.linalg.norm(peri)
+
+
+@pytest.mark.parametrize(
+    ("gid", "start", "end", "step"),
+    [
+        ("d02-rot2-arc-i", np.array([0.0, 0.0, 1.0]), _unit_h(), 1),
+        ("d02-rot3-arc-omega", _unit_node(), _unit_peri(), 2),
+    ],
+)
+def test_strip_tilt_and_periapsis_arcs(strip_fig, gid, start, end, step):
+    view = d02.STEP_VIEWS[step]
+    pts = _artists(strip_fig, gid).get_xydata()
+    radius = np.linalg.norm(pts[0]) / np.linalg.norm(_proj(start, view))
+    assert np.allclose(pts[0], radius * _proj(start, view), atol=1e-9)
+    assert np.allclose(pts[-1], radius * _proj(end, view), atol=1e-9)
+    mid = _bisector(start, end)
+    assert np.allclose(pts[len(pts) // 2], radius * _proj(mid, view), atol=1e-9)
+    _, head = _ends(_artists(strip_fig, f"{gid}-head"))
+    assert np.allclose(head, pts[-1])
+
+
+@pytest.mark.parametrize("step", [1, 2])
+def test_strip_normal_is_the_tilted_axis(strip_fig, step):
+    tail, head = _ends(_artists(strip_fig, f"d02-rot{step + 1}-h"))
+    assert np.allclose(tail, 0.0)
+    want = _proj(_unit_h(), d02.OBLIQUE_VIEW)
+    assert np.allclose(head / np.linalg.norm(head), want / np.linalg.norm(want))
+
+
+@pytest.mark.parametrize("layout", [ex.DOC, ex.SLIDE], ids=["doc", "slide"])
+def test_strip_panels_share_one_page_scale(layout):
+    with exporter.venue("light", layout) as cast:
+        fig = d02.build_three_rotations(layout, cast)
+        fig.canvas.draw()
+        scales = [_scale(ax) for ax in fig.axes]
+        plt.close(fig)
+    assert len(scales) == 3
+    for sx, sy in scales:
+        assert sx == pytest.approx(sy, rel=1e-6)
+        assert sx == pytest.approx(scales[0][0], rel=1e-6)
+
+
+@pytest.mark.parametrize("mode", ["light", "dark"])
+@pytest.mark.parametrize("layout", [ex.DOC, ex.SLIDE], ids=["doc", "slide"])
+def test_strip_labels_carry_no_stroked_halo(mode, layout):
+    from matplotlib.text import Text
+
+    with exporter.venue(mode, layout) as cast:
+        fig = d02.build_three_rotations(layout, cast)
+        stroked = [t.get_text() for t in fig.findobj(Text) if t.get_path_effects()]
+        texts = [t.get_text() for t in fig.findobj(Text)]
+        plt.close(fig)
+    assert stroked == []
+    assert any("proposed observer profile (pending)" in t for t in texts)
+
+
+# The talk clip: its states (no Manim needed)
+
+
+def test_clip_plays_one_factor_per_section_and_the_camera_alone():
+    states = d02.clip_states()
+    sections = [s for s, *_ in states]
+    assert list(dict.fromkeys(sections)) == list(d02.ROTATION_STEPS)
+    for section, _seconds, before, after in states:
+        k = d02.ROTATION_STEPS.index(section)
+        changed = [j for j in range(3) if before["f"][j] != after["f"][j]]
+        assert changed in ([], [k])  # a section applies only its own factor
+        if changed:
+            assert before["view"] == after["view"]  # never turn and move at once
+            assert after["f"][k] == 1.0 and before["f"][k] == 0.0
+    first, last = states[0][2], states[-1][3]
+    assert first["f"] == (0.0, 0.0, 0.0)
+    assert first["view"] == (90.0, 0.0)  # the observer's view
+    assert last["f"] == (1.0, 1.0, 1.0)
+
+
+def test_clip_ends_on_the_orbit_elements_geometry(elements_fig):
+    last = d02.clip_states()[-1][3]
+    assert last["view"] == tuple(d02.OBLIQUE_VIEW)
+    geo = d02.rotation_geometry(last["f"], last["view"], omega_r=last["omega_r"])
+    for key, gid in (
+        ("arc_Omega", "d02-arc-Omega"),
+        ("arc_i", "d02-arc-i"),
+        ("arc_omega", "d02-arc-omega"),
+    ):
+        assert np.allclose(
+            geo[key], _artists(elements_fig, gid).get_xydata(), atol=1e-12
+        )
+    view = d02.OBLIQUE_VIEW
+    assert np.allclose(geo["peri"], _proj(hand_position(0.0), view))
+    assert np.allclose(geo["asc"], _proj(hand_position(-W), view))
+    assert np.allclose(geo["desc"], _proj(hand_position(math.pi - W), view))
+    for key in (
+        "arc_Omega",
+        "arc_i",
+        "arc_omega",
+        "h",
+        "nodes",
+        "peri",
+        "val0",
+        "val1",
+        "val2",
+    ):
+        assert last["show"][key] == 1.0, key
+    assert last["show"]["ghost"] == 0.0
+
+
+def test_clip_durations():
+    spec = d02.MANIM[0]
+    assert d02.clip_seconds("doc") <= spec.doc_max_s <= 16.0
+    assert 18.0 <= d02.clip_seconds("slide") <= 22.0
+    # Each turn is slow enough to read and the final state is held.
+    assert d02.beat_seconds("turn", "doc") >= 2.5
+    assert d02.beat_seconds("final", "doc") >= 3.0
+
+
+def test_clip_keeps_periapsis_on_screen_and_fades_one_view_note_at_a_time():
+    for _section, _seconds, before, after in d02.clip_states():
+        if before["f"][1] > 0.0 or after["f"][1] > 0.0:
+            assert after["show"]["peri"] == 1.0  # visible through the tilt
+        # The two view notes never cross-fade: one is fully out first.
+        for state in (before, after):
+            assert min(state["show"]["view_face"], state["show"]["view_oblique"]) == 0.0
+        # The node-line label appears with the line.
+        assert after["show"]["node_label"] <= after["show"]["node_line"]
+    last = d02.clip_states()[-1][3]
+    assert last["show"]["desc_label"] == 1.0 and last["show"]["sky"] == 1.0
+
+
+def test_mixed_state_ends_are_the_beats():
+    for _section, _seconds, before, after in d02.clip_states():
+        assert d02.mix_state(before, after, 0.0)["f"] == pytest.approx(before["f"])
+        end = d02.mix_state(before, after, 1.0)
+        assert end["f"] == pytest.approx(after["f"])
+        assert end["view"] == pytest.approx(after["view"])
+        assert end["show"] == pytest.approx(after["show"])
+
+
+# The talk clip rendered (needs Manim and its system libraries)
+
+
+def _manim_module():
+    if os.environ.get("SPOHNBOOK_REQUIRE_MANIM"):
+        import eyepiece.manim  # noqa: F401
+        import manim  # noqa: F401
+    else:
+        pytest.importorskip("manim")
+        pytest.importorskip("eyepiece.manim")
+    from explainers import _manim
+
+    return _manim
+
+
+CLIP_VENUES = [("doc", "light"), ("doc", "dark"), ("slide", "dark")]
+
+
+@pytest.fixture(
+    scope="module", params=CLIP_VENUES, ids=["-".join(v) for v in CLIP_VENUES]
+)
+def clip_scene(request):
+    em = _manim_module()
+    spec = d02.MANIM[0]
+    venue = em.make_venue(*request.param, spec.fps[request.param[0]])
+    prov = em.provenance(d02.__file__)
+    return em.render(spec.scene(), venue, prov=prov, status=spec.status, skip=True)
+
+
+@pytest.mark.manim
+def test_clip_sections_are_readable(clip_scene):
+    assert list(clip_scene.reports) == list(d02.ROTATION_STEPS)
+    for name, report in clip_scene.reports.items():
+        assert report["passed"], (name, report)
+        assert report["tex_mobjects"] == []
+
+
+@pytest.mark.manim
+def test_clip_prints_the_elements_as_each_is_applied(clip_scene):
+    readouts = {
+        "omega": r"$\Omega=130\degree$",
+        "inclination": r"$i=55\degree$",
+        "periapsis": r"$\omega_p=70\degree$",
+    }
+    assert (ORB["Omega_deg"], ORB["i_deg"], ORB["omega_deg"]) == (130.0, 55.0, 70.0)
+    shown = []
+    for name in d02.ROTATION_STEPS:
+        strings = clip_scene.strings[name]
+        shown.append(readouts[name])
+        for readout in readouts.values():
+            assert (readout in strings) == (readout in shown), (name, readout)
+        assert any("proposed observer profile (pending)" in s for s in strings)
+    oblique = [
+        s for s in clip_scene.strings["periapsis"] if s.startswith("oblique view")
+    ]
+    assert oblique == [
+        "oblique view: camera turned 15 deg from east\n"
+        "toward the observer, raised 15 deg north"
+    ]
+    assert tuple(d02.OBLIQUE_VIEW) == (15.0, 15.0)
+
+
+@pytest.mark.manim
+def test_clip_badge_is_on_every_frame(monkeypatch):
+    em = _manim_module()
+    spec = d02.MANIM[0]
+    venue = em.make_venue("doc", "light", spec.fps["doc"])
+    crops = []
+
+    def record(self, frame, num_frames=1):
+        crops.append(bytes(np.ascontiguousarray(frame[4:44, 4:470]).tobytes()))
+        self.frames += num_frames
+
+    monkeypatch.setattr(em._Encoder, "write_frame", record)
+    scene = em.render(
+        spec.scene(), venue, prov=em.provenance(d02.__file__), status=spec.status
+    )
+    assert scene.frame_count <= spec.doc_max_s * venue.fps
+    assert len(set(crops)) == 1  # the corner never changes
+    corner = np.frombuffer(crops[0], dtype=np.uint8).reshape(40, 466, 4)
+    assert len(np.unique(corner.reshape(-1, 4), axis=0)) > 10  # and is not empty

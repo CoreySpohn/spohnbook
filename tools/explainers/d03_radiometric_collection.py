@@ -7,10 +7,12 @@ three adjacent panels for the three integrals that turn densities into one
 pixel's count: solid angle (with the spatial response), wavelength (with the
 optical response and QE inside the integral) and live time.
 
-The same panel constructors make a three-slide reveal for talks: the overview
-with the face-on detector, then the detector with the spectral integral, then
-the spectral integral with the live interval. Each slide carries the previous
-slide's new panel as its left panel.
+The same panel constructors make a relay for the book and for talks. Piece 1,
+"where each factor lives", splits the side view into a point-source row and an
+extended-source row and ends on the face-on detector; piece 2 carries that
+detector beside the spectral integral; piece 3 carries the spectral integral
+beside the live interval. Each piece carries the previous piece's new panel as
+its left panel, drawn by the same constructor.
 
 The specialization draws the photon-to-electron reference experiment (1 Jy
 at 700 nm held constant over 1 nm, 1 m2, 1 s, four equally illuminated
@@ -20,16 +22,19 @@ tests/test_explainer_d03.py.
 
 Hand-rolled shapes (no eyepiece or domain primitive exists): the side-view
 collection chain (sky patch, parallel beam, footprint cone, converging beam,
-side-on pixel column with a line-spread profile), the rectangular reference
-spectrum, and the 2 by 2 pixel count grid with per-pixel text. The face-on
-point-spread image uses eyepiece ``imshow_log``.
+side-on pixel column with an image profile), the chief-ray mapping of a sky
+cell onto a pixel, the rectangular reference spectrum, and the 2 by 2 pixel
+count grid with per-pixel text. Piece 1 replaces the stroked label halos of the
+shared helpers with a plain backing box. The face-on point-spread image uses
+eyepiece ``imshow_log``.
 """
 
 import eyepiece as ep
 import numpy as np
 from hwoutils.conversions import jy_to_photons_per_nm_per_m2
 from matplotlib.colors import to_rgb, to_rgba
-from matplotlib.patches import Rectangle
+from matplotlib.patches import Polygon, Rectangle
+from matplotlib.text import Text
 from scipy.special import j1
 
 from explainers import _common as ex
@@ -865,6 +870,455 @@ def build_reference(layout, cast):
     return fig
 
 
+# Relay piece 1, "where each factor lives": the side view split into a point
+# source row and an extended source row, ending on the face-on detector that
+# the wavelength figure carries. It has its own geometry so that the chief
+# ray through the lens center maps the sky cell exactly onto pixel p (the
+# overview's side view is not drawn to that constraint).
+WHERE = {
+    "axis_y": 4.2,
+    "cell_x": 2.4,  # plane of the sky patch (its right edge)
+    "aperture_x": 9.4,
+    "aperture_d": 3.4,
+    "lens_x": 10.0,  # the chief-ray pivot
+    "outside_x": 1.35,  # a sky direction outside the cell
+    "plate_x": 12.4,
+    "detector_x": 15.0,
+    "pixel_h": 1.0,
+    "n_pixels": 7,
+    "beam_half": 1.25,
+    "xlim": (-0.2, 25.6),
+    "ylim": (-0.1, 9.5),
+}
+
+
+def where_cell_half():
+    """Half-height of the sky cell that the chief ray maps onto pixel p.
+
+    Lines through the lens center keep their angle, so a cell edge at
+    ``cell_x`` lands on a pixel edge at ``detector_x`` when the heights
+    scale with the distances from the pivot.
+    """
+    w = WHERE
+    return (
+        0.5
+        * w["pixel_h"]
+        * (w["lens_x"] - w["cell_x"])
+        / (w["detector_x"] - w["lens_x"])
+    )
+
+
+def where_outside_y():
+    """Height of the drawn direction one pixel pitch outside the sky cell.
+
+    Its chief ray through the lens center lands on the center of the pixel
+    next to p, on the other side of the axis (the image is inverted).
+    """
+    w = WHERE
+    return w["axis_y"] + w["pixel_h"] * (w["lens_x"] - w["outside_x"]) / (
+        w["detector_x"] - w["lens_x"]
+    )
+
+
+def _backing(cast):
+    """A plain backing box in the background color (no stroked halo)."""
+    return {
+        "boxstyle": "round,pad=0.15,rounding_size=0.25",
+        "facecolor": to_rgba(cast.background, 0.85),
+        "edgecolor": "none",
+    }
+
+
+def _plain_text(fig, cast):
+    """Replace the stroked halos that shared helpers add with a backing box.
+
+    Labels on this figure carry no stroke, which at documentation size turns
+    glyphs into blobs; a label that had one sits on a plain box instead.
+    """
+    for text in fig.findobj(Text):
+        if text.get_path_effects():
+            text.set_path_effects([])
+            if text.get_bbox_patch() is None:
+                text.set_bbox(_backing(cast))
+    return fig
+
+
+def _label(ax, xy, text, cast, *, color=None, boxed=False, **kw):
+    """A label in data coordinates, with no halo, optionally on a box."""
+    kw.setdefault("fontsize", cast.layout.small_pt)
+    kw.setdefault("linespacing", 1.1)
+    t = ax.text(*xy, text, color=cast.text if color is None else color, **kw)
+    if boxed:
+        t.set_bbox(_backing(cast))
+    return t
+
+
+def _where_hardware(ax, cast):
+    """Aperture, lens, optics plate and the side-on pixel column.
+
+    Returns:
+        The y limits of pixel p.
+    """
+    w = WHERE
+    y0, ph, lw = w["axis_y"], w["pixel_h"], cast.layout.lw
+    ex.aperture(ax, (w["aperture_x"], y0), w["aperture_d"], cast)
+    ex.lens(ax, (w["lens_x"], y0), w["aperture_d"], cast)
+    plate_half = 0.5 * w["aperture_d"] - 0.2
+    ex.region(
+        ax,
+        "optics",
+        Rectangle((w["plate_x"] - 0.16, y0 - plate_half), 0.32, 2 * plate_half),
+        cast,
+    )
+    col_lo = y0 - 0.5 * w["n_pixels"] * ph
+    for k in range(w["n_pixels"]):
+        rect = Rectangle((w["detector_x"], col_lo + k * ph), 0.55, ph)
+        ex.region(ax, "detector", rect, cast)
+        if k == w["n_pixels"] // 2:
+            rect.set_edgecolor(cast.text)
+            rect.set_linewidth(1.8 * lw)
+            rect.set_zorder(5)
+            rect.set_gid("pixel-p")
+    return (y0 - 0.5 * ph, y0 + 0.5 * ph)
+
+
+def _where_profile(ax, cast, center_y, p_lims, *, gid):
+    """Image profile beside the column, centered on ``center_y``.
+
+    A cut through the illustrative Airy image at one wavelength, one
+    lambda/D per pixel; the part that falls inside pixel p is shaded dark.
+    """
+    w = WHERE
+    ph = w["pixel_h"]
+    col_lo = w["axis_y"] - 0.5 * w["n_pixels"] * ph
+    col_hi = col_lo + w["n_pixels"] * ph
+    ys = np.linspace(col_lo, col_hi, 561)
+    x_base = w["detector_x"] + 0.75
+    xs = x_base + 2.6 * airy((ys - center_y) / ph * PSF_PITCH_LOD)
+    in_p = (ys >= p_lims[0]) & (ys <= p_lims[1])
+    guide = cast.neutral(0.55)
+    lw = cast.layout.lw
+    ax.plot(xs, ys, color=guide, lw=0.8 * lw, zorder=4, gid=gid)
+    ax.fill_betweenx(
+        ys, x_base, xs, where=in_p, color=cast.neutral(0.7), alpha=0.9, lw=0, zorder=3
+    )
+    ax.fill_betweenx(
+        ys, x_base, xs, where=~in_p, color=guide, alpha=0.18, lw=0, zorder=3
+    )
+    ax.plot([x_base, x_base], [col_lo, col_hi], color=cast.neutral(0.4), lw=0.5 * lw)
+    return x_base
+
+
+def _where_axes(ax):
+    w = WHERE
+    ax.set(xlim=w["xlim"], ylim=w["ylim"], aspect="equal")
+    ax.axis("off")
+
+
+def draw_where_point(ax, cast):
+    """Row 1: the point source, parallel starlight, and its spread image."""
+    w = WHERE
+    _where_axes(ax)
+    y0, bh = w["axis_y"], w["beam_half"]
+    slide = cast.layout.is_slide
+    star = cast["star"].color
+
+    ex.mark(ax, "star", (1.3, y0), cast, scale=0.9)
+    _label(
+        ax,
+        (0.2, y0 + bh + 0.25),
+        r"point source $\Phi_\lambda$ at $\boldsymbol{\theta}$",
+        cast,
+        color=star,
+        ha="left",
+        va="bottom",
+        fontsize=cast.layout.font_pt,
+    )
+    if not slide:
+        ex.note(
+            ax,
+            (0.2, y0 - bh - 0.5),
+            r"photon s$^{-1}$ m$^{-2}$ nm$^{-1}$",
+            cast,
+            ha="left",
+            va="top",
+        )
+    for y in (y0 - bh, y0 + bh):
+        ex.arrow(ax, (2.4, y), (w["aperture_x"] - 0.05, y), "ray", cast, source="star")
+        ex.scale_break(ax, (3.6, y), cast)
+    _label(
+        ax,
+        (6.4, y0),
+        "parallel\nstarlight",
+        cast,
+        color=cast["annotation"].color,
+        fontstyle="italic",
+        ha="center",
+        va="center",
+    )
+
+    p_lims = _where_hardware(ax, cast)
+    for sign in (-1.0, 1.0):
+        ex.arrow(
+            ax,
+            (w["lens_x"], y0 + sign * bh),
+            (w["detector_x"], y0),
+            "ray",
+            cast,
+            source="star",
+        )
+    x_base = _where_profile(ax, cast, y0, p_lims, gid="profile-point")
+
+    top = y0 + 0.5 * w["aperture_d"] + 0.25
+    _label(
+        ax,
+        (w["aperture_x"] - 0.2, top),
+        "aperture\n$A$",
+        cast,
+        ha="center",
+        va="bottom",
+    )
+    _label(
+        ax,
+        (w["plate_x"], top - 0.2),
+        "optics\n" + r"$T_{\rm opt}(\lambda)$",
+        cast,
+        ha="center",
+        va="bottom",
+    )
+    col_hi = y0 + 0.5 * w["n_pixels"] * w["pixel_h"]
+    _label(
+        ax,
+        (w["detector_x"] + 0.3, col_hi + 0.15),
+        "detector QE\n" + r"$q_p(\lambda)$",
+        cast,
+        ha="center",
+        va="bottom",
+    )
+    _label(
+        ax,
+        (x_base + 3.1, y0),
+        r"pixel $p$",
+        cast,
+        ha="left",
+        va="center",
+        fontsize=cast.layout.font_pt,
+    )
+    _label(
+        ax,
+        (x_base + 3.1, y0 - 1.4),
+        "image spread: share in $p$\n"
+        + r"of a source at $\boldsymbol{\theta}$: $P_p(\lambda,\boldsymbol{\theta})$",
+        cast,
+        ha="left",
+        va="top",
+    )
+
+
+def draw_where_extended(ax, cast):
+    """Row 2: the extended source, its sky cell, and light from outside it."""
+    w = WHERE
+    _where_axes(ax)
+    y0 = w["axis_y"]
+    slide = cast.layout.is_slide
+    green = cast["local_zodi"].color
+    guide = cast.neutral(0.55)
+    lw = cast.layout.lw
+    half = where_cell_half()
+    cx = w["cell_x"]
+
+    patch_lo, patch_hi = y0 - 3.0, y0 + 3.0
+    _extended_region(
+        ax, Rectangle((0.3, patch_lo), cx - 0.3, patch_hi - patch_lo), cast
+    )
+    ax.add_patch(
+        Rectangle(
+            (0.3, y0 - half),
+            cx - 0.3,
+            2 * half,
+            facecolor="none",
+            edgecolor=cast.text,
+            ls="--",
+            lw=lw,
+            zorder=4,
+            gid="sky-cell",
+        )
+    )
+    _label(
+        ax,
+        (0.2, patch_hi + 0.15),
+        r"extended source $I_\lambda$",
+        cast,
+        color=green,
+        ha="left",
+        va="bottom",
+        fontsize=cast.layout.font_pt,
+    )
+    if not slide:
+        ex.note(
+            ax,
+            (0.2, patch_lo - 0.15),
+            r"photon s$^{-1}$ m$^{-2}$ nm$^{-1}$ sr$^{-1}$",
+            cast,
+            ha="left",
+            va="top",
+        )
+
+    # The idealized mapping: straight lines through the lens center carry
+    # the cell's edges onto pixel p's edges (inverted).
+    pivot = (w["lens_x"], y0)
+    for sign in (-1.0, 1.0):
+        edge_y = y0 + sign * half
+        land_y = y0 - sign * 0.5 * w["pixel_h"]
+        ax.plot(
+            [cx, pivot[0], w["detector_x"]],
+            [edge_y, y0, land_y],
+            color=guide,
+            lw=0.8 * lw,
+            ls=":",
+            zorder=3,
+            gid="cell-edge",
+        )
+    # The solid angle is the cone the cell subtends, with its vertex at the
+    # lens center: a shaded wedge and an arc at the vertex.
+    ax.add_patch(
+        Polygon(
+            [(cx, y0 - half), (cx, y0 + half), pivot],
+            closed=True,
+            facecolor=cast.neutral(0.5),
+            alpha=0.22,
+            edgecolor="none",
+            zorder=2,
+            gid="omega-cone",
+        )
+    )
+    half_deg = np.degrees(np.arctan2(half, pivot[0] - cx))
+    ex.angle_arc(
+        ax,
+        pivot,
+        180.0 - half_deg,
+        180.0 + half_deg,
+        cast,
+        radius=2.6,
+        sense=False,
+        color=cast.text,
+    )
+    _label(
+        ax,
+        (pivot[0] - 3.05, y0),
+        r"$\Omega_p$",
+        cast,
+        ha="right",
+        va="center",
+        fontsize=cast.layout.font_pt,
+    )
+    _label(
+        ax,
+        (cx + 0.2, y0 - half - 0.15),
+        "sky cell of $p$\n(idealized)",
+        cast,
+        color=cast["annotation"].color,
+        fontstyle="italic",
+        ha="left",
+        va="top",
+    )
+
+    # A direction just outside the cell: its chief ray lands one pixel
+    # below p, and its spread image reaches into p.
+    ox, out_y = w["outside_x"], where_outside_y()
+    ax.plot(
+        [ox],
+        [out_y],
+        marker="o",
+        ms=0.75 * cast.layout.marker_pt,
+        mfc=green,
+        mec=cast.text,
+        mew=0.6 * lw,
+        zorder=6,
+        gid="outside-point",
+    )
+    _label(
+        ax,
+        (cx + 0.2, out_y + 0.35),
+        r"outside $\Omega_p$",
+        cast,
+        color=green,
+        ha="left",
+        va="bottom",
+    )
+    land = w["detector_x"], y0 - w["pixel_h"]
+    # The chief ray through the lens center is undeviated: one straight ray.
+    ray = ex.arrow(ax, (ox, out_y), land, "ray", cast, source="local_zodi")
+    ray[0].set_gid("outside-ray")
+    # A smaller head, so it plainly ends on the neighbor and not on p.
+    ray[0].set_mutation_scale(0.5 * ray[0].get_mutation_scale())
+    along = np.degrees(np.arctan2(land[1] - out_y, land[0] - ox))
+    brk_x = 3.6
+    ex.scale_break(
+        ax,
+        (brk_x, out_y + (brk_x - ox) * np.tan(np.radians(along))),
+        cast,
+        along_deg=along,
+    )
+
+    p_lims = _where_hardware(ax, cast)
+    x_base = _where_profile(ax, cast, land[1], p_lims, gid="profile-outside")
+    _label(
+        ax,
+        (x_base + 3.1, y0),
+        r"pixel $p$",
+        cast,
+        ha="left",
+        va="center",
+        fontsize=cast.layout.font_pt,
+    )
+    _label(
+        ax,
+        (x_base + 3.1, y0 - 1.1),
+        "its image\nreaches into $p$",
+        cast,
+        color=cast["annotation"].color,
+        fontstyle="italic",
+        ha="left",
+        va="top",
+    )
+
+
+def build_where(layout, cast):
+    """Relay piece 1: where each factor lives, ending on the face-on detector."""
+    if layout.is_slide:
+        fig = ex.figure(layout)[0]
+        fig.clear()
+        grid = fig.add_gridspec(2, 2, width_ratios=[2.1, 1.0])
+    else:
+        fig = ex.figure(layout, doc_height_in=4.4)[0]
+        fig.clear()
+        grid = fig.add_gridspec(2, 2, width_ratios=[2.3, 1.0])
+    ax_p = fig.add_subplot(grid[0, 0])
+    ax_e = fig.add_subplot(grid[1, 0])
+    ax_d = fig.add_subplot(grid[:, 1])
+    draw_where_point(ax_p, cast)
+    draw_where_extended(ax_e, cast)
+    draw_detector(ax_d, cast)
+    # This figure opens the relay, so the face-on title names the pixel and
+    # the direction instead of the integral it stands for in the overview.
+    ax_d.set_title(r"face-on: $P_p(\lambda,\boldsymbol{\theta})$ in $p$", loc="left")
+    ax_p.set_title(
+        r"point source: $A\,\Phi_\lambda\,T_{\rm opt}\,"
+        r"P_p(\lambda,\boldsymbol{\theta})\,q_p$ in $p$",
+        loc="left",
+    )
+    ax_e.set_title(
+        r"extended source: $\int I_\lambda P_p(\lambda,\boldsymbol{\theta})\,"
+        r"d\Omega$ replaces $\Phi_\lambda P_p$",
+        loc="left",
+    )
+    ex.badge(ax_e, cast, STATUS, loc="lower right")
+    if layout.is_slide:
+        fig.suptitle("Where each factor of a pixel's count lives")
+    return _plain_text(fig, cast)
+
+
 CAPTION_OVERVIEW = (
     "What an aperture and a pixel collect ({ref}`radiometry-response-ownership`, "
     "{ref}`radiometry-pixel-brightness`). Top, side view with light traveling to the "
@@ -973,6 +1427,60 @@ ALT_REFERENCE = (
     "with a note that there is no dark current, clock-induced charge or read noise."
 )
 
+CAPTION_WHERE = (
+    "Where each factor of one pixel's count lives "
+    "({ref}`radiometry-pixel-brightness`, {ref}`radiometry-response-ownership`). Side "
+    "views with light traveling to the right, one row per kind of source. Top, a point "
+    "source at direction $\\boldsymbol{\\theta}$ with photon flux density "
+    "$\\Phi_\\lambda$ sends parallel starlight into an aperture of area $A$; the optics "
+    "transmit $T_{\\rm opt}(\\lambda)$; the image spreads over several pixels, and "
+    "$P_p(\\lambda,\\boldsymbol{\\theta})$ is the share in pixel $p$ of a point source "
+    "at direction $\\boldsymbol{\\theta}$; the detector converts photons to electrons "
+    "with QE $q_p(\\lambda)$, so the electron rate per unit wavelength in $p$ is "
+    "$A\\Phi_\\lambda T_{\\rm opt}P_p(\\lambda,\\boldsymbol{\\theta})q_p$. Bottom, an "
+    "extended source with brightness $I_\\lambda(\\boldsymbol{\\theta})$. Straight lines "
+    "through the lens center carry the dashed sky cell onto pixel $p$; the shaded cone "
+    "with its vertex at the lens center is the solid angle $\\Omega_p$ of that cell. "
+    "This idealized footprint is the cell of "
+    "$\\Phi_{\\lambda,p}=\\int_{\\Omega_p}I_\\lambda\\,d\\Omega$. A direction one "
+    "pixel pitch from the cell center, half a pitch beyond its edge, has its image "
+    "centered on the neighboring pixel, on the opposite side of the axis because the "
+    "image is inverted, and the spread of that image still reaches into $p$; light from "
+    "inside the cell likewise spreads out of $p$. The pixel therefore receives "
+    "$\\int I_\\lambda P_p(\\lambda,\\boldsymbol{\\theta})\\,d\\Omega$ over all "
+    "directions, which replaces $\\Phi_\\lambda P_p$ in the expected-count integral. The "
+    "part of each profile beside the pixel column that falls inside $p$ is shaded more "
+    "heavily. Right, pixel $p$ face-on at one wavelength: an illustrative Airy image of "
+    "an unobscured circular aperture, integrated over pixels one $\\lambda/D$ wide and "
+    "shown on a logarithmic scale; the profiles at left are cuts through the same Airy "
+    "pattern before pixel integration. The next figure, "
+    "{ref}`the spectral integral for pixel p <fig-explainer-d03-collection-wavelength>`, "
+    "opens with this face-on panel as its left panel. An original schematic of the "
+    "chapter's expected-count integral, not to scale and not an instrument prescription."
+)
+ALT_WHERE = (
+    "Two side-view rows and a face-on panel. Top row, titled point source, A Phi "
+    "lambda T opt P p of lambda and theta q p in p: a yellow star labeled point source Phi lambda at theta, in photon per "
+    "second per square meter per nanometer, sends two parallel yellow rays, cut by scale "
+    "breaks and labeled parallel starlight, to a vertical aperture bar labeled aperture "
+    "A. A lens focuses them through a plate labeled optics T opt of lambda onto a column "
+    "of seven detector pixels labeled detector QE q p of lambda, whose center pixel p is "
+    "outlined. A gray profile beside the column peaks at pixel p, and its part inside p "
+    "is shaded more heavily; the label reads image spread, share in p of a source at theta, P p of lambda and theta. "
+    "Bottom row, titled extended source, integral of I lambda P p of lambda and theta d Omega replaces Phi "
+    "lambda P p: a dotted green patch labeled extended source I lambda, in photon per "
+    "second per square meter per nanometer per steradian, with a dashed sky cell of p, "
+    "marked idealized. A lightly shaded cone labeled Omega p narrows from the cell to "
+    "its vertex at the lens center, where an arc spans it; dotted gray lines from the "
+    "cell edges cross at that vertex and end on the edges of pixel p. A green dot "
+    "labeled outside Omega p sits above the cell; its green ray, with a small head, passes "
+    "through the lens center and ends on the pixel just below p. The gray profile beside the column now "
+    "peaks on that neighboring pixel, and its tail inside p is shaded more heavily, labeled "
+    "its image reaches into p. A badge reads schematic, not to scale. Right: a face-on 7 "
+    "by 7 pixel window titled face-on, P p of lambda and theta in p, with a spread point-source image "
+    "at one wavelength on a log color scale and the center pixel p outlined."
+)
+
 FIGURES = [
     ex.FigureSpec(
         slug="d03-radiometric-collection",
@@ -983,6 +1491,18 @@ FIGURES = [
         params={
             "psf": "unobscured Airy, 1 lambda/D per pixel, 7 by 7 window",
             "curves": "illustrative normalized shapes",
+        },
+    ),
+    ex.FigureSpec(
+        slug="d03-collection-where",
+        build=build_where,
+        caption=CAPTION_WHERE,
+        alt=ALT_WHERE,
+        status=STATUS,
+        params={
+            "psf": "unobscured Airy, 1 lambda/D per pixel, 7 by 7 window",
+            "profile": "cut through the same Airy image, one wavelength",
+            "cell_mapping": "chief ray through the lens center, inverted",
         },
     ),
     ex.FigureSpec(

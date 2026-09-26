@@ -355,26 +355,159 @@ def _by_gid(fig, gid):
     return found
 
 
-def test_artists_mark_the_three_origins(instrument_fig, model):
-    fig = instrument_fig
+@pytest.fixture(scope="module")
+def origins_fig():
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from explainers import _common as ex
+    from explainers import _export as exporter
+
+    with exporter.venue("light", ex.DOC) as cast:
+        fig = d05.build_origins(ex.DOC, cast)
+        fig.canvas.draw()
+        yield fig
+    plt.close(fig)
+
+
+def _visible_text(fig):
+    from matplotlib.text import Text
+
+    return [t.get_text() for t in fig.findobj(Text) if t.get_visible()]
+
+
+def test_artists_mark_the_three_origins(origins_fig, model):
+    fig = origins_fig
+    ny, nx = d05.FP_SHAPE
+    # Hand arithmetic: (n - 1) / 2 and n / 2 of a 64-pixel cube.
+    center = ((nx - 1) / 2, (ny - 1) / 2)
+    grid = (nx / 2, ny / 2)
     (oc,) = _by_gid(fig, "d05-zoom-optical-center")
     (go,) = _by_gid(fig, "d05-zoom-lenslet-grid-origin")
-    assert (oc.get_xdata()[0], oc.get_ydata()[0]) == d05.OPTICAL_CENTER
-    assert (go.get_xdata()[0], go.get_ydata()[0]) == (32.0, 32.0)
+    assert (oc.get_xdata()[0], oc.get_ydata()[0]) == center == (31.5, 31.5)
+    assert (go.get_xdata()[0], go.get_ydata()[0]) == grid == (32.0, 32.0)
     (oc_text,) = _by_gid(fig, "d05-zoom-optical-center-label")
     (go_text,) = _by_gid(fig, "d05-zoom-grid-origin-label")
-    assert "(31.5, 31.5)" in oc_text.get_text()
-    assert "(32, 32)" in go_text.get_text() and "implementation" in go_text.get_text()
+    # The wording of the handbook-versus-implementation statement is pinned.
+    assert oc_text.get_text() == (
+        "optical center (31.5, 31.5)\n= $(n_\\mathrm{cube} - 1)/2$"
+    )
+    assert go_text.get_text() == (
+        "lenslet-grid origin (32, 32)\n= $n_\\mathrm{cube}/2$ in coronachrome"
+        "\n(implementation)"
+    )
+    # The marked offset: n / 2 - (n - 1) / 2 = 1/2 on each axis.
+    (arrow,) = _by_gid(fig, "d05-zoom-offset-arrow")
+    # One head, from the optical center (tail) to the grid origin (head).
+    assert arrow.xy == grid and arrow.xyann == center
+    assert arrow.arrow_patch.get_arrowstyle().__class__.__name__ == "CurveFilledB"
+    (offset,) = _by_gid(fig, "d05-zoom-offset-label")
+    half = (grid[0] - center[0], grid[1] - center[1])
+    assert half == (0.5, 0.5)
+    assert offset.get_text() == "+0.5 px on each\naxis (grid - optical)"
+    # Detector trace origin: half of the 120-pixel detector on each axis.
+    dy, dx = d05.DETECTOR_SHAPE
+    assert (dx / 2, dy / 2) == (60.0, 60.0)
     ticks = _by_gid(fig, "d05-trace-origin")
-    assert all(t.get_xdata()[0] == 60.0 for t in ticks)
+    assert all(t.get_xdata()[0] == dx / 2 for t in ticks)
     lo = min(min(t.get_ydata()) for t in ticks)
     hi = max(max(t.get_ydata()) for t in ticks)
-    assert lo < 60.0 < hi
+    assert lo < dy / 2 < hi
     # The ticks leave the 663 nm centroid circle (0.7 px away) uncovered.
-    gap = min(abs(y - 60.0) for t in ticks for y in t.get_ydata())
+    gap = min(abs(y - dy / 2) for t in ticks for y in t.get_ydata())
     assert gap > 1.0
     (label,) = _by_gid(fig, "d05-trace-origin-label")
-    assert "(60, 60)" in label.get_text() and "660 nm" in label.get_text()
+    assert label.get_text() == (
+        "detector trace origin (60, 60)\n"
+        "= $n_\\mathrm{det}/2$ in coronachrome (implementation):\n"
+        "lenslet (0, 0) at reference wavelength 660 nm"
+    )
+    # Lenslet (0, 0) sits on the anchor at the reference wavelength only
+    # because the dispersion polynomial has no constant term.
+    assert d05.DISPERSION_COEFFS[-1] == 0.0
+    assert d05.DISPERSION_COEFFS[0] * math.log(660.0 / d05.LAM_REF_NM) == 0.0
+
+
+def test_reference_wavelength_falls_between_labeled_bins(origins_fig):
+    """660 nm is not a bin center: the origin sits between 651 and 663 nm."""
+    xc, _ = _centroids()
+    lam = _centers()
+    below = np.flatnonzero(lam < d05.LAM_REF_NM).max()
+    assert [f"{lam[below]:.0f}", f"{lam[below + 1]:.0f}"] == ["651", "663"]
+    ch = d05.LENSLET_A
+    x0 = d05.DETECTOR_SHAPE[1] / 2
+    assert xc[ch, below] < x0 < xc[ch, below + 1]
+    # 140 ln(663.3 / 660) = 0.7 px: the origin is left of the 663 nm circle.
+    assert f"{xc[ch, below + 1] - x0:.1f}" == "0.7"
+    for k in (below, below + 1):
+        (text,) = _by_gid(origins_fig, f"d05-origin-bin-{lam[k]:.0f}")
+        assert text.get_text() == f"{lam[k]:.0f} nm"
+        assert text.xy[0] == pytest.approx(xc[ch, k])
+    (name,) = _by_gid(origins_fig, "d05-origin-lenslet-label")
+    assert name.get_text() == "lenslet 24 = grid (0, 0)"
+    # Channel 24 is grid index (0, 0) of the 7-by-7 grid, row-major.
+    assert tuple(_grid_positions(d05.N_LENSLETS)[ch]) == (0.0, 0.0)
+
+
+def test_origins_figure_carries_the_entrance_panel(origins_fig):
+    texts = _visible_text(origins_fig)
+    assert "zoom (b)" in texts
+    # The carried panel shows the zoom outline only: its origin marks are
+    # hidden, so only the zoom panel's two marks are visible.
+    marks = [
+        a
+        for a in origins_fig.findobj(lambda a: hasattr(a, "get_label"))
+        if a.get_label() in ("optical center", "lenslet-grid origin")
+        and a.get_visible()
+    ]
+    assert sorted(a.get_gid() for a in marks) == [
+        "d05-zoom-lenslet-grid-origin",
+        "d05-zoom-optical-center",
+    ]
+    # A small anchor: narrower than the zoom panel.
+    ent, zoom = origins_fig.axes[0], origins_fig.axes[1]
+    assert ent.get_position().width < 0.8 * zoom.get_position().width
+    (tag,) = _by_gid(origins_fig, "d05-carried-tag")
+    assert tag.get_text() == "(a) entrance plane\n(from the previous figure)"
+
+
+def test_instrument_figure_shows_no_origins(instrument_fig):
+    texts = " ".join(_visible_text(instrument_fig))
+    assert "origin" not in texts and "zoom" not in texts
+    gids = {a.get_gid() for a in instrument_fig.findobj() if a.get_gid()}
+    assert not any("origin" in g or "zoom" in g for g in gids)
+    # The two origin marks the library draws are hidden.
+    for line in instrument_fig.findobj(lambda a: hasattr(a, "get_label")):
+        if line.get_label() in (
+            "optical center",
+            "lenslet-grid origin",
+            "detector trace origin",
+        ):
+            assert not line.get_visible()
+
+
+def test_origins_caption_keeps_the_convention_statement():
+    specs = {s.slug: s for s in d05.FIGURES}
+    origins = specs["d05-lenslet-ifs-origins"].caption
+    instrument = specs["d05-lenslet-ifs-instrument"].caption
+    statement = (
+        "The optical center belongs to the cube and sits at its geometric "
+        "center (31.5, 31.5). The example implementation drawn here, "
+        "coronachrome, places lenslet (0, 0) at (32, 32), half a pixel away on "
+        "each axis; the {ref}`limitations page <limitations-optics>` records "
+        "that difference."
+    )
+    assert statement in origins
+    assert "(31.5, 31.5)" not in instrument and "(32, 32)" not in instrument
+    assert "fig-explainer-d05-lenslet-ifs-origins" in instrument
+    assert "(60, 60)" in origins and "120-pixel" in origins
+    assert "651 nm and 663 nm" in origins
+    assert "the chapter sets no convention for this point" in origins
+    # Half a cube pixel over a lenslet pitch of 6 cube pixels is 1/12.
+    assert 0.5 / d05.FP_PX_PER_LENSLET == pytest.approx(1 / 12)
+    assert "half a cube pixel on each axis (1/12 of a lenslet pitch here)" in origins
+    assert "$n_\\mathrm{cube}$ = 64" in origins and d05.FP_SHAPE == (64, 64)
 
 
 def test_wavelength_sense_on_detector_and_side_view(instrument_fig):
@@ -426,3 +559,15 @@ def test_no_label_carries_a_stroked_halo(mode, slide):
             stroked = [t.get_text() for t in fig.findobj(Text) if t.get_path_effects()]
             assert stroked == []
             plt.close(fig)
+
+
+def test_bin_label_carries_the_scanned_wavelength(instrument_fig, model):
+    (label,) = _by_gid(instrument_fig, "d05-bin-label")
+    assert label.get_text() == "bin footprint:\nlenslet 24, $\\lambda$ = 651 nm"
+    x0, y0, _, _ = d05._psflet_box(model.ir, d05.LENSLET_A, d05.SCAN_BIN)
+    assert label.get_position() == (x0, y0 - 0.15)
+    # No floating corner readout.
+    texts = [t for t in instrument_fig.findobj(lambda a: hasattr(a, "get_label"))]
+    for t in texts:
+        if getattr(t, "get_label", lambda: "")() == "scan readout":
+            assert not t.get_visible()

@@ -7,7 +7,8 @@ OPD stage standing for the deformable mirror (it acts on the entrance array,
 because conjugate pupils share one array in the model), a charge-6
 multi-scale vortex, a Lyot stop and a Fraunhofer transform to the image
 plane. A separate detector model (physicaloptix ``read_detector``) turns the
-final intensity into simulated counts.
+final intensity into simulated counts. A third figure shows the complex
+field itself, amplitude and phase, before and after each element.
 
 The side view is drawn here rather than with ``eyepiece.rail``: the rail
 places a lens right after every plane and interpolates the beam linearly
@@ -28,7 +29,9 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 from matplotlib import patheffects
+from matplotlib.colors import LinearSegmentedColormap, to_rgb, to_rgba
 from matplotlib.patches import Circle, Rectangle
+from matplotlib.text import Text
 from physicaloptix import viz as po_viz
 
 from explainers import _common as ex
@@ -188,7 +191,9 @@ def run(opd_nm):
     """Propagate one DM-plane OPD map (nm, on the pupil grid) through the path.
 
     Returns:
-        A dict of numpy arrays: ``opd`` (nm), ``lyot_field`` (the field
+        A dict of numpy arrays: ``opd`` (nm), ``entrance_field`` (the
+        field leaving the DM stage, on the path's D-wide array),
+        ``lyot_field`` (the field
         arriving at the Lyot stop, on the path's D-wide array),
         ``lyot_wide`` (the same field on the wider thumbnail grid),
         ``image_field`` (in units of the square root of the unocculted
@@ -237,6 +242,7 @@ def run(opd_nm):
         )
     return {
         "opd": np.asarray(opd_nm, dtype=float),
+        "entrance_field": np.asarray(after_dm),
         "lyot_field": np.asarray(taps["vortex"].data),
         "lyot_wide": np.asarray(lyot_wide),
         "image_field": np.asarray(out.data) / math.sqrt(o["peak"]),
@@ -1088,6 +1094,608 @@ def build_perturbation(layout, cast):
     return fig
 
 
+# The light at every plane
+
+# Columns of the light figure, left to right, and the plane each one samples.
+LIGHT_COLUMNS = (
+    "entrance",
+    "focal_before",
+    "focal_after",
+    "lyot_before",
+    "lyot_after",
+    "image",
+)
+PUPIL_COLUMNS = ("entrance", "lyot_before", "lyot_after")
+# What the model does between neighboring columns: a Fourier transform
+# between planes, a multiplication by an element within a plane.
+# The transform into the Lyot plane is the inverse of the clause's F.
+LIGHT_GAPS = (
+    "$\\mathcal{F}$",
+    "$\\times$",
+    "$\\mathcal{F}^{-1}$",
+    "$\\times$\nstop",
+    "$\\mathcal{F}$",
+)
+VORTEX_OPERAND = "$e^{i6\\theta}$"
+# What each column group's amplitude is relative to.
+LIGHT_NORMS = {
+    "entrance": "$|E|$ rel. incident",
+    "focal_before": "$|E|$ rel. $\\sqrt{I_{\\rm peak}}$",
+    "lyot_before": "$|E|$ rel. incident",
+}
+# Element names under the carried train, as in the train figure.
+LIGHT_ELEMENTS = {
+    "pupil": "aperture",
+    "dm": "deformable\nmirror",
+    "fpm": "vortex\nphase mask",
+    "lyot": "Lyot stop",
+    "image": "detector",
+}
+# Footnotes scale with the small type so they read at column width.
+LIGHT_NOTE_SCALE = 1.08
+# The amplitude map extends the pupil ramp past its cyan end toward the
+# text color, so the brightest decade reads in light mode too.
+LIGHT_AMPLITUDE_TOP_MIX = 0.45
+LIGHT_HEADS = {
+    "entrance": "$E=A\\,e^{i2\\pi W/\\lambda}$",
+    "focal_before": "before",
+    "focal_after": "after",
+    "lyot_before": "before",
+    "lyot_after": "after",
+    "image": "$I=|E|^2$",
+}
+# Plane of the rail that each group of columns hangs from.
+LIGHT_GROUPS = (
+    (("pupil", "dm"), ("entrance",)),
+    (("fpm",), ("focal_before", "focal_after")),
+    (("lyot",), ("lyot_before", "lyot_after")),
+    (("image",), ("image",)),
+)
+LIGHT_TICKS = {"pupil": (-1.0, 0.0, 1.0), "focal": (-10.0, 0.0, 10.0)}
+# Display sampling of the vortex (focal) plane in the light figure: finer
+# than the image grid, over the same extent, so the Airy rings and the
+# vortex phase are resolved. The model's own vortex uses its multi-scale
+# ladder, not this grid.
+LIGHT_PARAMS = {"fpm_display_pixscale_lod": 0.25}
+# Blend level of the neutral gray that marks pixels with no defined phase.
+LIGHT_BLANK_LEVEL = 0.3
+LIGHT_TITLE = (
+    "Each element multiplies the complex field; each gap is a Fourier transform"
+)
+
+
+def amplitude_floor():
+    """Lowest amplitude drawn: the square root of the intensity floor."""
+    return math.sqrt(PARAMS["intensity_floor"])
+
+
+def entrance_phase_peak():
+    """Largest phase the static ripple puts on the field, 2 pi a0/lambda (rad)."""
+    return 2.0 * math.pi * PARAMS["static_ripple_nm"] / PARAMS["wavelength_nm"]
+
+
+def amplitude_cmap(cast):
+    """The amplitude map: background to the pupil-role cyan, then deeper.
+
+    The last stop blends the cyan toward the text color, so in light mode
+    the top of the ramp darkens and in dark mode it brightens.
+    """
+    base = ex.image_cmap("pupil")
+    cyan = np.array(to_rgb(base(1.0)))
+    ink = np.array(to_rgb(cast.text))
+    top = cyan + LIGHT_AMPLITUDE_TOP_MIX * (ink - cyan)
+    return LinearSegmentedColormap.from_list(
+        "explainer_amplitude", [base(0.0), tuple(cyan), tuple(top)], N=256
+    )
+
+
+def fpm_coords():
+    """Half-pixel-offset display grid of the vortex plane, in lambda/D.
+
+    It spans the same extent as the image grid at a finer step.
+    """
+    step = LIGHT_PARAMS["fpm_display_pixscale_lod"]
+    half_width = 0.5 * PARAMS["nfoc"] * PARAMS["pixscale_lod"]
+    n = round(2.0 * half_width / step)
+    return (np.arange(n) - 0.5 * n + 0.5) * step
+
+
+def plane_fields(state):
+    """The complex field on every column of the light figure.
+
+    Pupil-plane fields are relative to the incident amplitude and sit on the
+    2 D wide thumbnail grid; focal-plane fields are relative to the square
+    root of the unocculted on-axis peak; the vortex-plane pair sits on the
+    ``fpm_coords`` display grid and the image on the image grid.
+
+    Args:
+        state: A ``propagate`` result.
+
+    Returns:
+        A dict of complex numpy arrays keyed by ``LIGHT_COLUMNS``.
+    """
+    o = optics()
+    po = o["po"]
+    u = fpm_coords()
+    with jax.enable_x64(True):
+        focal = po.cmft_fwd(
+            jnp.asarray(state["entrance_field"]),
+            jnp.asarray(o["pupil_coords"]),
+            jnp.asarray(u),
+        )
+    focal = np.asarray(focal) / math.sqrt(o["peak"])
+    uu, vv = np.meshgrid(u, u)
+    # The vortex's closed-form phase exp(i 6 theta), theta the focal azimuth.
+    vortex = np.exp(1j * PARAMS["vortex_charge"] * np.arctan2(vv, uu))
+    return {
+        "entrance": pad_to_thumbnail(state["entrance_field"]),
+        "focal_before": focal,
+        "focal_after": focal * vortex,
+        "lyot_before": state["lyot_wide"],
+        "lyot_after": state["lyot_wide"] * pad_to_thumbnail(o["stop"]),
+        "image": state["image_field"],
+    }
+
+
+def _light_axes(layout):
+    """Place the rail band and the two rows of six panels, in inches."""
+    f = layout.font_pt / 10.0
+    width = layout.width_in
+    left, right = (0.84 if layout.is_slide else 0.96) * f, 0.76 * f
+    pair_gap, group_gap, vortex_gap = 0.3 * f, 0.3 * f, 0.42 * f
+    gaps = (group_gap, vortex_gap, group_gap, pair_gap, group_gap)
+    size = (width - left - right - sum(gaps)) / 6.0
+    line = 1.15 * layout.small_pt / 72.0
+    note_line = LIGHT_NOTE_SCALE * line
+    xlab, footer, row_gap = 0.42 * f, 3.0 * note_line + 0.06, 0.07 * f
+    # Room under the footer for the provenance stamp the exporter adds.
+    stamp = 1.8 * layout.stamp_pt / 72.0 + 0.02
+    head, bracket = 2.0 * line + 0.08, 0.1 * f
+    # The train: plane labels above and element names below, two lines each.
+    half = 0.15 * f
+    side = 1.62 * half + 2.0 * line + 0.04
+    rail_h = 2.0 * side + 0.04
+    # The title band holds the carried-train tag and the status badge (and
+    # the headline on a slide).
+    title = 1.05 if layout.is_slide else 0.36
+    if layout.is_slide:
+        size = min(
+            size,
+            (
+                layout.height_in
+                - title
+                - rail_h
+                - head
+                - bracket
+                - xlab
+                - footer
+                - row_gap
+                - stamp
+                - 0.3
+            )
+            / 2.0,
+        )
+    used = stamp + footer + xlab + 2 * size + row_gap + head + bracket + rail_h
+    height = layout.height_in if layout.is_slide else used + title
+    fig, ax = ex.figure(layout, doc_height_in=height)
+    ax.remove()
+    fig.set_layout_engine("none")
+    lift = max(0.0, 0.5 * (height - title - used - 0.04))
+    total = 6 * size + sum(gaps)
+    x = left + 0.5 * (width - left - right - total)
+    xs = []
+    for i in range(6):
+        xs.append(x)
+        x += size + (gaps[i] if i < 5 else 0.0)
+    y_phase = stamp + footer + xlab + lift
+    y_amp = y_phase + size + row_gap
+    rows = {}
+    for name, y in (("amplitude", y_amp), ("phase", y_phase)):
+        rows[name] = {
+            key: fig.add_axes([x0 / width, y / height, size / width, size / height])
+            for key, x0 in zip(LIGHT_COLUMNS, xs, strict=True)
+        }
+    overlay = fig.add_axes([0, 0, 1, 1], zorder=-1)
+    overlay.set(xlim=(0, width), ylim=(0, height))
+    overlay.axis("off")
+    geometry = {
+        "size": size,
+        "xs": dict(zip(LIGHT_COLUMNS, xs, strict=True)),
+        "width": width,
+        "y_amp": y_amp,
+        "y_phase": y_phase,
+        "top": y_amp + size,
+        "head": head,
+        "bracket": bracket,
+        "rail_h": rail_h,
+        "rail_half": half,
+        "rail_side": side,
+        "line": line,
+        "note_line": note_line,
+        "vortex_gap": vortex_gap,
+        "footer_top": stamp + lift + footer,
+        "left": left,
+        "height": height,
+        "title": title,
+    }
+    return fig, rows, overlay, geometry
+
+
+def _backing(cast):
+    """A plain box in the background color, for a label over an image."""
+    return {
+        "boxstyle": "round,pad=0.15,rounding_size=0.2",
+        "facecolor": to_rgba(cast.background, 0.85),
+        "edgecolor": "none",
+    }
+
+
+def _unstroke(fig, cast):
+    """Replace the stroked halos the shared helpers add with a backing box."""
+    for text in fig.findobj(Text):
+        if text.get_path_effects():
+            text.set_path_effects([])
+            if text.get_bbox_patch() is None:
+                text.set_bbox(_backing(cast))
+    return fig
+
+
+def _light_rail(overlay, layout, cast, g):
+    """Draw the carried train, with a leader from each plane to its columns.
+
+    The train is the train figure's own drawing (``draw_rail``): the same
+    glyphs, element names and starlight label, with the planes placed over
+    the columns that show their fields.
+    """
+    size = g["size"]
+    xs = g["xs"]
+    centers = {key: xs[key] + 0.5 * size for key in LIGHT_COLUMNS}
+    pitch = centers["focal_before"] - centers["entrance"]
+    xp = {
+        "pupil": centers["entrance"] - 0.36 * pitch,
+        "dm": centers["entrance"] + 0.36 * pitch,
+        "fpm": 0.5 * (centers["focal_before"] + centers["focal_after"]),
+        "lyot": 0.5 * (centers["lyot_before"] + centers["lyot_after"]),
+        "image": centers["image"],
+    }
+    top = g["top"] + g["head"] + g["bracket"]
+    half = g["rail_half"]
+    axis_y = top + g["rail_side"]
+    small = layout.small_pt
+    rail = draw_rail(
+        overlay,
+        cast,
+        layout,
+        xp,
+        axis_y,
+        half,
+        x_start=0.05,
+        font=small,
+        details=True,
+    )
+    highlight_rail(rail, OPTICAL_KEYS, cast)
+    for text in rail["text"]:
+        text.set_text(text.get_text().replace(" ", "\n", 1))
+    gray = cast.neutral(0.55)
+    for key, text in rail["elements"].items():
+        text.set_text(LIGHT_ELEMENTS[key])
+        text.set_color(gray)
+        text.set_fontsize(0.9 * small)
+    # The transforms are labeled between the panels, where the inverse
+    # into the Lyot plane is marked; the train keeps only its relay word.
+    for text in list(overlay.texts):
+        if text.get_text() == "FT":
+            text.remove()
+        elif text.get_text() == "starlight":
+            text.set_position((0.05, axis_y + 1.1 * half))
+            text.set_ha("left")
+            text.set_va("bottom")
+    lead_kw = {"color": cast.text, "lw": 0.8 * cast.layout.lw}
+    # Leaders start under the element names, so no line crosses a word.
+    low = axis_y - 1.62 * half - 2.0 * g["line"] - 0.02
+    tick = 0.5 * g["bracket"]
+    for planes, columns in LIGHT_GROUPS:
+        a = min(xs[columns[0]], *(xp[k] for k in planes))
+        b = max(xs[columns[-1]] + size, *(xp[k] for k in planes))
+        bar = top - 0.5 * g["bracket"]
+        overlay.plot([a, a, b, b], [bar - tick, bar, bar, bar - tick], **lead_kw)
+        for plane in planes:
+            overlay.plot([xp[plane], xp[plane]], [low, bar], **lead_kw)
+
+
+def _footnote(overlay, xy, text, cast, layout, **kw):
+    """An italic footnote at the enlarged note size."""
+    kw.setdefault("ha", "center")
+    return overlay.text(
+        *xy,
+        text,
+        va="top",
+        fontsize=LIGHT_NOTE_SCALE * layout.small_pt,
+        fontstyle="italic",
+        color=cast["annotation"].color,
+        linespacing=1.05,
+        **kw,
+    )
+
+
+def build_light(layout, cast):
+    """The complex field before and after each element, and the image."""
+    o = optics()
+    p = PARAMS
+    state = propagate(static_coeffs(0.0))
+    fields = plane_fields(state)
+    small = layout.small_pt
+    floor = amplitude_floor()
+    fig, rows, overlay, g = _light_axes(layout)
+    size = g["size"]
+    xs = g["xs"]
+    extents = {
+        "pupil": ep.extent_lod(o["wide_coords"]),
+        "fpm": ep.extent_lod(fpm_coords()),
+        "focal": focal_extent(o),
+    }
+    amp_cmap = amplitude_cmap(cast)
+    phase_cmap = ex.image_cmap("phase")
+    images = {}
+    for key in LIGHT_COLUMNS:
+        kind = "pupil" if key in PUPIL_COLUMNS else "focal"
+        extent = extents["fpm" if key.startswith("focal") else kind]
+        amp_ax = rows["amplitude"][key]
+        phase_ax = rows["phase"][key]
+        amp_ax.set_gid(f"amplitude-{key}")
+        phase_ax.set_gid(f"phase-{key}")
+        if key == "image":
+            top = ep.imshow_log(
+                floored(state["intensity"]),
+                ax=amp_ax,
+                extent=extent,
+                floor=p["intensity_floor"],
+                vmin=p["intensity_floor"],
+                vmax=p["intensity_ceiling"],
+                cmap=ex.image_cmap("intensity"),
+                colorbar=False,
+            )
+            ex.mark(amp_ax, "star", (0.0, 0.0), cast, scale=0.55)
+        else:
+            top = ep.imshow_log(
+                np.abs(fields[key]),
+                ax=amp_ax,
+                extent=extent,
+                floor=floor,
+                vmin=floor,
+                vmax=1.0,
+                cmap=amp_cmap,
+                colorbar=False,
+            )
+        # Where there is too little light for a phase, the panel shows a
+        # neutral gray that the cyclic map never takes.
+        phase_ax.set_facecolor(cast.neutral(LIGHT_BLANK_LEVEL))
+        phase = po_viz.plot_field(
+            phase_field(fields[key]),
+            kind="phase",
+            ax=phase_ax,
+            extent=extent,
+            cmap=phase_cmap,
+            colorbar=False,
+        )
+        images[key] = (top.artists["image"], phase.artists["image"])
+        for ax in (amp_ax, phase_ax):
+            ax.set_xticks(LIGHT_TICKS[kind])
+            ax.set_yticks([])
+            ax.tick_params(labelbottom=False, length=2.0)
+        phase_ax.tick_params(labelbottom=True)
+        phase_ax.set_xticklabels([f"{t:g}" for t in LIGHT_TICKS[kind]])
+        phase_ax.set_xlabel(
+            r"$x$ [$D$]" if kind == "pupil" else r"$x$ [$\lambda/D$]", labelpad=1.0
+        )
+        if kind == "pupil":
+            rings = [(p["aperture_radius_d"], "-")]
+            if key != "entrance":
+                rings.append((p["lyot_radius_d"], "--"))
+            for ax in (amp_ax, phase_ax):
+                for radius, ls in rings:
+                    ax.add_patch(
+                        Circle(
+                            (0.0, 0.0),
+                            radius,
+                            fill=False,
+                            ec=cast["optics"].color,
+                            ls=ls,
+                            lw=0.8 * cast.layout.lw,
+                        )
+                    )
+        overlay.text(
+            xs[key] + 0.5 * size,
+            g["top"] + 0.04,
+            LIGHT_HEADS[key],
+            ha="center",
+            va="bottom",
+            fontsize=small,
+            color=cast.text,
+        )
+
+    # What each group's amplitude is relative to, over its columns.
+    for first, last in (
+        ("entrance", "entrance"),
+        ("focal_before", "focal_after"),
+        ("lyot_before", "lyot_after"),
+    ):
+        overlay.text(
+            0.5 * (xs[first] + xs[last] + size),
+            g["top"] + 0.06 + g["line"],
+            LIGHT_NORMS[first],
+            ha="center",
+            va="bottom",
+            fontsize=0.9 * small,
+            color=cast.neutral(0.6),
+        )
+
+    # What happens between neighboring columns.
+    mid = g["y_phase"] + size + 0.5 * (g["y_amp"] - g["y_phase"] - size)
+    for left, right, word in zip(
+        LIGHT_COLUMNS[:-1], LIGHT_COLUMNS[1:], LIGHT_GAPS, strict=True
+    ):
+        x = 0.5 * (xs[left] + size + xs[right])
+        if left == "focal_before":
+            continue
+        overlay.text(
+            x,
+            mid,
+            word,
+            ha="center",
+            va="center",
+            fontsize=small,
+            color=cast.text,
+            linespacing=1.1,
+        )
+    # The vortex operand: the train figure's mask-phase thumbnail, between
+    # "x" above and its formula below.
+    x = 0.5 * (xs["focal_before"] + size + xs["focal_after"])
+    thumb = 0.84 * g["vortex_gap"]
+    operand = overlay.inset_axes(
+        [x - 0.5 * thumb, mid - 0.5 * thumb, thumb, thumb],
+        transform=overlay.transData,
+    )
+    operand.imshow(
+        o["mask_phase"],
+        cmap=phase_cmap,
+        vmin=-np.pi,
+        vmax=np.pi,
+        origin="lower",
+        interpolation="nearest",
+    )
+    operand.set_xticks([])
+    operand.set_yticks([])
+    operand.set_gid("operand-vortex")
+    overlay.text(
+        x,
+        mid + 0.5 * thumb + 0.03,
+        LIGHT_GAPS[1],
+        ha="center",
+        va="bottom",
+        fontsize=small,
+        color=cast.text,
+    )
+    overlay.text(
+        x,
+        mid - 0.5 * thumb - 0.03,
+        VORTEX_OPERAND,
+        ha="center",
+        va="top",
+        fontsize=small,
+        color=cast.text,
+    )
+
+    # Assertion: the ripple's phase is too small to see on a full cycle.
+    # Enlarged like the footnotes, but never wider than its panel; the unit
+    # is the row label's radian.
+    bound = rows["phase"]["entrance"].text(
+        0.0,
+        -0.97,
+        f"$\\leq${entrance_phase_peak():.3f}",
+        bbox=_backing(cast),
+        fontsize=LIGHT_NOTE_SCALE * small,
+        color=cast.text,
+        ha="center",
+        va="bottom",
+    )
+    renderer = fig.canvas.get_renderer()
+    room = (size - 0.04) * fig.dpi
+    width = bound.get_window_extent(renderer).width
+    if width > room:
+        bound.set_fontsize(bound.get_fontsize() * room / width)
+
+    # Keys: amplitude and phase on the left, the image intensity on the right.
+    bar_w = 0.07 * layout.font_pt / 10.0
+    x_key = xs["entrance"] - 0.1 * layout.font_pt / 10.0 - bar_w
+    fw, fh = fig.get_size_inches()
+    keys = {}
+    for name, y, image, label in (
+        ("amplitude", g["y_amp"], images["entrance"][0], "amplitude\n$|E|$"),
+        ("phase", g["y_phase"], images["entrance"][1], "phase\n[rad]"),
+    ):
+        cax = fig.add_axes([x_key / fw, y / fh, bar_w / fw, size / fh])
+        cbar = fig.colorbar(image, cax=cax)
+        cax.set_gid(f"key-{name}")
+        cax.yaxis.set_ticks_position("left")
+        keys[name] = cbar
+        overlay.text(
+            0.04,
+            y + 0.5 * size,
+            label,
+            rotation=90,
+            ha="left",
+            va="center",
+            fontsize=layout.font_pt if layout.is_slide else small,
+            color=cast.text,
+            linespacing=1.0,
+            multialignment="center",
+        )
+    keys["amplitude"].set_ticks([1e-4, 1e-2, 1.0])
+    keys["amplitude"].set_ticklabels(["$10^{-4}$", "$10^{-2}$", "1"])
+    keys["phase"].set_ticks([-np.pi, 0.0, np.pi])
+    keys["phase"].set_ticklabels([r"$-\pi$", "0", r"$\pi$"])
+    cax = fig.add_axes(
+        [
+            (xs["image"] + size + 0.06 * layout.font_pt / 10.0) / fw,
+            g["y_amp"] / fh,
+            bar_w / fw,
+            size / fh,
+        ]
+    )
+    cbar = fig.colorbar(images["image"][0], cax=cax)
+    cax.set_gid("key-intensity")
+    cbar.set_ticks([1e-10, 1e-7, 1e-4])
+    cbar.set_ticklabels(["$10^{-10}$", "$10^{-7}$", "$10^{-4}$"])
+    keys["intensity"] = cbar
+    overlay.text(
+        xs["image"] + size + (0.13 + 0.42) * layout.font_pt / 10.0,
+        g["y_amp"] + 0.5 * size,
+        r"$I/I_{\rm peak}$",
+        rotation=90,
+        ha="left",
+        va="center",
+        fontsize=layout.font_pt,
+        color=cast.text,
+    )
+
+    _light_rail(overlay, layout, cast, g)
+    foot = g["footer_top"]
+    _footnote(
+        overlay, (0.05, foot), "gray: no light,\nno phase", cast, layout, ha="left"
+    )
+    _footnote(
+        overlay,
+        (0.5 * (xs["focal_before"] + xs["focal_after"] + size), foot),
+        "the vortex changes\nonly the phase",
+        cast,
+        layout,
+    )
+    _footnote(
+        overlay,
+        (0.5 * (xs["lyot_before"] + xs["lyot_after"] + size), foot),
+        "solid: pupil edge; dashed: stop\n"
+        "faint light inside (log scale):\n"
+        "the ripple light, the speckles",
+        cast,
+        layout,
+    )
+    overlay.text(
+        0.05,
+        g["height"] - (0.72 if layout.is_slide else 0.06),
+        "(the train from the optical-planes figure)",
+        ha="left",
+        va="top",
+        fontsize=LIGHT_NOTE_SCALE * small,
+        fontstyle="italic",
+        color=cast["annotation"].color,
+    )
+    ex.badge(overlay, cast, "simulated, noiseless;\ntrain schematic", loc="upper right")
+    if layout.is_slide:
+        fig.suptitle(LIGHT_TITLE, x=0.02, ha="left", y=0.975, fontsize=layout.title_pt)
+    return _unstroke(fig, cast)
+
+
 # The animation
 
 
@@ -1333,7 +1941,7 @@ TRAIN_CAPTION = (
     "under the proposed coherent profile ({ref}`optics-coherent-phase`). The OPD "
     "is a path difference, not a mirror surface height: at normal reflection a "
     "surface displacement h gives an OPD of 2h ({ref}`Hecht 2017, Sec. 9.4.2, "
-    "eq. 9.44 <source-hecht2017>`). The intensity forms only at the image plane, "
+    "text before eq. 9.44 <source-hecht2017>`). The intensity forms only at the image plane, "
     "and the detector applies its own boundary contract "
     "({ref}`optics-signed-intensity`): here 1e7 photons per second in a pixel at "
     "the unocculted peak, a 1 s exposure, quantum efficiency 1, a Gaussian "
@@ -1429,6 +2037,83 @@ TOUR_ALT = (
     "intensity change turns blue at the speckles and then back to white, and "
     "the speckle phase changes from red to blue."
 )
+LIGHT_CAPTION = (
+    "The light of the optical-planes train at every plane, before and after "
+    "each element ({ref}`optics-coherent-phase`). The top row is the field "
+    "amplitude |E| and the bottom row its phase. Amplitude uses the amplitude "
+    "colormap on a log norm in every plane, extended past its cyan end toward "
+    "the text color so that the brightest decade reads; phase uses the cyclic "
+    "phase map in every plane. Pupil-plane amplitudes are relative to the "
+    "incident amplitude and span 2 D; focal-plane amplitudes are relative to "
+    "the square root of the unocculted on-axis peak and span 24 lambda/D, so "
+    "the amplitude floor of 1e-5 matches the intensity floor of 1e-10. Each "
+    "element multiplies the field. The entrance array carries the transmission "
+    "A of a clear circular aperture times exp(+i 2 pi W/lambda) for the 1 nm "
+    "ripple W of 6 cycles per D, a phase of at most 0.011 rad that a "
+    "full-cycle phase scale cannot show. The vortex multiplies by "
+    "exp(i 6 theta), with theta the focal-plane azimuth, drawn as the mask "
+    "thumbnail of the train figure between the focal pair: it leaves |E| "
+    "unchanged and winds the phase six times around the axis (Mawet et al. "
+    "2005, ApJ 633, 1191; Foo et al. 2005, Opt. Lett. 30, 3308). The Lyot "
+    "stop of 0.8 D multiplies by its transmission. The gaps into the focal "
+    "and image planes are the transform F of that clause, and the gap into "
+    "the Lyot plane is its inverse. Before the vortex the focal field is, "
+    "apart from the speckles of the ripple, the Airy pattern of the clear "
+    "circular aperture, a real field whose rings alternate in sign (phase 0 "
+    "and pi). For that clear circular aperture the vortex moves the starlight "
+    "outside the pupil edge (solid circle) in the Lyot plane, and the stop "
+    "(dashed circle) blocks it. The faint light inside the pupil, visible "
+    "only on the log scale, is the ripple light that forms the speckles of "
+    "the perturbation figure: about 4e-5 of the entrance energy passes the "
+    "stop, close to the first-order share of the ripple, "
+    "(2 pi a0/lambda)^2/2 = 6.5e-5, times the 0.64 of the aperture area "
+    "that the stop keeps; the leakage of the sampled vortex without the "
+    "ripple is under 5 percent of it. Only at the image plane is the "
+    "intensity I = |E|^2 taken, on the log scale of the train and "
+    "perturbation figures. Phase is drawn only where the intensity exceeds "
+    "3e-7 of the reference; gray marks pixels with too little light for a "
+    "phase. The image comes from the propagated physicaloptix path of the "
+    "train figure. The path keeps only a D-wide array, which holds about 4 "
+    "percent of the entrance energy at the Lyot plane, so the Lyot pair "
+    "evaluates the same vortex operator on a 2 D wide grid; its central "
+    "D-wide block is the field the path carries. The focal pair is a matrix "
+    "Fourier transform of the sampled entrance field onto a display grid of "
+    "0.25 lambda/D over the image extent, times the closed-form vortex "
+    "phase, because the model's own vortex uses a multi-scale ladder and "
+    "does not output its focal-plane field. The model reaches the Lyot plane "
+    "with an inverse transform, so it does not invert the pupil as a "
+    "physical relay would; the panels show x right and y up, and the viewing "
+    "direction belongs to the pending {ref}`image coordinates and PSFlet "
+    "origin decision <decision-image-coordinates-and-psflet-origin>`. The "
+    "train above is schematic and not to scale; its planes sit over the "
+    "columns that show their fields. The picture is a noiseless example "
+    "implementation of the proposed coherent profile, not a performance "
+    "claim."
+)
+LIGHT_ALT = (
+    "The optical train from the optical-planes figure drawn in side view "
+    "across the top: starlight enters from the left through the aperture, a "
+    "relay to the deformable mirror, the vortex phase mask at the focal "
+    "plane, the Lyot stop and the detector at the image plane, each element "
+    "named in small gray text under the beam. Brackets join the planes to "
+    "six columns of square panels below. The top row shows field amplitude "
+    "on a log scale, labeled relative to the incident amplitude for the pupil "
+    "planes and relative to the square root of the peak for the focal plane; "
+    "the bottom row shows phase on a cyclic scale, with gray where there is "
+    "no light. Left to right: a uniform disk of amplitude with a flat phase "
+    "marked at most 0.011 (radians, from the row label); the focal field before the vortex, a bright "
+    "core with rings whose phase alternates between dark and light; the same "
+    "amplitude after the vortex, with the rings broken into colored spokes "
+    "of phase; the Lyot-plane field before the stop, bright outside a solid "
+    "pupil-edge circle and faint inside a dashed stop circle; the same field "
+    "after the stop, faint light only inside the stop; and the image-plane "
+    "intensity with two speckles either side of a star glyph, with phase "
+    "shown only at the speckles. Between the columns are the labels F, times "
+    "a small thumbnail of the six-fold vortex phase labeled e to the i 6 "
+    "theta, F inverse, times stop, and F. Footnotes say that gray means no "
+    "light, that the vortex changes only the phase, and that the faint light "
+    "inside the stop is the ripple light that forms the speckles."
+)
 
 
 FIGURES = [
@@ -1447,6 +2132,14 @@ FIGURES = [
         alt=PERTURBATION_ALT,
         status="simulated, noiseless optical model",
         params=PARAMS,
+    ),
+    ex.FigureSpec(
+        slug="d04-light-every-plane",
+        build=build_light,
+        caption=LIGHT_CAPTION,
+        alt=LIGHT_ALT,
+        status="simulated, noiseless optical model; train schematic",
+        params={**PARAMS, **LIGHT_PARAMS},
     ),
 ]
 ANIMATIONS = [

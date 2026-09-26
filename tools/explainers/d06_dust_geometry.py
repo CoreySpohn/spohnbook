@@ -463,7 +463,9 @@ def zodi_top(ax, cast, layout, *, inset_bounds, inset_pt=None):
     arc = _by_gid(ax, "look_angle/label")
     if arc is not None:
         arc.set_text(
-            r"$|\lambda-\lambda_\odot|$" + "\n" + rf"= {p['solar_lon_deg']:.0f}$^\circ$"
+            r"$|\lambda-\lambda_\odot|$"
+            + "\n"
+            + rf"= {p['solar_lon_deg']:.0f}$\degree$"
         )
         mid = np.radians(0.5 * (180.0 + np.degrees(np.arctan2(along[1], along[0]))))
         r_label = 0.85 if layout.is_slide else 0.72
@@ -489,14 +491,14 @@ def zodi_notes(ax, cast, xy, *, ha="left", sign=True):
     """What the top view cannot show: latitude, elongation, the angle's sign."""
     p = ZODI
     text = (
-        rf"sightline {p['ecliptic_lat_deg']:.0f}$^\circ$ above the ecliptic "
+        rf"sightline {p['ecliptic_lat_deg']:.0f}$\degree$ above the ecliptic "
         r"($\beta$), drawn projected;" + "\n"
-        rf"its solar elongation is {zodi_elongation_deg():.0f}$^\circ$"
+        rf"its solar elongation is {zodi_elongation_deg():.0f}$\degree$"
     )
     if sign:
         text += (
             "\n"
-            rf"drawn at $\lambda-\lambda_\odot$ = {drawn_solar_lon_deg():.0f}$^\circ$;"
+            rf"drawn at $\lambda-\lambda_\odot$ = {drawn_solar_lon_deg():.0f}$\degree$;"
             + "\nthe table is symmetric in its sign"
         )
     return ex.note(ax, xy, text, cast, transform=ax.transAxes, ha=ha, va="top")
@@ -953,8 +955,8 @@ def _phase_panel(ax, cast, layout):
     (near,) = ax.plot([], [], "o", zorder=5, **filled)
     (far,) = ax.plot([], [], "o", zorder=5, **hollow)
     for y, style, text in (
-        (0.84, filled, r"near-half grain, $\Theta=90^\circ-i$"),
-        (0.64, hollow, r"far-half grain, $\Theta=90^\circ+i$"),
+        (0.84, filled, r"near-half grain, $\Theta=90\degree-i$"),
+        (0.64, hollow, r"far-half grain, $\Theta=90\degree+i$"),
     ):
         ax.plot([0.4], [y], "o", transform=ax.transAxes, clip_on=False, **style)
         ax.text(
@@ -1035,7 +1037,7 @@ def _view_panel(ax, cast, layout):
         arrow.set_positions((0.0, 0.0), tuple(0.85 * tip))
         t = np.linspace(0.0, i, 30)
         arc.set_data(0.45 * np.sin(t), 0.45 * np.cos(t))
-        label.set_text(rf"$i$ = {incl:.0f}$^\circ$")
+        label.set_text(rf"$i$ = {incl:.0f}$\degree$")
         tel.set_position(tuple(0.85 * tip + np.array([0.08, 0.0])))
 
     return place

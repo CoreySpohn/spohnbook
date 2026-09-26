@@ -1,0 +1,158 @@
+{
+  "module": "d09_roll_rotation",
+  "script": "tools/explainers/d09_roll_rotation.py",
+  "build_command": "python tools/build_explainer_figures.py --only d09",
+  "source_hash": "9c349d2f7826",
+  "source_sha256": {
+    "tools/explainers/d09_roll_rotation.py": "116375f4aa5f9aa9b52d2d5e554626925f81b6a11df9ccd6507f9250e310a243",
+    "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
+    "tools/explainers/_export.py": "b62dc95b9442fd3062fe8b1446626b4aea0e896263564843ab38c84fcf3e1dfc"
+  },
+  "stamp_date": "2026-09-25",
+  "revisions": {
+    "spohnbook": {
+      "commit": "ddaab96",
+      "dirty": true
+    },
+    "eyepiece": {
+      "commit": "05e03c0",
+      "dirty": false
+    },
+    "hwostyle": {
+      "commit": "18e2644",
+      "dirty": false
+    }
+  },
+  "package_versions": {
+    "eyepiece": "0.4.1.dev22+g05e03c0b7",
+    "hwostyle": "1.1.1.dev8+g183fc366e.d20260811",
+    "hwoutils": "1.9.1.dev5+g453bf3fd0.d20260911",
+    "matplotlib": "3.11.0",
+    "numpy": "2.2.6"
+  },
+  "ffmpeg": "ffmpeg version 4.4.6 Copyright (c) 2000-2025 the FFmpeg developers",
+  "layouts": {
+    "doc": {
+      "name": "doc",
+      "width_in": 7.2,
+      "height_in": 3.6,
+      "dpi": 200,
+      "font_pt": 10.0,
+      "small_pt": 8.5,
+      "title_pt": 11.0,
+      "lw": 1.2,
+      "marker_pt": 7.0,
+      "stamp_pt": 6.0,
+      "frame_budget": 30,
+      "anim_dpi": 150
+    },
+    "slide": {
+      "name": "slide",
+      "width_in": 16.0,
+      "height_in": 9.0,
+      "dpi": 120,
+      "font_pt": 20.0,
+      "small_pt": 16.0,
+      "title_pt": 26.0,
+      "lw": 2.4,
+      "marker_pt": 14.0,
+      "stamp_pt": 9.0,
+      "frame_budget": null,
+      "anim_dpi": 120
+    }
+  },
+  "figures": [
+    {
+      "slug": "d09-roll-rotation",
+      "status": "schematic; proposed pixel profile, image-coordinate profile pending",
+      "caption": "Telescope roll and active image rotation under the example chart of {ref}`optics-roll-rotation`: the sky chart is $\\mathbf{s}=(x_{\\rm sky},y_{\\rm sky})=(E,N)$, a fixed sky source has detector coordinates $\\mathbf{d}=R(-\\theta)\\mathbf{s}$ for a positive telescope roll $\\theta$, and no calibrated zero-point orientation or reflection is applied. Stored pixels follow the proposed profile of {ref}`optics-pixel-directions`, $x=(c-c_x)s$ and $y=(r-c_y)s$, with the geometric origin $c_x=c_y=1.5$ of a 4-by-4 grid, where the star on the optical axis sits between four pixels. Top row: the physical picture in the sky chart, with the detector outline, its corner pixel (0, 0) marked by a wedge, and its column (c) and row (r) directions; in (b) faint dashed arrows keep the roll-0 directions, and the arc $\\theta$ outside the frame runs from the E direction, the roll-0 column direction, to the turned column direction. Bottom row: the same detector as a stored array, displayed with origin lower. (a) At zero roll the source at $(x,y)=(1.5s,0.5s)$ occupies $(r,c)=(2,3)$. (b) A roll of $\\theta=+90$ degrees turns the detector basis counterclockwise under the fixed sky; the source's detector coordinates become $(0.5s,-1.5s)$, pixel (0, 2), so in the stored array the sky turns clockwise. (c) An active +90-degree image rotation changes nothing physical: it moves the stored content counterclockwise in fixed pixels, to $(-0.5s,1.5s)$, pixel (3, 1). These pixels follow from geometry, independently of a rotation helper. The same senses hold in the example implementation of {doc}`the scene-to-detection example <../examples/scene-to-detection>` (section Detection): coronagraphoto places sources with the hwoutils matrix `ccw_rotation_matrix(-telescope_pa_deg)`, which turns the scene clockwise on the readout for a positive angle, and hwoutils `rotate_image` turns an image counterclockwise for a positive angle, so derotating a frame by its own roll angle is an active rotation by $+\\theta$. coronagraphoto's `telescope_pa_deg` plays the role of $\\theta$ here; despite its name it is a roll, not a position angle. The rotation relations are identities given this example chart and profile. The image-coordinate profile itself is pending under the {ref}`image coordinates and PSFlet origin decision <decision-image-coordinates-and-psflet-origin>`, and the matrix taking $(E,N)$ into the sky chart is pending under the {ref}`observer basis and node decision <decision-observer-basis-and-node>`. The sky chart is drawn with its stored axes, east to the right; a conventional north-up, east-left display reverses only its horizontal display axis, which also reverses the apparent turning sense in the sky-chart view; the stored-array senses are unchanged. Telescope roll is neither an astronomical position angle nor a parallactic angle. Schematic, not to scale.",
+      "alt": "Six panels in two rows and three columns, titled (a) roll 0, (b) roll theta = +90 degrees and (c) active rotation +90 degrees. Top row, labeled on the sky chart: each panel has sky axes with E to the right and N up in its lower left corner, a yellow star at the center, a cyan source up and to the right of the star, and a 4-by-4 detector grid centered on the star, with a large filled wedge in its pixel (0, 0) corner and arrows labeled c and r along two edges. In (a) the wedge is at the lower left, c points right, r points up, the star and source are labeled, and the source's pixel is shaded; below the panel it reads source in (r, c) = (2, 3). In (b) the grid is turned a quarter turn counterclockwise: the wedge is at the lower right, c points up along the right edge and r points left along the bottom edge, while faint dashed arrows outside them keep the roll-0 c direction, pointing right, and r direction, pointing up. Outside the lower right corner an arc labeled theta turns from the roll-0 c direction, which is the E direction, to the new c direction. The source has not moved; its shaded pixel is given below the panel as (r, c) = (0, 2). In (c) the grid is drawn faint in its unturned position, and the note below reads nothing physical turns. Bottom row, labeled stored array (origin lower): three 4-by-4 arrays with column c from 0 to 3 to the right and row r from 0 to 3 upward, the star at the center. (a) shades pixel (2, 3), titled starting pixel. (b) shades pixel (0, 2), with an open circle labeled start at (2, 3) and a clockwise arc to the source, titled sky turns clockwise. (c) shades pixel (3, 1), with an open circle labeled start at (2, 3) and a counterclockwise arc to the source, titled content turns counterclockwise. A dashed status box at the bottom reads schematic; origin at the grid center; proposed pixel profile; image-coordinate profile pending.",
+      "params": {
+        "grid": 4,
+        "source_xy_in_s": [
+          1.5,
+          0.5
+        ],
+        "roll_deg": 90.0,
+        "active_rotation_deg": 90.0,
+        "chart": "(x_sky, y_sky) = (E, N)"
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d09-roll-rotation-light.png",
+          "sha256": "b591565a480ac29a61cba40313a8d2a5e2ce32913f205cd1ca6c15c68d985be3",
+          "bytes": 136248
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d09-roll-rotation-light.pdf",
+          "sha256": "46f8570d729365929c032265df97046393ba069a0a4c83971d59911b95bdb7f8",
+          "bytes": 43206
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d09-roll-rotation-dark.png",
+          "sha256": "0ae19442c03092f69ad370ea9125613484f78e24ae0573453aac168515affd58",
+          "bytes": 136326
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d09-roll-rotation-dark.pdf",
+          "sha256": "3f419feba868c1d15be152c36c88205cc3b2213ad0df9b8de1e88dfe176b8b48",
+          "bytes": 43202
+        },
+        {
+          "file": "talks/stills/d09-roll-rotation.png",
+          "sha256": "4d3a826e38d07ca60417ea488c9ec3a890702442b20662a7a1d254a87b7d28fd",
+          "bytes": 182068
+        },
+        {
+          "file": "talks/stills/d09-roll-rotation.pdf",
+          "sha256": "59095dfd628e1da68a8de08e059ea14f4175b62e847a9da46722e93d53ea2a90",
+          "bytes": 51215
+        }
+      ]
+    }
+  ],
+  "animations": [
+    {
+      "slug": "d09-roll-viewpoint",
+      "status": "schematic; proposed pixel profile, image-coordinate profile pending",
+      "ground": "viewpoint",
+      "caption": "The detector turns under a fixed sky as the telescope roll $\\theta$ runs from 0 to +90 degrees; only $\\theta$ changes, and every scale is fixed. Left: the sky chart, with the star, the fixed source at $(x,y)=(1.5s,0.5s)$ and the detector grid turning counterclockwise, its corner pixel (0, 0) marked by a wedge. Right: the stored array, displayed with origin lower, where the same source moves clockwise along $\\mathbf{d}=R(-\\theta)\\mathbf{s}$ from pixel (2, 3) to pixel (0, 2); the shaded pixel is the one holding the source. coronagraphoto's `telescope_pa_deg` plays the role of $\\theta$; despite its name it is a roll, not a position angle. Telescope roll and active image rotation under the example chart of {ref}`optics-roll-rotation`: the sky chart is $\\mathbf{s}=(x_{\\rm sky},y_{\\rm sky})=(E,N)$, a fixed sky source has detector coordinates $\\mathbf{d}=R(-\\theta)\\mathbf{s}$ for a positive telescope roll $\\theta$, and no calibrated zero-point orientation or reflection is applied. Stored pixels follow the proposed profile of {ref}`optics-pixel-directions`, $x=(c-c_x)s$ and $y=(r-c_y)s$, with the geometric origin $c_x=c_y=1.5$ of a 4-by-4 grid, where the star on the optical axis sits between four pixels. The rotation relations are identities given this example chart and profile. The image-coordinate profile itself is pending under the {ref}`image coordinates and PSFlet origin decision <decision-image-coordinates-and-psflet-origin>`, and the matrix taking $(E,N)$ into the sky chart is pending under the {ref}`observer basis and node decision <decision-observer-basis-and-node>`. The sky chart is drawn with its stored axes, east to the right; a conventional north-up, east-left display reverses only its horizontal display axis, which also reverses the apparent turning sense in the sky-chart view; the stored-array senses are unchanged. Telescope roll is neither an astronomical position angle nor a parallactic angle. Schematic, not to scale.",
+      "alt": "Animation with two panels. Left, titled sky chart, roll theta = followed by the current angle from +0 to +90 degrees: sky axes with E to the right and N up in the lower left corner, a yellow star at the center, a cyan source up and to the right of it that never moves, and a 4-by-4 detector grid with a corner wedge and edge arrows labeled c and r that turns counterclockwise about the star, with a growing arc labeled theta from the E direction, which gains an arrowhead once the arc is long enough; the source's pixel in the turned grid is shaded, and the note below reads sky fixed, detector turns. Right, titled stored array: source in (r, c) = followed by the current pixel, from (2, 3) to (0, 2): a 4-by-4 grid displayed with origin lower, with column c and row r from 0 to 3 and the star at the center, where the cyan source moves clockwise from an open circle labeled start at pixel (2, 3), leaving a trail, and the shaded pixel follows it to pixel (0, 2).",
+      "params": {
+        "grid": 4,
+        "source_xy_in_s": [
+          1.5,
+          0.5
+        ],
+        "roll_deg": 90.0,
+        "active_rotation_deg": 90.0,
+        "chart": "(x_sky, y_sky) = (E, N)"
+      },
+      "frames": {
+        "doc": 19,
+        "talk": 64
+      },
+      "revision": {
+        "commit": "ddaab96",
+        "dirty": true
+      },
+      "outputs": [
+        {
+          "file": "docs/_static/explainers/explainer-d09-roll-viewpoint-light.mp4",
+          "sha256": "50fb7ff6cd98e7b3e396f04170b26a213d3437ebd9e82df4678548d9b29391fb",
+          "bytes": 128257
+        },
+        {
+          "file": "docs/_static/explainers/explainer-d09-roll-viewpoint-dark.mp4",
+          "sha256": "05a748be7b2fbd3fc2e8ab8c5cd6ba1c24223875031e99cc8c1b08581571c663",
+          "bytes": 130230
+        },
+        {
+          "file": "talks/animations/d09-roll-viewpoint.mp4",
+          "sha256": "262d14abe9fb29114823da375c3374c9934ea75ae53269d88595fe7b6e9bf4a6",
+          "bytes": 375027
+        }
+      ]
+    }
+  ]
+}

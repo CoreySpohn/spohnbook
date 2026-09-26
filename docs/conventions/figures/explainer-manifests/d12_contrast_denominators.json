@@ -1,0 +1,118 @@
+{
+  "module": "d12_contrast_denominators",
+  "script": "tools/explainers/d12_contrast_denominators.py",
+  "build_command": "python tools/build_explainer_figures.py --only d12",
+  "source_hash": "f0362a919d52",
+  "source_sha256": {
+    "tools/explainers/d12_contrast_denominators.py": "a1dd64ccac8ea89a5689ab3b1b3fd25c4b742f55a8396cbaa05bab26a21dbe7e",
+    "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
+    "tools/explainers/_export.py": "b62dc95b9442fd3062fe8b1446626b4aea0e896263564843ab38c84fcf3e1dfc"
+  },
+  "stamp_date": "2026-09-25",
+  "revisions": {
+    "spohnbook": {
+      "commit": "ddaab96",
+      "dirty": true
+    },
+    "eyepiece": {
+      "commit": "05e03c0",
+      "dirty": false
+    },
+    "hwostyle": {
+      "commit": "18e2644",
+      "dirty": false
+    }
+  },
+  "package_versions": {
+    "eyepiece": "0.4.1.dev22+g05e03c0b7",
+    "hwostyle": "1.1.1.dev8+g183fc366e.d20260811",
+    "hwoutils": "1.9.1.dev5+g453bf3fd0.d20260911",
+    "matplotlib": "3.11.0",
+    "numpy": "2.2.6"
+  },
+  "ffmpeg": null,
+  "layouts": {
+    "doc": {
+      "name": "doc",
+      "width_in": 7.2,
+      "height_in": 3.6,
+      "dpi": 200,
+      "font_pt": 10.0,
+      "small_pt": 8.5,
+      "title_pt": 11.0,
+      "lw": 1.2,
+      "marker_pt": 7.0,
+      "stamp_pt": 6.0,
+      "frame_budget": 30,
+      "anim_dpi": 150
+    },
+    "slide": {
+      "name": "slide",
+      "width_in": 16.0,
+      "height_in": 9.0,
+      "dpi": 120,
+      "font_pt": 20.0,
+      "small_pt": 16.0,
+      "title_pt": 26.0,
+      "lw": 2.4,
+      "marker_pt": 14.0,
+      "stamp_pt": 9.0,
+      "frame_budget": null,
+      "anim_dpi": 120
+    }
+  },
+  "figures": [
+    {
+      "slug": "d12-contrast-denominators",
+      "status": "tabulated design, example planet",
+      "caption": "One planet, four denominators ({ref}`radiometry-contrast-zodi`). Left, the off-axis PSF of an example planet with band contrast $c_b=\\Phi_p/\\Phi_\\star=10^{-10}$ at 3.22 $\\lambda/D$ (92 mas at 1000 nm on the 7.2 m circumscribed aperture), a tabulated offset of the eac1_optimal_order_6_1d yield input package, so the image is the package's own PSF with no interpolation. The package's PSFs are averages over its 0.9 to 1.1 $\\mu$m band, evaluated at five wavelengths, so every ratio here is a band ratio, not a monochromatic $c_\\lambda$. Right, the stellar leakage of the same coronagraph for a star 0.0316 $\\lambda/D$ across, the tabulated diameter nearest the Sun at 10 pc; this design nulls a point-source star. Both images are in the package's unit, the fraction of the star's photons incident on the collecting area that lands in each 0.25 $\\lambda/D$ pixel (the planet image is its PSF times $10^{-10}$), drawn as raw pixels on one log scale with x right and y up from the star; how these axes map to the sky belongs to the pending {ref}`image coordinates and PSFlet origin decision <decision-image-coordinates-and-psflet-origin>`. The dashed circle is the 0.7 $\\lambda/D$ photometric aperture, 1.54 $(\\lambda/D)^2$ or 24.6 pixels, at the planet position. The table gives, for the same planet, the ratio each denominator returns. (1) Host-star flux: the host-relative ratio this section defines at one reference plane before the coronagraph, the flux ratio of {ref}`Nemati et al. (2023, Sec. 1, text at eq. 1) <source-nemati2023>`; it appears in neither image. (2) The unocculted PSF peak: the planet's peak pixel over the star's peak pixel without the focal-plane mask, a one-pixel form of the normalized intensity of {ref}`Nemati et al. (2023, Sec. 1.1, eq. 4) <source-nemati2023>` applied to the planet. The package carries no unocculted PSF, so its off-axis PSF at 20.5 $\\lambda/D$, where the core throughput has leveled off, stands in; it is sampled at the planet's pixel phase, not at an on-axis star's. The ratio falls below $10^{-10}$ because the planet's peak is 94 percent of that unocculted peak. (3) The total incident stellar flux: the planet's peak pixel read directly in the image unit. That value scales with the pixel area: it is $3.7\\times10^{-12}$ in one 0.25 $\\lambda/D$ pixel, or $5.9\\times10^{-11}$ per $(\\lambda/D)^2$, which is the per-pixel versus per-$(\\lambda/D)^2$ choice of {ref}`radiometry-pixel-brightness`. (4) An aperture sum, the yield-package normalization: the planet's sum inside the aperture divided by the same sum for a source with planet flux equal to the star's, which is the core throughput, 0.58. This is yippy's raw contrast and the contrast of {ref}`Nemati et al. (2023, Sec. 1.1, eq. 3) <source-nemati2023>`; for the leakage it gives $2.4\\times10^{-14}$, so inside this aperture the planet-to-leakage ratio is the band contrast divided by the raw contrast. Row 4 returns $c_b$ exactly only for a planet whose spectrum has the star's shape, so that $c_\\lambda$ is constant across the band; otherwise it weights $c_\\lambda$ by the throughput-weighted stellar spectrum. Rows 1 and 4 agree by construction of that normalization, not because they are the same quantity: the first is a flux ratio at a reference plane, the second a ratio of image sums over one named aperture. This section lists four denominators, host-star flux, a zero-magnitude reference, an unocculted PSF peak and total incident stellar flux; the figure draws three of them, omits the zero-magnitude reference, and adds the aperture sum, whose aperture {ref}`optics-pixel-measure` requires to be named. The values come from yippy's throughput, core_area and raw_contrast tables and its off-axis PSFs; the definitions are identities, the planet is an example, and the scalar leakage measure every backend exports is the pending {ref}`stellar leakage measure decision <decision-stellar-leakage-measure>`.",
+      "alt": "Two log-scaled images side by side above a four-row table, sharing one colorbar, the fraction of the star's incident photons per pixel, from 1e-19 to 1e-11. Left: the off-axis PSF of a planet at 3.22 lambda/D to the right of a plus sign that marks the star, a bright core inside a dashed circle keyed 4 with diffraction rings around it; a note gives the aperture radius 0.7 lambda/D, its area 1.54 square lambda/D or 24.6 pixels, and that it holds 0.58 of the planet light. Right: the stellar leakage of a 0.0316 lambda/D star, dark at the star with faint rings, and the same dashed circle at the planet position; notes give the raw contrast in that aperture, 2.4e-14, keyed 4, and, keyed 2, that without the mask the star's peak pixel is 0.0390. Key 3 sits at the top end of the colorbar. The table lists four denominators with the numerator and denominator each uses and the value it gives for the planet: 1, host-star flux, 1.0e-10; 2, unocculted PSF peak, 9.4e-11, because the off-axis peak is 94 percent of the unocculted peak; 3, total incident stellar flux, 3.7e-12 in the peak 0.25 lambda/D pixel; 4, an aperture sum, 1.0e-10. A line under the table reads: rows 1 and 4 agree by construction; compare ratios only when their denominators match.",
+      "params": {
+        "package": "eac1_optimal_order_6_1d",
+        "diameter_m": 7.2,
+        "wavelength_nm": 1000.0,
+        "planet_ratio": 1e-10,
+        "planet_sep_lod": 3.22,
+        "reference_sep_lod": 20.5,
+        "star_diam_lod": 0.032,
+        "aperture_radius_lod": 0.7,
+        "half_window_px": 24,
+        "norm_vmin": 1e-19,
+        "norm_vmax": 1e-11
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d12-contrast-denominators-light.png",
+          "sha256": "c9da6d2cbeb3ecf58f756a65cc68cbe7e6ee68be3199179f7152b374d7ab3b81",
+          "bytes": 298853
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d12-contrast-denominators-light.pdf",
+          "sha256": "a9257e13bdc511d2dcc51c63e936a12aec151efc66bb338d9e2bf15ae54169a7",
+          "bytes": 86485
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d12-contrast-denominators-dark.png",
+          "sha256": "32541285d2891d22fd737262a64e9a3c7567416f8c42f65980b04c25dda6735c",
+          "bytes": 299493
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d12-contrast-denominators-dark.pdf",
+          "sha256": "f8b7f84fd367f2b6934118fd2488c97eaf4bc2852c4303325f5dc047320a668b",
+          "bytes": 86493
+        },
+        {
+          "file": "talks/stills/d12-contrast-denominators.png",
+          "sha256": "5fd1bea20123338d0b37c57f5debc6385b4a1154cdf1e8b389ddf6aa0498839b",
+          "bytes": 291693
+        },
+        {
+          "file": "talks/stills/d12-contrast-denominators.pdf",
+          "sha256": "d0ff4e8b8e1f22bc42f9096c67163b8ce83eebd08d7839d89f9f26ff1c4baadd",
+          "bytes": 91255
+        }
+      ]
+    }
+  ],
+  "animations": []
+}

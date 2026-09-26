@@ -124,3 +124,41 @@ jobs:
         path: |
           docs/_build/html
           docs/_evidence
+
+  manim:
+    name: Manim explainer clips (optional)
+    runs-on: ubuntu-latest
+    # The clips are rendered locally and committed; this job only proves that
+    # the Manim tooling still renders, byte-identically, on a clean machine.
+    # It installs eyepiece's Manim renderer from the repository until a
+    # release ships it, so it runs only on manual dispatch for now and a
+    # failure here does not fail the workflow.
+    if: github.event_name == 'workflow_dispatch'
+    continue-on-error: true
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+
+    - name: Install Cairo, Pango, pkg-config, ffmpeg and the Inter font
+      run: >-
+        sudo apt-get update -q && sudo apt-get install -y -q
+        libcairo2-dev libpango1.0-dev pkg-config ffmpeg fonts-inter
+
+    - name: Install the locked environment, Manim and eyepiece's Manim renderer
+      run: |
+        uv venv .venv --python 3.12
+        uv pip sync --python .venv/bin/python requirements-docs.txt
+        uv pip install --python .venv/bin/python -e ".[explainers-manim]" \
+          "eyepiece[manim] @ git+https://github.com/CoreySpohn/eyepiece@main"
+
+    - name: Run the Manim tests (a skipped Manim test fails the job)
+      env:
+        SPOHNBOOK_REQUIRE_MANIM: "1"
+      run: .venv/bin/python -m pytest tests -v -rs -m manim

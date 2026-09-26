@@ -326,6 +326,8 @@ clauses:
   - id: optics-angular-grids
     page: conventions/optics-images
     derivation: "u = alpha D / lambda by definition; fixed native steps give an angular step proportional to lambda, reference-wavelength grids a fixed one."
+    citations:
+      - {source: hecht2017, locator: "Sec. 10.2.5, eq. 10.58", supports: "the first dark ring of a circular aperture's Airy pattern lies at 1.22 lambda/D"}
     decisions: [decision-image-coordinates-and-psflet-origin]
   - id: optics-pixel-measure
     page: conventions/optics-images
@@ -336,7 +338,7 @@ clauses:
     derivation: "Under the kernel exp(-i 2 pi u x) a positive phase ramp moves the response to +x; the first-order OPD derivative is i 2 pi / lambda; the change of variables u' = s u gives s^2 in two dimensions. The transform sign pairing is this book's choice."
     citations:
       - {source: goodman2015, locator: "Sec. 3.8.3, eq. 3.8-16", supports: "the exp(-i omega t) time convention (not the spatial transform sign)"}
-      - {source: hecht2017, locator: "Sec. 9.4.2, eq. 9.44", supports: "a mirror displacement at normal incidence changes the optical path by twice the displacement"}
+      - {source: hecht2017, locator: "Sec. 9.4.2, text before eq. 9.44", supports: "a mirror displacement at normal incidence changes the optical path by twice the displacement"}
     decisions: [decision-image-coordinates-and-psflet-origin]
   - id: optics-signed-intensity
     page: conventions/optics-images

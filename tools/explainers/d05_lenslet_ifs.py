@@ -522,8 +522,9 @@ def _entrance_panel(
     zoom_box=True,
     spaxel_tag=True,
     grid_labels=True,
+    zoom_letter="b",
 ):
-    """Entrance image with every lenslet cell and the two origins."""
+    """Entrance image with every lenslet cell; with the zoom box, the origins."""
     res = cviz.plot_lenslet_cells(
         m.d,
         FP_SHAPE,
@@ -567,13 +568,20 @@ def _entrance_panel(
         )
     if not zoom_box:
         # Without the zoom panel that names them, the two origin marks would
-        # be unlabeled glyphs; the zoom panel is their home.
+        # be unlabeled glyphs; the origins figure's zoom is their home.
         for line in res.artists.get("lines", []):
             line.set_visible(False)
     ax.set_xlabel("entrance $x$ [cube px]")
     ax.set_ylabel("entrance $y$ [cube px]")
     if spaxel_tag:
-        _tag(ax, (0.98, 0.03), "one lenslet cell = one spaxel", cast, ha="right")
+        _tag(
+            ax,
+            (0.98, 0.97),
+            "one lenslet cell = one spaxel",
+            cast,
+            ha="right",
+            va="top",
+        )
     if zoom_box:
         x0, x1, y0, y1 = ZOOM_WINDOW
         ax.add_patch(
@@ -590,7 +598,7 @@ def _entrance_panel(
         _label(
             ax,
             (x0 - 0.5, y0 - 0.5),
-            "zoom (c)",
+            f"zoom ({zoom_letter})",
             cast,
             ha="right",
             va="top",
@@ -627,7 +635,7 @@ def _zoom_panel(ax, m, cast):
     _label(
         ax,
         (ox - 0.15, oy - 0.3),
-        f"optical center ({ox:g}, {oy:g})\n= (n - 1)/2 of the cube",
+        f"optical center ({ox:g}, {oy:g})\n" + r"= $(n_\mathrm{cube} - 1)/2$",
         cast,
         ha="center",
         va="top",
@@ -636,14 +644,56 @@ def _zoom_panel(ax, m, cast):
     _label(
         ax,
         (gx, gy + 0.3),
-        f"lenslet-grid origin ({gx:g}, {gy:g})\n= n/2 in coronachrome\n(implementation)",
+        f"lenslet-grid origin ({gx:g}, {gy:g})\n"
+        + r"= $n_\mathrm{cube}/2$ in coronachrome"
+        + "\n(implementation)",
         cast,
         ha="center",
         va="bottom",
         gid="d05-zoom-grid-origin-label",
     )
+    _offset_arrow(ax, m, cast)
     _tag(ax, (0.03, 0.03), "lines: cube pixel edges", cast)
     return res
+
+
+def origin_offset_px(m):
+    """Lenslet-grid origin minus optical center, in cube pixels ``(dx, dy)``."""
+    return (
+        m.grid_origin[0] - OPTICAL_CENTER[0],
+        m.grid_origin[1] - OPTICAL_CENTER[1],
+    )
+
+
+def _offset_arrow(ax, m, cast):
+    """A one-headed arrow from the optical center to the grid origin."""
+    ox, oy = OPTICAL_CENTER
+    gx, gy = m.grid_origin
+    dx, _ = origin_offset_px(m)
+    ax.annotate(
+        "",
+        (gx, gy),
+        (ox, oy),
+        arrowprops={
+            "arrowstyle": "-|>",
+            "color": cast.text,
+            "lw": 0.8 * cast.layout.lw,
+            "shrinkA": 6,
+            "shrinkB": 6,
+            "mutation_scale": 8 if not cast.layout.is_slide else 16,
+        },
+        zorder=7,
+        gid="d05-zoom-offset-arrow",
+    )
+    _label(
+        ax,
+        (gx + 0.2, 0.5 * (oy + gy) - 0.05),
+        f"{dx:+g} px on each\naxis (grid - optical)",
+        cast,
+        ha="left",
+        va="center",
+        gid="d05-zoom-offset-label",
+    )
 
 
 # Detector traces
@@ -671,10 +721,12 @@ def _psflet_box(ir, channel, index):
 
 
 def _hide_library_labels(res):
-    """Hide plot_traces' end labels and trace-origin mark; we place our own."""
+    """Hide plot_traces' labels and trace-origin mark; we place our own.
+
+    The scan readout is hidden too: the bin-footprint label carries it.
+    """
     for text in res.artists["text"]:
-        if text.get_label() != "scan readout":
-            text.set_visible(False)
+        text.set_visible(False)
     for line in res.artists["lines"]:
         if line.get_label() == "detector trace origin":
             line.set_visible(False)
@@ -712,7 +764,7 @@ def _outline_marks(res, cast):
         mark.set_path_effects(stroke)
 
 
-def _trace_origin_mark(ax, m, cast):
+def _trace_origin_mark(ax, m, cast, text_xy):
     """Detector trace origin: a tick pair that leaves the centroid circles clear."""
     x0, y0 = m.trace_origin
     ticks = []
@@ -729,10 +781,11 @@ def _trace_origin_mark(ax, m, cast):
         ticks.append(tick)
     text = _boxed(
         ax.annotate(
-            f"detector trace origin ({x0:g}, {y0:g}):\n"
-            f"lenslet (0, 0) at {LAM_REF_NM:.0f} nm = detector n/2",
+            f"detector trace origin ({x0:g}, {y0:g})\n"
+            + r"= $n_\mathrm{det}/2$ in coronachrome (implementation):"
+            + f"\nlenslet (0, 0) at reference wavelength {LAM_REF_NM:.0f} nm",
             (x0, y0 - 2.6),
-            xytext=(x0 + 6.0, 52.9),
+            xytext=text_xy,
             textcoords="data",
             ha="center",
             va="top",
@@ -763,7 +816,7 @@ def _detector_labels(ax, m, cast, res, *, channels, scan_index=SCAN_BIN, detail=
     art = {}
     art["605"] = _label(
         ax,
-        (float(m.xg[a, 0]) - 5.0, ya),
+        (float(m.xg[a, 0]) - 6.5, ya),
         f"{m.lam[0]:.0f} nm",
         cast,
         color=ca,
@@ -783,7 +836,7 @@ def _detector_labels(ax, m, cast, res, *, channels, scan_index=SCAN_BIN, detail=
     )
     art[a] = _label(
         ax,
-        (float(m.xg[a, 0]) - 5.0, ya - 1.6),
+        (float(m.xg[a, 0]) - 6.5, ya - 1.6),
         f"lenslet {a}",
         cast,
         color=ca,
@@ -800,10 +853,8 @@ def _detector_labels(ax, m, cast, res, *, channels, scan_index=SCAN_BIN, detail=
             ha="left",
             va="center",
         )
-    if detail:
-        art["origin"] = _trace_origin_mark(ax, m, cast)
     art["bin"] = _label(
-        ax, (0, 0), "bin footprint", cast, color=ca, ha="left", va="top"
+        ax, (0, 0), "", cast, color=ca, ha="left", va="top", gid="d05-bin-label"
     )
     art["centroid"] = _boxed(
         ax.annotate(
@@ -836,6 +887,9 @@ def _detector_labels(ax, m, cast, res, *, channels, scan_index=SCAN_BIN, detail=
     def update(k):
         x0, y0, _, _ = _psflet_box(m.ir, a, k)
         art["bin"].set_position((x0, y0 - 0.15))
+        art["bin"].set_text(
+            f"bin footprint:\nlenslet {a}, " + rf"$\lambda$ = {m.lam[k]:.0f} nm"
+        )
         art["centroid"].xy = (float(m.xg[a, k]), ya)
         # Below the trace, left of "bin footprint": clear of both traces.
         art["centroid"].set_position((x0 - 1.2, y0 - 0.15))
@@ -845,38 +899,33 @@ def _detector_labels(ax, m, cast, res, *, channels, scan_index=SCAN_BIN, detail=
 
 
 def build_instrument(layout, cast):
-    """Figure: the optical train, the entrance cells and origins, the traces."""
+    """Figure: the optical train, the entrance cells, the detector traces.
+
+    The architecture only: the three reference origins have their own figure.
+    """
     m = _model()
     with _x64():
-        fig = plt.figure(figsize=layout.size(8.4), layout="constrained")
+        fig = plt.figure(figsize=layout.size(5.6), layout="constrained")
         if layout.is_slide:
-            # The talk slide keeps the mapping; the origin detail stays in the
-            # documentation figure.
             gs = fig.add_gridspec(
                 2, 2, height_ratios=(1.0, 1.25), width_ratios=(1.0, 2.0)
             )
-            ax_side = fig.add_subplot(gs[0, :])
-            ax_ent = fig.add_subplot(gs[1, 0])
-            ax_zoom = None
-            ax_det = fig.add_subplot(gs[1, 1])
         else:
             gs = fig.add_gridspec(
-                3, 2, height_ratios=(0.95, 1.45, 1.05), width_ratios=(1.25, 1.0)
+                2, 2, height_ratios=(1.0, 1.0), width_ratios=(1.0, 1.85)
             )
-            ax_side = fig.add_subplot(gs[0, :])
-            ax_ent = fig.add_subplot(gs[1, 0])
-            ax_zoom = fig.add_subplot(gs[1, 1])
-            ax_det = fig.add_subplot(gs[2, :])
-        det_letter = "c" if ax_zoom is None else "d"
-        _side_view(ax_side, cast, slide=layout.is_slide, detector_letter=det_letter)
+        ax_side = fig.add_subplot(gs[0, :])
+        ax_ent = fig.add_subplot(gs[1, 0])
+        ax_det = fig.add_subplot(gs[1, 1])
+        _side_view(ax_side, cast, slide=layout.is_slide, detector_letter="c")
         ax_side.set_title("(a) side view: the light of one lenslet", loc="left")
         _entrance_panel(
             ax_ent,
             m,
             cast,
             channels=(LENSLET_A, LENSLET_B),
-            zoom_box=ax_zoom is not None,
-            grid_labels=not layout.is_slide,
+            zoom_box=False,
+            grid_labels=False,
         )
         ax_ent.set_title(
             "(b) entrance: lenslet cells"
@@ -884,9 +933,6 @@ def build_instrument(layout, cast):
             else "(b) entrance plane: lenslet cells",
             loc="left",
         )
-        if ax_zoom is not None:
-            _zoom_panel(ax_zoom, m, cast)
-            ax_zoom.set_title("(c) zoom: two entrance origins", loc="left")
         res = _detector_panel(
             ax_det, m, cast, channels=(LENSLET_A, LENSLET_B), window=DETECTOR_WINDOW
         )
@@ -899,16 +945,146 @@ def build_instrument(layout, cast):
             detail=not layout.is_slide,
         )
         ax_det.set_title(
-            f"({det_letter}) detector traces"
+            "(c) detector traces"
             if layout.is_slide
-            else f"({det_letter}) detector: one trace per lenslet",
+            else "(c) detector: one trace per lenslet",
             loc="left",
         )
         ex.badge(ax_det, cast, "simulated", loc="lower left")
         if not layout.is_slide:
             ex.badge(ax_ent, cast, "simulated", loc="lower left")
+        for ax in (ax_ent, ax_det):
+            ax.set_anchor("N")
         _headline(
             fig, layout, "Each lenslet becomes one short spectrum on the detector"
+        )
+    return _plain_text(fig, cast)
+
+
+# Around the detector trace origin: the trace of lenslet (0, 0) near 660 nm.
+ORIGIN_DET_WINDOW = (44.5, 75.5, 50.5, 68.5)
+SLIDE_ORIGIN_DET_WINDOW = (49.1, 69.9, 49.5, 70.5)
+
+
+def _origin_detector_panel(ax, m, cast, *, window):
+    """The detector trace origin among the centroids of lenslet (0, 0)."""
+    res = _detector_panel(
+        ax, m, cast, channels=(LENSLET_A,), scan_index=None, window=window
+    )
+    _hide_library_labels(res)
+    x0 = m.trace_origin[0]
+    text_x = 0.5 * (window[0] + window[1]) if cast.layout.is_slide else x0 + 3.0
+    _trace_origin_mark(ax, m, cast, (text_x, 55.0))
+    ca = _lenslet_color(LENSLET_A)
+    k = SCAN_BIN
+    ya = float(m.yg[LENSLET_A, k])
+    # The two bin centers that bracket the reference wavelength, labeled
+    # above the footprints on short leaders.
+    for kk, ha, dx in ((k, "right", -1.0), (k + 1, "left", 1.0)):
+        xk = float(m.xg[LENSLET_A, kk])
+        _boxed(
+            ax.annotate(
+                f"{m.lam[kk]:.0f} nm",
+                (xk, ya + 0.6),
+                xytext=(xk + dx, ya + 5.2),
+                textcoords="data",
+                ha=ha,
+                va="bottom",
+                color=ca,
+                fontsize=cast.layout.small_pt,
+                arrowprops={"arrowstyle": "-", "color": ca, "lw": 0.8},
+                zorder=7,
+                gid=f"d05-origin-bin-{m.lam[kk]:.0f}",
+            ),
+            cast,
+        )
+    i, j = _grid_index(LENSLET_A)
+    _label(
+        ax,
+        (window[0] + 0.5, window[3] - 0.5),
+        f"lenslet {LENSLET_A} = grid ({i}, {j})",
+        cast,
+        color=ca,
+        ha="left",
+        va="top",
+        gid="d05-origin-lenslet-label",
+    )
+    return res
+
+
+def build_origins(layout, cast):
+    """Figure: the three reference origins, each in its own frame.
+
+    The entrance panel is carried over from the instrument figure (same
+    constructor) with its zoom box; the zoom names the optical center and
+    the lenslet-grid origin on the cube pixel grid, and the detector panel
+    names the detector trace origin.
+    """
+    m = _model()
+    with _x64():
+        if layout.is_slide:
+            # The carried panel is a small anchor; the two origin panels
+            # take the frame.
+            fig, (ax_ent, ax_zoom, ax_det) = ex.figure(
+                layout, ncols=3, width_ratios=(0.65, 1.0, 1.0)
+            )
+            # Panels hang from the headline: no dead band under it.
+            for ax in (ax_ent, ax_zoom, ax_det):
+                ax.set_anchor("N")
+            window = SLIDE_ORIGIN_DET_WINDOW
+        else:
+            fig = plt.figure(figsize=layout.size(6.4), layout="constrained")
+            gs = fig.add_gridspec(
+                2, 2, height_ratios=(1.3, 1.0), width_ratios=(0.6, 1.0)
+            )
+            # A small anchor: the carried panel takes the upper part of its
+            # cell only.
+            ax_ent = fig.add_subplot(
+                gs[0, 0].subgridspec(2, 1, height_ratios=(0.62, 0.38))[0]
+            )
+            ax_zoom = fig.add_subplot(gs[0, 1])
+            ax_det = fig.add_subplot(gs[1, :])
+            window = ORIGIN_DET_WINDOW
+        carried = _entrance_panel(
+            ax_ent,
+            m,
+            cast,
+            channels=(LENSLET_A, LENSLET_B),
+            zoom_box=True,
+            spaxel_tag=False,
+            grid_labels=False,
+            zoom_letter="b",
+        )
+        # The zoom outline only: at this scale the two origin marks shrink
+        # into one unreadable glyph, and (b) is their home.
+        for line in carried.artists.get("lines", []):
+            line.set_visible(False)
+        # The relay tag rides in the title, clear of the small panel's marks.
+        title = ax_ent.set_title(
+            "(a) entrance\n(previous slide)"
+            if layout.is_slide
+            else "(a) entrance plane\n(from the previous figure)",
+            loc="left",
+        )
+        title.set_gid("d05-carried-tag")
+        _zoom_panel(ax_zoom, m, cast)
+        ax_zoom.set_title(
+            "(b) cube: two origins"
+            if layout.is_slide
+            else "(b) cube: two entrance origins",
+            loc="left",
+        )
+        _origin_detector_panel(ax_det, m, cast, window=window)
+        ax_det.set_title(
+            "(c) detector" if layout.is_slide else "(c) detector: the trace origin",
+            loc="left",
+        )
+        for ax in (ax_ent, ax_det):
+            ex.badge(ax, cast, "simulated", loc="lower left")
+        _headline(
+            fig,
+            layout,
+            "Three origins in three frames: never exchange one for another",
         )
     return _plain_text(fig, cast)
 
@@ -1645,6 +1821,7 @@ def build_scan(layout, cast):
             else SCAN_ENTRANCE_WINDOW,
             zoom_box=False,
             spaxel_tag=False,
+            grid_labels=False,
         )
         ax_e.set_title("entrance plane", loc="left")
         window = SLIDE_SCAN_WINDOW if layout.is_slide else DETECTOR_WINDOW
@@ -1732,42 +1909,77 @@ INSTRUMENT_CAPTION = (
     "Simulated entrance image, log stretch, with every square collection cell. "
     "Each cell integrates the entrance flux of one lenslet, which becomes one "
     "spaxel of the extracted cube ({ref}`Rizzo et al. 2017, Sec. 2.2 "
-    "<source-rizzo2017>`); the two outlined cells are grid neighbors. (c) The "
-    "boxed region of (b) on its cube pixel grid. The optical center belongs to "
-    "the cube and sits at its geometric center (31.5, 31.5). The example "
-    "implementation drawn here, coronachrome, places lenslet (0, 0) at "
-    "(32, 32), half a pixel away on each axis; the {ref}`limitations page "
-    "<limitations-optics>` records that difference. (d) Simulated detector "
+    "<source-rizzo2017>`); the two outlined cells, lenslets 24 and 31, are "
+    "grid neighbors. (c) Simulated detector "
     "response to unit flux in every wavelength bin of the two lenslets, log "
     "stretch. Each open circle is the centroid of one bin footprint, one per "
     "wavelength bin from 605 to 713 nm, and the line through them is the "
     "geometric trace. The box outlines the detector pixels of the 651 nm bin "
-    "of lenslet 24. The detector trace origin, where lenslet (0, 0) lands at "
-    "the 660 nm reference wavelength, is a third reference point. The three "
-    "origins are separate calibrated quantities: taking one for another "
-    "shifts every spaxel, and so every planet position, by half a pixel, or "
-    "misplaces every bin footprint on the detector. The footprints of the two "
-    "neighbors share detector rows. The instrument is synthetic, not an "
+    "of lenslet 24. The footprints of the two neighbors share detector rows. "
+    "The reference origins of the entrance plane and the detector are drawn "
+    "in {ref}`the next figure <fig-explainer-d05-lenslet-ifs-origins>`. "
+    "The instrument is synthetic, not an "
     "instrument prescription: a 7-by-7 grid clocked by arctan(1/2), 13.4 "
     "detector pixels per lenslet pitch, Moffat PSFlets, and ten bins at "
     "resolving power 50."
 )
 INSTRUMENT_ALT = (
-    "Four panels. Top: a side-view schematic of a lenslet integral field "
+    "Three panels. Top: a side-view schematic of a lenslet integral field "
     "spectrograph, with light arriving from the left onto a column of small "
     "lenses in the entrance focal plane, one highlighted lens focusing onto a "
     "pinhole, then a collimator, a prism with its apex up that bends the gray "
     "broadband beam down toward its base into rays from 605 nanometers (bent "
     "most, lowest) to 713 nanometers (bent least, highest), a camera, and a "
-    "detector, with an arrow marking detector +x upward. Middle "
-    "left: a simulated entrance image with a rotated grid of square lenslet "
-    "cells; lenslet 24, grid (0, 0), and lenslet 31, grid (1, 0), are "
-    "outlined. Middle right: a zoom on the cube pixel grid showing the optical "
-    "center at (31.5, 31.5) and the lenslet-grid origin at (32, 32). Bottom: a "
-    "simulated detector image with two parallel horizontal traces, one per "
-    "lenslet, each marked by ten centroid circles from 605 to 713 nanometers, "
-    "a box around the 651 nanometer bin footprint, its centroid, and tick "
-    "marks at the detector trace origin (60, 60)."
+    "detector, with an arrow marking detector +x upward. Bottom left: a "
+    "simulated entrance image with a rotated grid of square lenslet cells; "
+    "the neighboring cells of lenslets 24 and 31 are outlined. Bottom right: "
+    "a simulated detector image with two parallel horizontal traces, one per "
+    "lenslet, each marked by ten centroid circles from 605 to 713 "
+    "nanometers, with a box around the 651 nanometer bin footprint of "
+    "lenslet 24 and its centroid."
+)
+ORIGINS_CAPTION = (
+    "Three reference origins of a lenslet integral field spectrograph, each "
+    "in its own frame (clause `optics-ifs-products`; pixel origins as in "
+    "clause `optics-pixel-directions`). (a) The simulated entrance image of "
+    "{ref}`the previous figure <fig-explainer-d05-lenslet-ifs-instrument>`, "
+    "with the region drawn in (b) boxed. (b) The "
+    "boxed region of (a) on its cube pixel grid, for a cube of "
+    "$n_\\mathrm{cube}$ = 64 pixels on a side. The optical center belongs to "
+    "the cube and sits at its geometric center (31.5, 31.5). The example "
+    "implementation drawn here, coronachrome, places lenslet (0, 0) at "
+    "(32, 32), half a pixel away on each axis; the {ref}`limitations page "
+    "<limitations-optics>` records that difference. The arrow runs from the "
+    "optical center to the lenslet-grid origin, +0.5 pixel on each axis. "
+    "(c) Simulated detector "
+    "response to unit flux in every wavelength bin of lenslet 24, grid "
+    "(0, 0), log stretch. The detector trace origin is the point coronachrome "
+    "anchors every trace to, the detector center $n_\\mathrm{det}/2$ = "
+    "(60, 60) of the 120-pixel detector; the chapter sets no convention for "
+    "this point. With no constant dispersion term, lenslet (0, 0) lands there "
+    "at the 660 nm reference wavelength, which is not a bin center, so the "
+    "origin lies between the centroids of the 651 nm and 663 nm bins. The "
+    "three origins are separate calibrated quantities: taking one for another "
+    "shifts every spaxel, and so every planet position, by half a cube pixel "
+    "on each axis (1/12 of a lenslet pitch here), or misplaces every bin "
+    "footprint on the detector. Simulated, with the synthetic instrument of "
+    "the previous figure."
+)
+ORIGINS_ALT = (
+    "Three panels. Top left, small: the simulated entrance image with its "
+    "rotated grid of square lenslet cells, the cells of lenslets 24 and 31 "
+    "outlined, and a small box near the image center marking the zoomed "
+    "region, tagged as carried from the previous figure. Top right: a zoom "
+    "on the cube pixel grid, with a cross at the optical center (31.5, "
+    "31.5), labeled as the cube size minus one over two, a square at the "
+    "lenslet-grid origin (32, 32), labeled as half the cube size in "
+    "coronachrome, and an arrow from the cross to the square labeled +0.5 "
+    "pixel on each axis. Bottom: a simulated detector image of one "
+    "horizontal trace, lenslet 24, grid (0, 0), with ten centroid circles; "
+    "a pair of tick marks at (60, 60), between the circles of the 651 and "
+    "663 nanometer bins, marks the detector trace origin, labeled as half "
+    "the detector size in coronachrome, where lenslet (0, 0) lands at the "
+    "660 nanometer reference wavelength."
 )
 PLACEMENT_CAPTION = (
     "PSFlet templates, calibrated placement and detector-edge capture under "
@@ -1885,6 +2097,14 @@ FIGURES = [
         caption=INSTRUMENT_CAPTION,
         alt=INSTRUMENT_ALT,
         status="schematic side view; simulated array panels",
+        params=PARAMS,
+    ),
+    ex.FigureSpec(
+        slug="d05-lenslet-ifs-origins",
+        build=build_origins,
+        caption=ORIGINS_CAPTION,
+        alt=ORIGINS_ALT,
+        status="simulated; grid and trace origins as coronachrome implements them",
         params=PARAMS,
     ),
     ex.FigureSpec(

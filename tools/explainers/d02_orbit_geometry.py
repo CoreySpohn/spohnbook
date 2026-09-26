@@ -37,8 +37,10 @@ arrows, the angular-momentum vector and the construction's rays) have a
 """
 
 import numpy as np
+from matplotlib.colors import to_rgba
 from matplotlib.patches import Circle, FancyArrowPatch, Polygon
 
+from explainers import ManimSpec
 from explainers import _common as ex
 
 # Scientific inputs: one set for every figure and animation.
@@ -1204,6 +1206,1071 @@ def build_clock(layout, cast):
     return ex.AnimationScene(fig=fig, draw=draw, frames=frames)
 
 
+# Three rotations: the orbit placed one factor at a time
+#
+# Read left to right, the chapter's R_Z(Omega) R_X(i) R_Z(omega_p) is three
+# turns, each about an axis that the earlier turns placed: about +Z by Omega,
+# about the node line by i, and about the orbit normal by omega_p. The orbit
+# after step k is the chapter's formula with the later angles still zero, so
+# every state drawn below is that formula; the documentation strip and the
+# talk clip both draw these states from ``rotation_geometry``.
+
+ROTATION_STEPS = ("omega", "inclination", "periapsis")
+# Fractions of (Omega, i, omega_p) applied before step 1 and after each step.
+STEP_FRACTIONS = (
+    (0.0, 0.0, 0.0),
+    (1.0, 0.0, 0.0),
+    (1.0, 1.0, 0.0),
+    (1.0, 1.0, 1.0),
+)
+FACE_ON = (90.0, 0.0)
+# The turn in the sky plane is seen in the observer's view; the two turns out
+# of it are seen in the oblique view of the orbit-elements figure.
+STEP_VIEWS = (FACE_ON, OBLIQUE_VIEW, OBLIQUE_VIEW)
+ROTATION_LIMITS = ((-1.5, 1.62), (-1.55, 1.62))
+NORTH_REF_LEN = 0.9  # the dashed north reference Omega is measured from
+SKY_OMEGA_R = 0.42  # Omega arc radius in the observer's view, inside periapsis
+ROTATION_NAMES = (r"$R_Z(\Omega)$", r"$R_X(i)$", r"$R_Z(\omega_p)$")
+OBLIQUE_NOTE = (
+    f"oblique view: camera turned {OBLIQUE_VIEW[0]:.0f} deg from east\n"
+    f"toward the observer, raised {OBLIQUE_VIEW[1]:.0f} deg north"
+)
+
+
+def staged_rotation(fractions, orbit=ORBIT):
+    """``R_Z(f0 Omega) R_X(f1 i) R_Z(f2 omega_p)``: the construction part way."""
+    f_om, f_i, f_w = fractions
+    return (
+        rot_z(f_om * np.deg2rad(orbit["Omega_deg"]))
+        @ rot_x(f_i * np.deg2rad(orbit["i_deg"]))
+        @ rot_z(f_w * np.deg2rad(orbit["omega_deg"]))
+    )
+
+
+def staged_position(nu, fractions, orbit=ORBIT):
+    """Position(s) at true anomaly ``nu`` after the given fractions of the turns."""
+    nu = np.asarray(nu, dtype=float)
+    r = radius(nu, orbit)
+    perifocal = np.stack([r * np.cos(nu), r * np.sin(nu), np.zeros_like(nu)], -1)
+    return perifocal @ staged_rotation(fractions, orbit).T
+
+
+def staged_axes(fractions, orbit=ORBIT):
+    """Node-line direction and orbit normal after the given fractions.
+
+    The first turn places the node line and the tilt, about that line, leaves
+    it fixed. The tilt places the normal and the last turn, about the normal,
+    leaves it fixed.
+    """
+    f_om, f_i, _ = fractions
+    turn = rot_z(f_om * np.deg2rad(orbit["Omega_deg"]))
+    node = turn @ NORTH
+    normal = turn @ rot_x(f_i * np.deg2rad(orbit["i_deg"])) @ TOWARD_OBSERVER
+    return node, normal
+
+
+def rotation_geometry(fractions, view, orbit=ORBIT, n=361, omega_r=None):
+    """Every projected shape of the construction for one state and one camera.
+
+    Args:
+        fractions: Applied fractions of ``(Omega, i, omega_p)``, each in [0, 1].
+        view: A camera, as for ``camera``.
+        orbit: Orbital elements.
+        n: Samples around the orbit.
+        omega_r: Radius of the Omega arc; None uses the orbit-elements
+            figure's oblique-view radius. The observer's view uses
+            ``SKY_OMEGA_R``, inside periapsis, as that figure's sky panel does.
+
+    Returns:
+        A dict of screen-coordinate arrays: the orbit split into the part on
+        or in front of the sky plane and the part behind it (NaN gaps), the
+        sky disk, the node line, the north reference, the three angle arcs as
+        far as they are applied and a point beside the middle of each, the
+        basis tips, the orbit normal tip, periapsis and both nodes, and the
+        motion arrows as (tail, head) pairs.
+    """
+    f_om, f_i, f_w = fractions
+    node, normal = staged_axes(fractions, orbit)
+    nu = np.linspace(0.0, 2.0 * np.pi, n)
+    pts = staged_position(nu, fractions, orbit)
+    xy = project(pts, view)
+    parts = []
+    for keep in (pts[:, 2] >= -1e-9, pts[:, 2] < -1e-9):
+        # Widen each part by one sample so it meets the sky plane.
+        grown = keep | np.roll(keep, 1) | np.roll(keep, -1)
+        parts.append(np.where(grown[:, None], xy, np.nan))
+    om = f_om * np.deg2rad(orbit["Omega_deg"])
+    inc = f_i * np.deg2rad(orbit["i_deg"])
+    w = f_w * np.deg2rad(orbit["omega_deg"])
+
+    def arc(start, axis, angle, rad, label_gap):
+        return (
+            project(arc_points(start, axis, angle, rad), view),
+            project(arc_points(start, axis, angle, rad + label_gap)[24], view),
+        )
+
+    omega_r = ARC_R["Omega"] if omega_r is None else omega_r
+    arc_om, label_om = arc(NORTH, TOWARD_OBSERVER, om, omega_r, 0.17)
+    arc_i, label_i = arc(TOWARD_OBSERVER, node, inc, ARC_R["i"], 0.14)
+    arc_w, label_w = arc(node, normal, w, ARC_R["omega"], 0.15)
+    motion = [
+        project(
+            staged_position(
+                nu_from_u(np.array([u - MOTION_SPAN_DEG, u]), orbit), fractions, orbit
+            ),
+            view,
+        )
+        for u in MOTION_U_DEG
+    ]
+    return {
+        "front": parts[0],
+        "behind": parts[1],
+        "sky": _sky_disk(view),
+        "node_line": project(np.array([-SKY_SIZE * node, SKY_SIZE * node]), view),
+        "north_ref": project(np.array([np.zeros(3), NORTH_REF_LEN * NORTH]), view),
+        "arc_Omega": arc_om,
+        "arc_i": arc_i,
+        "arc_omega": arc_w,
+        "label_Omega": label_om,
+        "label_i": label_i,
+        "label_omega": label_w,
+        "north": project(AXIS_LEN * NORTH, view),
+        "east": project(AXIS_LEN * EAST, view),
+        "toward": project(AXIS_LEN * TOWARD_OBSERVER, view),
+        "h": project(H_LEN * normal, view),
+        "peri": project(staged_position(0.0, fractions, orbit), view),
+        "asc": project(staged_position(-w, fractions, orbit), view),
+        "desc": project(staged_position(np.pi - w, fractions, orbit), view),
+        "motion": motion,
+    }
+
+
+def angle_readout(step, orbit=ORBIT):
+    """The printed value of the angle a step applies, e.g. ``Omega = 130 deg``."""
+    key, symbol = (
+        ("Omega_deg", r"\Omega"),
+        ("i_deg", "i"),
+        ("omega_deg", r"\omega_p"),
+    )[step]
+    return rf"${symbol}={orbit[key]:.0f}\degree$"
+
+
+STEP_ACTIONS = (
+    r"turn about $+\hat{\mathbf{Z}}$, north toward east",
+    "tilt about the node line",
+    r"turn about $\hat{\mathbf{h}}$, from the node",
+)
+# The clip's step list, as (text, whether it is mathtext).
+CLIP_ACTIONS = (
+    (STEP_ACTIONS[0], True),
+    (
+        "tilt about the node line; the ascending node\n"
+        "(where the planet moves toward\nthe observer)",
+        False,
+    ),
+    (STEP_ACTIONS[2], True),
+)
+
+
+def _backing(cast):
+    """A plain backing box for a label over marks (no stroked halo)."""
+    return {
+        "boxstyle": "round,pad=0.12,rounding_size=0.2",
+        "facecolor": to_rgba(cast.background, 0.85),
+        "edgecolor": "none",
+    }
+
+
+def _plain(ax, xy, text, cast, *, color=None, box=True, **kw):
+    """A label with no stroked halo; over marks it sits on a backing box."""
+    kw.setdefault("ha", "center")
+    kw.setdefault("va", "center")
+    kw.setdefault("fontsize", cast.layout.small_pt)
+    kw.setdefault("zorder", 9)
+    text_artist = ax.text(*xy, text, color=color or _note_ink(cast), **kw)
+    if box:
+        text_artist.set_bbox(_backing(cast))
+    return text_artist
+
+
+def _arc_plain(ax, pts, cast, *, gid):
+    """An angle arc with its arrowhead at the measured end."""
+    color = cast.neutral(0.85)
+    ax.plot(*pts.T, color=color, lw=cast.layout.lw, zorder=6, gid=gid)
+    ax.add_patch(
+        FancyArrowPatch(
+            pts[-4],
+            pts[-1],
+            arrowstyle="-|>",
+            mutation_scale=cast.layout.marker_pt * 1.4,
+            color=color,
+            lw=cast.layout.lw,
+            shrinkA=0,
+            shrinkB=0,
+            zorder=6,
+            gid=f"{gid}-head",
+        )
+    )
+
+
+def _rotation_panel(ax, step, cast):
+    """One step: the orbit before the turn (dotted) and after it."""
+    layout = cast.layout
+    view = STEP_VIEWS[step]
+    omega_r = SKY_OMEGA_R if step == 0 else None
+    geo = rotation_geometry(STEP_FRACTIONS[step + 1], view, omega_r=omega_r)
+    ghost = rotation_geometry(STEP_FRACTIONS[step], view)
+    scen, ink = cast["scenery"].color, _scen_ink(cast)
+    lw, ms = layout.lw, 1.4 * layout.marker_pt
+    tag = f"d02-rot{step + 1}"
+    ex.region(ax, "reference_plane", Polygon(geo["sky"]), cast)
+    for key in ("front", "behind"):
+        ax.plot(
+            *ghost[key].T,
+            color=cast.neutral(0.5),
+            lw=0.8 * lw,
+            ls=":",
+            zorder=2,
+            gid=f"{tag}-before-{key}",
+        )
+    color = cast["planet"].color
+    ax.plot(*geo["front"].T, color=color, lw=1.3 * lw, zorder=3, gid=f"{tag}-front")
+    ax.plot(
+        *geo["behind"].T,
+        color=color,
+        lw=0.9 * lw,
+        ls=(0, (3, 2.5)),
+        zorder=2,
+        gid=f"{tag}-behind",
+    )
+    ax.plot(*geo["node_line"].T, color=scen, lw=0.8 * lw, zorder=2, gid=f"{tag}-nodes")
+    for k, (tail, head) in enumerate(geo["motion"]):
+        ax.add_patch(
+            FancyArrowPatch(
+                tail,
+                head,
+                arrowstyle="-|>",
+                mutation_scale=layout.marker_pt * 1.9,
+                color=color,
+                lw=0.01,
+                shrinkA=0,
+                shrinkB=0,
+                zorder=5,
+                gid=f"{tag}-motion-{k}",
+            )
+        )
+    ex.mark(ax, "star", (0, 0), cast, scale=0.8)
+    arc_ink = cast.neutral(0.85)
+    if step == 0:
+        ax.plot(*geo["north_ref"].T, color=scen, lw=0.7 * lw, ls="--", zorder=2)
+        _arc_plain(ax, geo["arc_Omega"], cast, gid=f"{tag}-arc-Omega")
+        _plain(
+            ax,
+            geo["label_Omega"],
+            r"$\Omega$",
+            cast,
+            color=arc_ink,
+            fontsize=layout.font_pt,
+        )
+        _point(ax, geo["peri"], "D", cast, size=0.75 * layout.marker_pt)
+        _plain(
+            ax,
+            geo["peri"] + np.array([0.1, -0.06]),
+            "periapsis",
+            cast,
+            ha="left",
+            va="top",
+        )
+        end = geo["node_line"][1]
+        _plain(
+            ax,
+            end + np.array([-0.02, -0.04]),
+            "node line",
+            cast,
+            color=ink,
+            ha="right",
+            va="top",
+            box=False,
+        )
+        # A compass on this sky panel: north up, east left.
+        origin = np.array([1.25, -1.2])
+        for vec, text in ((NORTH, "N"), (EAST, "E")):
+            d = project(vec, view)
+            _vector(ax, origin, origin + 0.34 * d, ink, 0.8 * lw, ms=ms)
+            _plain(ax, origin + 0.46 * d, text, cast, color=ink, box=False)
+    else:
+        for key, text in (("north", "N"), ("toward", r"$\hat{\mathbf{Z}}$")):
+            tip = geo[key]
+            _vector(ax, (0, 0), tip, scen, 0.9 * lw, ms=ms)
+            _plain(
+                ax,
+                tip + 0.1 * tip / np.linalg.norm(tip),
+                text,
+                cast,
+                color=ink,
+                box=False,
+            )
+        _vector(
+            ax,
+            (0, 0),
+            geo["h"],
+            cast.text,
+            1.5 * lw,
+            ms=1.8 * layout.marker_pt,
+            zorder=5,
+            gid=f"{tag}-h",
+        )
+        _plain(
+            ax,
+            geo["h"] + np.array([0.05, 0.03]),
+            r"$\hat{\mathbf{h}}$",
+            cast,
+            color=cast.text,
+            ha="left",
+            va="bottom",
+            fontsize=layout.font_pt,
+            box=False,
+        )
+        _point(ax, geo["asc"], "^", cast)
+        _point(ax, geo["desc"], "v", cast, filled=False)
+        _plain(
+            ax,
+            geo["desc"]
+            + (np.array([0.1, 0.02]) if step == 1 else np.array([0.06, 0.1])),
+            "descending\nnode" if step == 1 else "descending node",
+            cast,
+            ha="left",
+            va="bottom",
+        )
+        if step == 1:
+            # Periapsis still lies at the ascending node until the last turn.
+            peri = _point(ax, geo["peri"], "D", cast, size=0.55 * layout.marker_pt)
+            peri.set_markeredgecolor(cast.background)
+            peri.set_zorder(8)
+            _arc_plain(ax, geo["arc_i"], cast, gid=f"{tag}-arc-i")
+            _plain(
+                ax, geo["label_i"], r"$i$", cast, color=arc_ink, fontsize=layout.font_pt
+            )
+            _plain(
+                ax,
+                geo["asc"] + np.array([0.0, -0.16]),
+                "ascending node (the planet\nmoves toward the observer),\nstill at periapsis",
+                cast,
+                va="top",
+            )
+        else:
+            ax.plot(
+                *np.array([[0.0, 0.0], geo["peri"]]).T,
+                color=scen,
+                lw=0.7 * lw,
+                zorder=2,
+            )
+            _arc_plain(ax, geo["arc_omega"], cast, gid=f"{tag}-arc-omega")
+            _plain(
+                ax,
+                geo["label_omega"],
+                r"$\omega_p$",
+                cast,
+                color=arc_ink,
+                fontsize=layout.font_pt,
+            )
+            _point(ax, geo["peri"], "D", cast, size=0.75 * layout.marker_pt)
+            _plain(
+                ax,
+                geo["peri"] + np.array([0.1, -0.06]),
+                "periapsis",
+                cast,
+                ha="left",
+                va="top",
+            )
+            _plain(
+                ax,
+                geo["asc"] + np.array([0.0, -0.13]),
+                "ascending node",
+                cast,
+                va="top",
+            )
+    ax.set_title(
+        f"{step + 1}. {ROTATION_NAMES[step]}, {angle_readout(step)}\n{STEP_ACTIONS[step]}",
+        fontsize=layout.font_pt,
+        color=cast.text,
+        linespacing=1.35,
+    )
+    _finish(ax, *ROTATION_LIMITS)
+    return geo
+
+
+def build_three_rotations(layout, cast):
+    fig, axes = ex.figure(layout, doc_height_in=3.6, ncols=3)
+    lines = [
+        r"$\mathbf{r}=R_Z(\Omega)\,R_X(i)\,R_Z(\omega_p)\,"
+        r"[r\cos\nu,\ r\sin\nu,\ 0]^{\mathsf{T}}$",
+        "one factor per panel, left to right; dotted: the orbit before the turn",
+    ]
+    if layout.is_slide:
+        lines.insert(0, "How do three rotations place the orbit?")
+    fig.suptitle(
+        "\n".join(lines), x=0.01, ha="left", fontsize=layout.font_pt, color=cast.text
+    )
+    fig.text(
+        0.99,
+        0.985,
+        f"{PROFILE}\norbit to scale",
+        ha="right",
+        va="top",
+        fontsize=layout.small_pt,
+        fontstyle="italic",
+        color=cast["annotation"].color,
+        bbox={
+            "boxstyle": "round,pad=0.3",
+            "facecolor": cast.background,
+            "edgecolor": cast["scenery"].color,
+            "lw": 0.6 * layout.lw,
+            "ls": "--",
+        },
+        gid="d02-rot-badge",
+    )
+    for step, ax in enumerate(axes):
+        _rotation_panel(ax, step, cast)
+    views = ("observer's view", "oblique view", "oblique view")
+    for ax, text in zip(axes, views, strict=True):
+        _plain(
+            ax,
+            (0.0, 0.0),
+            text,
+            cast,
+            box=False,
+            transform=ax.transAxes,
+            ha="left",
+            va="bottom",
+            fontstyle="italic",
+        )
+    return fig
+
+
+# Talk clip: the three rotations played as transformations (Manim)
+#
+# The clip draws the states of the strip, from ``rotation_geometry``, with the
+# chapter's own cameras and projection; Manim only moves them. Every frame is
+# set from one state, interpolated between the beats below: the applied
+# fractions, the camera, the Omega arc radius, the weight of each group of
+# marks ("show"), the factor now being applied ("hl") and the factors already
+# applied ("lit").
+
+# Seconds of each beat: a number is scaled by the venue's pace; a turn and
+# the final hold have their own lengths, so the documentation clip keeps its
+# rotations slow enough to read while its other beats are brisk.
+CLIP_PACE = {"doc": 0.6, "slide": 1.0}
+CLIP_TURN_S = {"doc": 2.6, "slide": 3.2}
+CLIP_FINAL_S = {"doc": 3.2, "slide": 3.5}
+CLIP_SECTIONS = ROTATION_STEPS
+CLIP_BEATS = (
+    ("omega", 0.8, {}),
+    (
+        "omega",
+        0.6,
+        {
+            "show": {
+                "node_line": 1,
+                "node_label": 1,
+                "north_ref": 1,
+                "ghost": 1,
+                "step0": 1,
+            },
+            "hl": (1, 0, 0),
+        },
+    ),
+    ("omega", "turn", {"f": (1, 0, 0), "show": {"arc_Omega": 1}}),
+    (
+        "omega",
+        0.5,
+        {
+            "show": {"val0": 1, "ghost": 0, "north_ref": 0},
+            "hl": (0, 0, 0),
+            "lit": (1, 0, 0),
+        },
+    ),
+    ("omega", 0.8, {}),
+    (
+        "inclination",
+        1.8,
+        {
+            "view": OBLIQUE_VIEW,
+            "omega_r": ARC_R["Omega"],
+            "ghost_f": (1, 0, 0),
+            "show": {"toward": 1, "view_face": 0, "node_label": 0},
+        },
+    ),
+    (
+        "inclination",
+        0.6,
+        {
+            "show": {"ghost": 1, "step1": 1, "h": 1, "view_oblique": 1},
+            "hl": (0, 1, 0),
+        },
+    ),
+    ("inclination", "turn", {"f": (1, 1, 0), "show": {"arc_i": 1}}),
+    (
+        "inclination",
+        0.5,
+        {
+            "show": {"val1": 1, "nodes": 1, "ghost": 0},
+            "hl": (0, 0, 0),
+            "lit": (1, 1, 0),
+        },
+    ),
+    ("inclination", 0.8, {}),
+    (
+        "periapsis",
+        0.6,
+        {
+            "ghost_f": (1, 1, 0),
+            "show": {"ghost": 1, "step2": 1},
+            "hl": (0, 0, 1),
+        },
+    ),
+    (
+        "periapsis",
+        "turn",
+        {"f": (1, 1, 1), "show": {"arc_omega": 1, "peri_line": 1}},
+    ),
+    (
+        "periapsis",
+        0.6,
+        {
+            "show": {"val2": 1, "ghost": 0, "desc_label": 1},
+            "hl": (0, 0, 0),
+            "lit": (1, 1, 1),
+        },
+    ),
+    ("periapsis", "final", {}),
+)
+CLIP_GROUPS = (
+    "sky",
+    "orbit",
+    "basis",
+    "motion",
+    "peri",
+    "view_face",
+    "node_label",
+    "node_line",
+    "north_ref",
+    "ghost",
+    "toward",
+    "h",
+    "arc_Omega",
+    "arc_i",
+    "arc_omega",
+    "nodes",
+    "desc_label",
+    "peri_line",
+    "view_oblique",
+    "step0",
+    "step1",
+    "step2",
+    "val0",
+    "val1",
+    "val2",
+)
+CLIP_VISIBLE_AT_START = ("sky", "orbit", "basis", "motion", "peri", "view_face")
+CLIP_START = {
+    "f": (0.0, 0.0, 0.0),
+    "ghost_f": (0.0, 0.0, 0.0),
+    "view": FACE_ON,
+    "omega_r": SKY_OMEGA_R,
+    "hl": (0.0, 0.0, 0.0),
+    "lit": (0.0, 0.0, 0.0),
+    "show": {g: float(g in CLIP_VISIBLE_AT_START) for g in CLIP_GROUPS},
+}
+
+
+def clip_states(start=CLIP_START, beats=CLIP_BEATS):
+    """The state before and after every beat, starting from ``start``.
+
+    Returns:
+        A list of ``(section, seconds, before, after)``.
+    """
+    out, state = [], {**start, "show": dict(start["show"])}
+    for section, seconds, change in beats:
+        after = {**state, "show": {**state["show"], **change.get("show", {})}}
+        for key in ("f", "ghost_f", "view", "hl", "lit"):
+            if key in change:
+                after[key] = tuple(float(v) for v in change[key])
+        if "omega_r" in change:
+            after["omega_r"] = float(change["omega_r"])
+        out.append((section, seconds, state, after))
+        state = after
+    return out
+
+
+def mix_state(a, b, t):
+    """The state a fraction ``t`` of the way from ``a`` to ``b``.
+
+    Every numeric field is interpolated. ``ghost_f`` takes its new value at
+    once; the beats change it only while the ghost is hidden.
+    """
+
+    def lerp(x, y):
+        return tuple((1.0 - t) * np.asarray(x, float) + t * np.asarray(y, float))
+
+    return {
+        "f": lerp(a["f"], b["f"]),
+        "ghost_f": b["ghost_f"],
+        "view": lerp(a["view"], b["view"]),
+        "omega_r": (1.0 - t) * a["omega_r"] + t * b["omega_r"],
+        "hl": lerp(a["hl"], b["hl"]),
+        "lit": lerp(a["lit"], b["lit"]),
+        "show": {k: (1.0 - t) * a["show"][k] + t * b["show"][k] for k in a["show"]},
+    }
+
+
+def beat_seconds(seconds, venue_name):
+    """Length of one beat in a venue: a turn, the final hold, or paced."""
+    if seconds == "turn":
+        return CLIP_TURN_S[venue_name]
+    if seconds == "final":
+        return CLIP_FINAL_S[venue_name]
+    return CLIP_PACE[venue_name] * seconds
+
+
+def clip_seconds(venue_name):
+    """Running time of the clip in one venue, before frame rounding."""
+    return sum(beat_seconds(seconds, venue_name) for _, seconds, _ in CLIP_BEATS)
+
+
+def three_rotations_scene():
+    """The Manim scene class of the three-rotations clip (imports Manim)."""
+    import manim
+
+    from explainers import _manim as em
+
+    class ThreeRotations(em.ExplainerScene):
+        """R_Z(Omega), R_X(i) and R_Z(omega_p) applied to the orbit in turn."""
+
+        def construct(self):
+            s = self.style
+            venue, cast, layout = s.venue, s.cast, s.venue.layout
+            slide = layout.is_slide
+            origin = np.array([-3.15, -0.45]) if slide else np.array([-3.65, -0.35])
+            scale = 2.05 if slide else 2.2
+            lw, mk = layout.lw, layout.marker_pt
+            small, body = layout.small_pt, layout.font_pt
+            scen, ink, note_ink = (
+                cast["scenery"].color,
+                _scen_ink(cast),
+                _note_ink(cast),
+            )
+            arc_ink, planet = cast.neutral(0.85), cast["planet"].color
+            items = []  # (mobject, group, stroke opacity, fill opacity)
+            boxed = []  # (label, backing box)
+
+            def at(xy):
+                return origin + scale * np.asarray(xy, dtype=float)
+
+            def keep(mob, group, stroke=None, fill=None):
+                stroke = mob.get_stroke_opacity() if stroke is None else stroke
+                fill = mob.get_fill_opacity() if fill is None else fill
+                items.append((mob, group, stroke, fill))
+                return mob
+
+            def poly(group, **kw):
+                return keep(em.Poly(s, **kw), group)
+
+            def marker(group, shape, size_pt, *, filled=True):
+                r = venue.units(0.5 * size_pt)
+                offsets = {
+                    "D": np.array([[1.2, 0], [0, 1.2], [-1.2, 0], [0, -1.2]]),
+                    "^": np.array([[0, 1.2], [-1, -0.7], [1, -0.7]]),
+                    "v": np.array([[0, -1.2], [-1, 0.7], [1, 0.7]]),
+                }[shape]
+                mob = em.Poly(
+                    s,
+                    color=scen,
+                    width_pt=0.8 * lw,
+                    fill=scen if filled else cast.background,
+                    fill_opacity=1.0,
+                )
+                mob.offsets = r * offsets
+                return keep(mob, group)
+
+            def label(group, string, pt, *, color, italic=False, math=True, box=False):
+                if math:
+                    mob = em.MathLabel(s, string, pt, color=color, italic=italic)
+                else:
+                    mob = em.text(s, string, pt, color=color, italic=italic)
+                if box:
+                    back = em.Poly(
+                        s,
+                        color=cast.background,
+                        width_pt=lw,
+                        fill=cast.background,
+                        fill_opacity=0.85,
+                    )
+                    boxed.append((mob, keep(back, group, stroke=0.0, fill=0.85)))
+                return keep(mob, group, stroke=0.0, fill=1.0)
+
+            # The orbit in space, back to front.
+            rp = cast["reference_plane"]
+            # A dashed outline cannot carry a fill, so the shaded disk and its
+            # dash-dot rim are two polylines.
+            sky_fill = poly(
+                "sky",
+                color=rp.color,
+                width_pt=rp.lw,
+                fill=rp.color,
+                fill_opacity=rp.fill_alpha,
+            )
+            keep(sky_fill.set_stroke(opacity=0.0), "sky", stroke=0.0)
+            sky = poly(
+                "sky",
+                color=rp.color,
+                width_pt=rp.lw,
+                dash_pt=tuple(v * rp.lw for v in (6.4, 1.6, 1.0, 1.6)),
+            )
+            ghost = [
+                poly(
+                    "ghost",
+                    color=cast.neutral(0.5),
+                    width_pt=0.8 * lw,
+                    dash_pt=(0.8 * lw, 1.3 * lw),
+                )
+                for _ in range(2)
+            ]
+            behind = poly(
+                "orbit", color=planet, width_pt=0.9 * lw, dash_pt=(2.7 * lw, 2.25 * lw)
+            )
+            node_line = poly("node_line", color=scen, width_pt=0.8 * lw)
+            north_ref = poly(
+                "north_ref", color=scen, width_pt=0.7 * lw, dash_pt=(2.6 * lw, 1.1 * lw)
+            )
+            peri_line = poly("peri_line", color=scen, width_pt=0.7 * lw)
+            basis = {}
+            for key, group in (
+                ("north", "basis"),
+                ("east", "basis"),
+                ("toward", "toward"),
+            ):
+                vec = em.Vector(s, color=scen, width_pt=0.9 * lw, head_pt=0.7 * mk)
+                keep(vec.shaft, group)
+                keep(vec.head, group)
+                basis[key] = vec
+            front = poly("orbit", color=planet, width_pt=1.3 * lw)
+            h_vec = em.Vector(s, color=cast.text, width_pt=1.5 * lw, head_pt=0.9 * mk)
+            keep(h_vec.shaft, "h")
+            keep(h_vec.head, "h")
+            arcs = {}
+            for key in ("Omega", "i", "omega"):
+                arc = poly(f"arc_{key}", color=arc_ink, width_pt=lw)
+                head = em.Head(s, color=arc_ink, size_pt=0.63 * mk, width_pt=0.6 * lw)
+                arcs[key] = (arc, keep(head, f"arc_{key}"))
+            motion = []
+            for _ in MOTION_U_DEG:
+                head = em.Head(s, color=planet, size_pt=0.76 * mk, width_pt=0.6 * lw)
+                head.head_wid = venue.units(0.76 * mk)
+                motion.append(keep(head, "motion"))
+            peri = marker("peri", "D", 0.75 * mk)
+            asc = marker("nodes", "^", 0.9 * mk)
+            desc = marker("nodes", "v", 0.9 * mk, filled=False)
+            star = manim.Star(
+                n=5,
+                outer_radius=venue.units(0.8 * mk),
+                density=2,
+                color=s.entity("star"),
+                fill_opacity=1.0,
+                stroke_width=0.0,
+            ).move_to([*origin, 0.0])
+            keep(star, "sky", stroke=0.0, fill=1.0)
+
+            # Labels on the geometry.
+            axis_pt = 1.15 * small
+            basis_labels = {
+                "north": label(
+                    "basis", r"north $\hat{\mathbf{X}}$", axis_pt, color=ink, box=True
+                ),
+                "east": label(
+                    "basis", r"east $\hat{\mathbf{Y}}$", axis_pt, color=ink, box=True
+                ),
+                "toward": label(
+                    "toward",
+                    r"toward observer $\hat{\mathbf{Z}}$",
+                    axis_pt,
+                    color=ink,
+                    box=True,
+                ),
+            }
+            arc_labels = {
+                key: label(f"arc_{key}", tex, body, color=arc_ink, box=True)
+                for key, tex in (
+                    ("Omega", r"$\Omega$"),
+                    ("i", r"$i$"),
+                    ("omega", r"$\omega_p$"),
+                )
+            }
+            h_label = label("h", r"$\hat{\mathbf{h}}$", body, color=cast.text, box=True)
+            peri_label = label("peri", "periapsis", small, color=note_ink, math=False)
+            node_label = label(
+                "node_label", "node line", small, color=ink, math=False, box=True
+            )
+            asc_label = label(
+                "nodes", "ascending node", small, color=note_ink, math=False, box=True
+            )
+            desc_label = label(
+                "desc_label",
+                "descending node",
+                small,
+                color=note_ink,
+                math=False,
+                box=True,
+            )
+            sky_label = label(
+                "sky", "sky plane", small, color=ink, italic=True, math=False
+            )
+
+            # The equation, the steps and the notes, in the right-hand column.
+            x0 = 1.0 if slide else 0.9
+            top = 2.3 if slide else 2.95
+            eq_pt = 1.2 * body
+            dim, bright = s.neutral(0.45), s.text_color
+            row = em.math_row(s, [r"$\mathbf{r}=$", *ROTATION_NAMES], eq_pt, gap_em=0.3)
+            row.shift(np.array([x0, top, 0.0]))
+            vec_row = em.math_row(
+                s, [r"$\times\,[r\cos\nu,\ r\sin\nu,\ 0]^{\mathsf{T}}$"], eq_pt
+            )
+            vec_row.shift(
+                np.array([row[1].get_left()[0], top - venue.units(1.9 * eq_pt), 0.0])
+            )
+            keep(row[0], "sky", stroke=0.0, fill=1.0)
+            keep(vec_row[0], "sky", stroke=0.0, fill=1.0)
+            factors = list(row[1:])
+            unders = []
+            for k, piece in enumerate(factors):
+                keep(piece, "sky", stroke=0.0, fill=1.0)
+                bar = em.Poly(s, color=cast.text, width_pt=1.2 * lw)
+                y = piece.get_bottom()[1] - venue.units(0.3 * eq_pt)
+                bar.redraw(
+                    np.array([[piece.get_left()[0], y], [piece.get_right()[0], y]])
+                )
+                unders.append(keep(bar, f"under{k}"))
+            step_y = top - venue.units(3.7 * eq_pt)
+            step_pt, action_pt = 1.15 * body, 1.15 * small
+            steps = []
+            for k in range(3):
+                head = label(
+                    f"step{k}",
+                    f"{k + 1}. {ROTATION_NAMES[k]}",
+                    step_pt,
+                    color=cast.text,
+                )
+                em.place(head, (x0, step_y), "left", "top")
+                value = label(f"val{k}", angle_readout(k), step_pt, color=cast.text)
+                em.place(
+                    value,
+                    (
+                        head.get_right()[0] + venue.units(0.9 * step_pt),
+                        head.get_center()[1],
+                    ),
+                    "left",
+                    "center",
+                )
+                text, math = CLIP_ACTIONS[k]
+                action = label(f"step{k}", text, action_pt, color=note_ink, math=math)
+                em.place(
+                    action,
+                    (
+                        x0 + venue.units(1.2 * step_pt),
+                        head.get_bottom()[1] - venue.units(0.45 * step_pt),
+                    ),
+                    "left",
+                    "top",
+                )
+                steps += [head, value, action]
+                step_y = action.get_bottom()[1] - venue.units(0.75 * step_pt)
+            annotation = cast["annotation"].color
+            legend = label(
+                "sky",
+                "dotted: the orbit before the turn\ndashed: behind the sky plane",
+                small,
+                color=annotation,
+                italic=True,
+                math=False,
+            )
+            em.place(legend, (x0, -3.45), "left", "bottom")
+            views = [
+                label(
+                    "view_face",
+                    r"observer's view from $+\hat{\mathbf{Z}}$: north up, east left",
+                    small,
+                    color=annotation,
+                    italic=True,
+                ),
+                label(
+                    "view_oblique",
+                    OBLIQUE_NOTE,
+                    small,
+                    color=annotation,
+                    italic=True,
+                    math=False,
+                ),
+            ]
+            for mob in views:
+                em.place(
+                    mob,
+                    (x0, legend.get_top()[1] + venue.units(0.6 * small)),
+                    "left",
+                    "bottom",
+                )
+            badge = em.badge(s, f"{PROFILE}; orbit to scale", corner=manim.UL)
+            extras = [badge]
+            if slide:
+                headline = em.text(
+                    s, "How do three rotations place the orbit?", layout.title_pt
+                )
+                em.place(
+                    headline, (venue.frame_width / 2 - 0.25, 3.45), "right", "center"
+                )
+                extras.append(headline)
+
+            def place_radial(mob, xy, dist, toward=None):
+                d = (
+                    np.asarray(xy, float)
+                    if toward is None
+                    else np.asarray(toward, float)
+                )
+                n = np.hypot(*d)
+                u = d / n if n > 1e-9 else np.array([0.0, -1.0])
+                ha = "left" if u[0] > 0.35 else ("right" if u[0] < -0.35 else "center")
+                va = "bottom" if u[1] > 0.35 else ("top" if u[1] < -0.35 else "center")
+                em.place(mob, at(np.asarray(xy) + dist * u), ha, va)
+
+            pad = venue.units(0.15 * small)
+
+            def apply(state):
+                geo = rotation_geometry(
+                    state["f"], state["view"], omega_r=state["omega_r"]
+                )
+                old = rotation_geometry(state["ghost_f"], state["view"])
+                sky.redraw(at(geo["sky"]), closed=True)
+                sky_fill.redraw(at(geo["sky"]), closed=True)
+                ghost[0].redraw(at(old["front"]))
+                ghost[1].redraw(at(old["behind"]))
+                behind.redraw(at(geo["behind"]))
+                front.redraw(at(geo["front"]))
+                node_line.redraw(at(geo["node_line"]))
+                north_ref.redraw(at(geo["north_ref"]))
+                peri_line.redraw(at(np.array([[0.0, 0.0], geo["peri"]])))
+                for key, vec in basis.items():
+                    vec.redraw(at((0.0, 0.0)), at(geo[key]))
+                toward = (0.1, -1.0) if state["view"][0] < 80.0 else None
+                place_radial(basis_labels["north"], geo["north"], 0.07)
+                place_radial(basis_labels["east"], geo["east"], 0.07)
+                place_radial(basis_labels["toward"], geo["toward"], 0.1, toward=toward)
+                h_vec.redraw(at((0.0, 0.0)), at(geo["h"]))
+                place_radial(h_label, geo["h"], 0.06, toward=(1.0, 0.3))
+                for key, (arc, head) in arcs.items():
+                    pts = geo[f"arc_{key}"]
+                    if np.hypot(*(pts[-1] - pts[0])) < 1e-3:
+                        arc.clear_points()
+                        head.clear_points()
+                    else:
+                        arc.redraw(at(pts))
+                        head.redraw(at(pts[-1]), pts[-1] - pts[-4])
+                    em.place(arc_labels[key], at(geo[f"label_{key}"]))
+                for head, (tail, tip) in zip(motion, geo["motion"], strict=True):
+                    head.redraw(at(tip), tip - tail)
+                for mob, key in ((peri, "peri"), (asc, "asc"), (desc, "desc")):
+                    mob.redraw(at(geo[key]) + mob.offsets, closed=True)
+                # Radially out in the observer's view; to the right in the
+                # oblique view, where periapsis starts on the ascending node.
+                g = np.clip(
+                    (state["view"][0] - OBLIQUE_VIEW[0]) / (90.0 - OBLIQUE_VIEW[0]),
+                    0.0,
+                    1.0,
+                )
+                out = geo["peri"] / np.hypot(*geo["peri"])
+                # Off the node line and the north axis: outward, turned a little
+                # counterclockwise.
+                out = out + 0.7 * np.array([-out[1], out[0]])
+                place_radial(
+                    peri_label,
+                    geo["peri"],
+                    0.1,
+                    toward=g * out + (1.0 - g) * np.array([1.0, 0.0]),
+                )
+                place_radial(asc_label, geo["asc"], 0.1, toward=(0.0, -1.0))
+                place_radial(desc_label, geo["desc"], 0.1, toward=(1.0, 0.45))
+                far = geo["node_line"][0]
+                place_radial(node_label, 0.8 * far, 0.08, toward=(-far[1], far[0]))
+                # The sky-plane label sits outside the rim, south-west in the
+                # observer's view and south in the oblique view, clear of the orbit.
+                g = np.clip(
+                    (state["view"][0] - OBLIQUE_VIEW[0]) / (90.0 - OBLIQUE_VIEW[0]),
+                    0,
+                    1,
+                )
+                theta = np.deg2rad(180.0 + 45.0 * g)
+                rim = SKY_SIZE * (np.cos(theta) * NORTH + np.sin(theta) * EAST)
+                place_radial(sky_label, project(rim, state["view"]), 0.04)
+                for mob, back in boxed:
+                    (x0_, y0_), (x1_, y1_) = (
+                        mob.get_corner(manim.DL)[:2],
+                        mob.get_corner(manim.UR)[:2],
+                    )
+                    back.redraw(
+                        np.array(
+                            [
+                                [x0_ - pad, y0_ - pad],
+                                [x1_ + pad, y0_ - pad],
+                                [x1_ + pad, y1_ + pad],
+                                [x0_ - pad, y1_ + pad],
+                            ]
+                        ),
+                        closed=True,
+                    )
+                for k, piece in enumerate(factors):
+                    w = min(1.0, state["hl"][k] + state["lit"][k])
+                    piece.set_fill(manim.interpolate_color(dim, bright, w))
+                weights = {
+                    **state["show"],
+                    **{f"under{k}": state["hl"][k] for k in range(3)},
+                }
+                for mob, group, stroke, fill in items:
+                    weight = weights.get(group, 1.0)
+                    mob.set_stroke(opacity=stroke * weight)
+                    mob.set_fill(opacity=fill * weight, family=True)
+
+            layers = [sky_fill, sky, *ghost, behind, node_line, north_ref, peri_line]
+            layers += [m for v in basis.values() for m in (v.shaft, v.head)]
+            layers += [front, h_vec.shaft, h_vec.head]
+            layers += [m for pair in arcs.values() for m in pair]
+            layers += [*motion, peri, asc, desc, star]
+            layers += [back for _, back in boxed]
+            layers += [*basis_labels.values(), *arc_labels.values(), h_label]
+            layers += [peri_label, node_label, asc_label, desc_label, sky_label]
+            layers += [row[0], *factors, vec_row[0], *unders, *steps, legend, *views]
+            rig = manim.VGroup(*layers)
+            self.add(rig, *extras)
+            beats = clip_states()
+            apply(beats[0][2])
+            section = None
+            for name, seconds, before, after in beats:
+                if name != section:
+                    self.section(name)
+                    section = name
+                run = beat_seconds(seconds, venue.name)
+                if before == after:
+                    self.wait(run)
+                    continue
+                self.play(
+                    manim.UpdateFromAlphaFunc(
+                        rig, lambda _m, t, a=before, b=after: apply(mix_state(a, b, t))
+                    ),
+                    run_time=run,
+                    rate_func=manim.smooth,
+                )
+
+    return ThreeRotations
+
+
 # Registry
 
 _PARAMS = {"orbit": ORBIT, "side": SIDE, "oblique_view": OBLIQUE_VIEW}
@@ -1370,6 +2437,80 @@ CLOCK_ALT = (
     "crescent in front. Readouts give the time since periapsis, alpha and Phi."
 )
 
+ROTATIONS_CAPTION = (
+    "The orbit of the orbit-elements figure built one factor at a time, in the "
+    "proposed observer profile ({ref}`geometry-observer-basis`), which is "
+    "pending. Read left to right, "
+    r"$\mathbf r=R_Z(\Omega)R_X(i)R_Z(\omega_p)[r\cos\nu,\ r\sin\nu,\ 0]^{\mathsf T}$"
+    " is three active right-handed rotations, each about an axis that the "
+    "rotations before it placed. Each panel applies one factor to the orbit "
+    "left by the panel before it, which is drawn dotted. Left, in the "
+    r"observer's view from $+\hat{\mathbf Z}$ (north up, east to the left): "
+    r"$R_Z(\Omega)$ turns the ellipse about $+\hat{\mathbf Z}$, carrying the "
+    r"line that becomes the node line from north toward east by $\Omega$. "
+    "Middle, in the oblique view of the next figure: "
+    r"$R_X(i)$ tilts the orbit by $i$ about the node line, so the orbit normal "
+    r"$\hat{\mathbf h}$ leaves $+\hat{\mathbf Z}$ by $i$, and the crossing on "
+    "the node line where the planet moves toward the observer, "
+    r"$\dot Z>0$, is the ascending node. Until the last factor, periapsis lies "
+    r"on the node line. Right: $R_Z(\omega_p)$ turns the orbit about "
+    r"$\hat{\mathbf h}$ within its own plane and carries periapsis away from "
+    r"the ascending node by $\omega_p$ in the direction of motion. Every panel "
+    "is the chapter's formula with the later angles set to zero, so the strip "
+    "is an identity of the rotation product. The order of the factors "
+    "matters: the same three angles applied in another order place a "
+    "different orbit. Read right to left, the same product is three turns "
+    "about the fixed axes instead, and it gives the same orbit only because "
+    "it keeps this order of factors. The "
+    "rotation order and the node agree with {ref}`Savransky et al. (2019), "
+    "Sec. 2.1 and Fig. 1 <source-savransky2019>`; placing east along "
+    r"$\hat{\mathbf Y}$ awaits the fixture in "
+    "{ref}`geometry-savransky-profile`. Orbit to scale with $e=0.35$, "
+    r"$i=55^\circ$, $\Omega=130^\circ$, $\omega_p=70^\circ$; the three "
+    "panels share one page scale; the observer distance is not drawn."
+)
+ROTATIONS_ALT = (
+    "Three panels, each with a star at the center of a shaded sky-plane disk, "
+    "a cyan eccentric orbit, and, dotted, the orbit before that panel's "
+    "rotation. Left, titled R_Z(Omega), Omega = 130 degrees, in the observer's "
+    "view with north up and east left: the orbit lies in the sky plane, a line "
+    "through the star and periapsis is labeled node line, and an arc from a "
+    "dashed north line turns counterclockwise to it; a compass marks N and E. "
+    "Middle, titled R_X(i), i = 55 degrees, in an oblique view with arrows N "
+    "and Z-hat: the orbit is tilted about the node line, with its part behind "
+    "the sky plane dashed, a heavier arrow h-hat leaves Z-hat by an arc "
+    "labeled i, a filled triangle marks the ascending node, labeled as where "
+    "the planet moves toward the observer, with the periapsis diamond still on "
+    "it, and an open triangle marks the descending node. Right, titled R_Z(omega-p), omega-p = 70 "
+    "degrees, in the same oblique view: the orbit has turned within its tilted "
+    "plane, an arc labeled omega-p runs from the node line to periapsis, "
+    "marked by a diamond, and both nodes are labeled."
+)
+CLIP_CAPTION = (
+    "The construction of the three-rotation figure played as motion, in the "
+    "proposed observer profile ({ref}`geometry-observer-basis`), which is "
+    r"pending. The orbit turns by $\Omega$ about $+\hat{\mathbf Z}$ in the "
+    "observer's view, the camera turns to the oblique view, the orbit tilts by "
+    r"$i$ about the node line, and it turns by $\omega_p$ about "
+    r"$\hat{\mathbf h}$; the factor being applied is underlined in "
+    r"$\mathbf r=R_Z(\Omega)R_X(i)R_Z(\omega_p)[r\cos\nu,\ r\sin\nu,\ 0]^{\mathsf T}$."
+    " The clip ends on the geometry of the orbit-elements figure. Every frame "
+    "is the chapter's formula with the angles partly applied, drawn with the "
+    "projection of the stills. Orbit to scale; the observer distance is not "
+    "drawn."
+)
+CLIP_ALT = (
+    "Animation. A cyan eccentric orbit around a star turns about the line of "
+    "sight in the observer's view, north up and east left, while an arc from "
+    "north grows to 130 degrees. The view then turns to an oblique camera, the "
+    "orbit tilts by 55 degrees about the node line while an arrow h-hat leaves "
+    "the Z-hat axis, and the orbit finally turns by 70 degrees within its "
+    "tilted plane, carrying periapsis away from the ascending node. Beside it, "
+    "the equation r = R_Z(Omega) R_X(i) R_Z(omega-p) times the perifocal "
+    "position underlines each factor as it is applied, and the three angle "
+    "values appear one by one."
+)
+
 FIGURES = [
     ex.FigureSpec(
         slug="d02-observer-construction",
@@ -1395,6 +2536,14 @@ FIGURES = [
         status=STATUS_DISK,
         params={**_PARAMS, "epoch_u_deg": EPOCH_U_DEG, "n_ticks": N_TICKS},
     ),
+    ex.FigureSpec(
+        slug="d02-three-rotations",
+        build=build_three_rotations,
+        caption=ROTATIONS_CAPTION,
+        alt=ROTATIONS_ALT,
+        status=STATUS_ORBIT,
+        params={**_PARAMS, "step_fractions": STEP_FRACTIONS},
+    ),
 ]
 
 ANIMATIONS = [
@@ -1417,5 +2566,24 @@ ANIMATIONS = [
         status=STATUS_DISK,
         params={**_PARAMS, "n_ticks": N_TICKS},
         preview_frames=(0, 9, 14, 20),
+    ),
+]
+
+MANIM = [
+    ManimSpec(
+        slug="d02-three-rotations-clip",
+        scene=three_rotations_scene,
+        still="d02-three-rotations",
+        ground="narration",
+        caption=CLIP_CAPTION,
+        alt=CLIP_ALT,
+        status=STATUS_ORBIT,
+        params={
+            **_PARAMS,
+            "pace": CLIP_PACE,
+            "turn_s": CLIP_TURN_S,
+            "final_s": CLIP_FINAL_S,
+        },
+        doc_max_s=16.0,
     ),
 ]

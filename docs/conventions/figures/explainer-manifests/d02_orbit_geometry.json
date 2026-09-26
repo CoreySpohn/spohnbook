@@ -2,16 +2,16 @@
   "module": "d02_orbit_geometry",
   "script": "tools/explainers/d02_orbit_geometry.py",
   "build_command": "python tools/build_explainer_figures.py --only d02",
-  "source_hash": "c858ed71c380",
+  "source_hash": "ae8d052f884c",
   "source_sha256": {
-    "tools/explainers/d02_orbit_geometry.py": "f2a4fcb430d17c2380124dc81e0f338a7c9e0fb62e064ee9b323da84cc364af6",
+    "tools/explainers/d02_orbit_geometry.py": "b6470a6191fd729c202b98e7c0aeaf31769a73856b84b6a0c5e7981f7b40104e",
     "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
-    "tools/explainers/_export.py": "1dae7e6f79963cd53c3f8a4fbff06d493d0d674b97daf4d5916f31a15742c115"
+    "tools/explainers/_export.py": "b62dc95b9442fd3062fe8b1446626b4aea0e896263564843ab38c84fcf3e1dfc"
   },
   "stamp_date": "2026-09-25",
   "revisions": {
     "spohnbook": {
-      "commit": "6c3d11b",
+      "commit": "ddaab96",
       "dirty": true
     },
     "eyepiece": {
@@ -30,7 +30,7 @@
     "matplotlib": "3.11.0",
     "numpy": "2.2.6"
   },
-  "ffmpeg": null,
+  "ffmpeg": "ffmpeg version 4.4.6 Copyright (c) 2000-2025 the FFmpeg developers",
   "layouts": {
     "doc": {
       "name": "doc",
@@ -87,33 +87,33 @@
       "outputs": [
         {
           "file": "docs/conventions/figures/explainer-d02-observer-construction-light.png",
-          "sha256": "86c005e09694add6dad8e31265d824fb9e84f499230cc03d171556db03d6d63d",
-          "bytes": 107936
+          "sha256": "b39ef076e3603e9b14ea61cdd7ae619f395e8db041f752276151ca64eaa2cc52",
+          "bytes": 107960
         },
         {
           "file": "docs/conventions/figures/explainer-d02-observer-construction-light.pdf",
-          "sha256": "77d39820e4023eb86171cc4bc02b9fb20e930dfc7fb218a3de577cb7b4f14aeb",
-          "bytes": 175336
+          "sha256": "8eff7197795027f716e3ceccea476f29611373cd0d10964cfbaf8680e6a0e9b8",
+          "bytes": 174676
         },
         {
           "file": "docs/conventions/figures/explainer-d02-observer-construction-dark.png",
-          "sha256": "5aa33191dadb31c756655e215fe4455d9209a7464dc3c82199ded84d2a32226f",
-          "bytes": 105064
+          "sha256": "d3f00d0d397a754f964e37cf01fb8760912acef140f81891312c6bd17c1cb392",
+          "bytes": 105075
         },
         {
           "file": "docs/conventions/figures/explainer-d02-observer-construction-dark.pdf",
-          "sha256": "6d80ed946b95b9ffb7e93da20e2ca9bf5a68a938b54b4b15e6c628ac43289ccf",
-          "bytes": 175310
+          "sha256": "e6217be644e77f28b0305585ba1b77082f9074045c6762b0aff1e30b07cafe05",
+          "bytes": 174650
         },
         {
           "file": "talks/stills/d02-observer-construction.png",
-          "sha256": "ca83f4414ee861d84c62e75cad93db96b6610bc1c6b0eafd657994d153b0aeed",
-          "bytes": 148312
+          "sha256": "93b83ad3f1548969b3b407e396f168cec9865bf34a4d4b30dfe772dda76e7680",
+          "bytes": 148334
         },
         {
           "file": "talks/stills/d02-observer-construction.pdf",
-          "sha256": "00b17a0ba9f5d71dde73c68f2706d6253995347e27bdd112e06b4d69fd81db2f",
-          "bytes": 155660
+          "sha256": "a2abd05dd0aed83b299bebf8db56ab2f20d445dbfa6945765311a0afcb491206",
+          "bytes": 154997
         }
       ]
     },
@@ -142,33 +142,33 @@
       "outputs": [
         {
           "file": "docs/conventions/figures/explainer-d02-orbit-elements-light.png",
-          "sha256": "52dd888a2c005c87073c70280dc15a54c5dab85c09bf6f6b6db98a40e6bbea12",
-          "bytes": 184300
+          "sha256": "3fc2c0614f4288337b95b61349df13dd9390cb7ce03b4c16a5961f5e7a71933b",
+          "bytes": 184335
         },
         {
           "file": "docs/conventions/figures/explainer-d02-orbit-elements-light.pdf",
-          "sha256": "9c7f5caf02043ec1b41086af248860fbec1739773dc843faa4b14213a7765218",
-          "bytes": 189724
+          "sha256": "d04445e62e00341afac08c35aea41bbbbbd19060fef7bb2df4a8c2dfd05b6a7d",
+          "bytes": 189060
         },
         {
           "file": "docs/conventions/figures/explainer-d02-orbit-elements-dark.png",
-          "sha256": "e60c2b8ef227d5bfbb5fefb77d516b6edd4b12c7b10bcd039230a82200fd79d8",
-          "bytes": 179563
+          "sha256": "bdaa8ba9fe89cd1d977b83bdbb792dbe948ce0aeaa7ce30f163e93ff25726d8c",
+          "bytes": 179578
         },
         {
           "file": "docs/conventions/figures/explainer-d02-orbit-elements-dark.pdf",
-          "sha256": "84f6534ee5c790c8e1ff0a7e22d1deb9e818491d646cdafb66b66e655ac4f1be",
-          "bytes": 189698
+          "sha256": "57998250e0a824715f85b02b3ec66b379aded1ddf0032d095dcc992567e0fd16",
+          "bytes": 189034
         },
         {
           "file": "talks/stills/d02-orbit-elements.png",
-          "sha256": "8f38e1efd8107d8a29a5350978948c76b1116cefe39ae7da36dcc808653dafe7",
-          "bytes": 223559
+          "sha256": "45c0cf941fdadc08f2176f171c9159d14c1b451c1ae3d9d8dbd8aefa7731a8c7",
+          "bytes": 223593
         },
         {
           "file": "talks/stills/d02-orbit-elements.pdf",
-          "sha256": "67f2f0707aae59e8f57af3b63a1da201ca609e2d6bab3ed1c5c33b7e2877a81e",
-          "bytes": 176285
+          "sha256": "192be0a06fa50fd3c8b5d49505b53f4a526fcdc448179511f4fbedc38c2f0202",
+          "bytes": 175621
         }
       ]
     },
@@ -203,33 +203,110 @@
       "outputs": [
         {
           "file": "docs/conventions/figures/explainer-d02-phase-epochs-light.png",
-          "sha256": "c66a06eee3884285ab90385a1b848be8e08221dcd7badd4db8088521e1238428",
-          "bytes": 167347
+          "sha256": "11f8214cba36f83379e79159831f27dfabd73f44772c82ea3eb73b6ef7c1aaae",
+          "bytes": 167359
         },
         {
           "file": "docs/conventions/figures/explainer-d02-phase-epochs-light.pdf",
-          "sha256": "76db742350c9086e6e591be49e4a1d2717b3ff44d80045a92af96c6763cdef56",
-          "bytes": 127175
+          "sha256": "350444f256827d884df18c615b78660ac6c5c95eb6c4a13b92086bf3ff0df132",
+          "bytes": 126989
         },
         {
           "file": "docs/conventions/figures/explainer-d02-phase-epochs-dark.png",
-          "sha256": "55dc08c0597cf506bb73a9ff80e53bcd22d450e92d7db8b2e566b639a6e6fa45",
-          "bytes": 162574
+          "sha256": "1d7162b771043a323b84327c23721edd247e6568796718b33dc0f3fbef3fc1cc",
+          "bytes": 162582
         },
         {
           "file": "docs/conventions/figures/explainer-d02-phase-epochs-dark.pdf",
-          "sha256": "3bbfe53e9047e762341f28d33ff63fc393e9cbda6e1eff822693e6df85f395e8",
-          "bytes": 127176
+          "sha256": "1ac3d1197b14d78c93f2c4306dbcd4ff1ee9b2ac31c9aa7864fc46fe3133b234",
+          "bytes": 126989
         },
         {
           "file": "talks/stills/d02-phase-epochs.png",
-          "sha256": "bc62b12eca1d8d0a1178886d02ee432ad517129440292ece2efac1e7201b5fab",
-          "bytes": 201406
+          "sha256": "6bffa3edb06bf1c7a51ad377fd4868e3cb8d6db7391d04690c20732c61e0c98d",
+          "bytes": 201436
         },
         {
           "file": "talks/stills/d02-phase-epochs.pdf",
-          "sha256": "d438c8df4340fcd1b05888bff4d3cd53aaa38c7f9d9a8c324b998b36cf451b0b",
-          "bytes": 116475
+          "sha256": "cbbdeaf410da6e57a0824ab4b29d1cb79e6c89c1ec56c084366a81d491e2903d",
+          "bytes": 116288
+        }
+      ]
+    },
+    {
+      "slug": "d02-three-rotations",
+      "status": "proposed observer profile (pending); orbit to scale, observer distance not drawn",
+      "caption": "The orbit of the orbit-elements figure built one factor at a time, in the proposed observer profile ({ref}`geometry-observer-basis`), which is pending. Read left to right, $\\mathbf r=R_Z(\\Omega)R_X(i)R_Z(\\omega_p)[r\\cos\\nu,\\ r\\sin\\nu,\\ 0]^{\\mathsf T}$ is three active right-handed rotations, each about an axis that the rotations before it placed. Each panel applies one factor to the orbit left by the panel before it, which is drawn dotted. Left, in the observer's view from $+\\hat{\\mathbf Z}$ (north up, east to the left): $R_Z(\\Omega)$ turns the ellipse about $+\\hat{\\mathbf Z}$, carrying the line that becomes the node line from north toward east by $\\Omega$. Middle, in the oblique view of the next figure: $R_X(i)$ tilts the orbit by $i$ about the node line, so the orbit normal $\\hat{\\mathbf h}$ leaves $+\\hat{\\mathbf Z}$ by $i$, and the crossing on the node line where the planet moves toward the observer, $\\dot Z>0$, is the ascending node. Until the last factor, periapsis lies on the node line. Right: $R_Z(\\omega_p)$ turns the orbit about $\\hat{\\mathbf h}$ within its own plane and carries periapsis away from the ascending node by $\\omega_p$ in the direction of motion. Every panel is the chapter's formula with the later angles set to zero, so the strip is an identity of the rotation product. The order of the factors matters: the same three angles applied in another order place a different orbit. Read right to left, the same product is three turns about the fixed axes instead, and it gives the same orbit only because it keeps this order of factors. The rotation order and the node agree with {ref}`Savransky et al. (2019), Sec. 2.1 and Fig. 1 <source-savransky2019>`; placing east along $\\hat{\\mathbf Y}$ awaits the fixture in {ref}`geometry-savransky-profile`. Orbit to scale with $e=0.35$, $i=55^\\circ$, $\\Omega=130^\\circ$, $\\omega_p=70^\\circ$; the three panels share one page scale; the observer distance is not drawn.",
+      "alt": "Three panels, each with a star at the center of a shaded sky-plane disk, a cyan eccentric orbit, and, dotted, the orbit before that panel's rotation. Left, titled R_Z(Omega), Omega = 130 degrees, in the observer's view with north up and east left: the orbit lies in the sky plane, a line through the star and periapsis is labeled node line, and an arc from a dashed north line turns counterclockwise to it; a compass marks N and E. Middle, titled R_X(i), i = 55 degrees, in an oblique view with arrows N and Z-hat: the orbit is tilted about the node line, with its part behind the sky plane dashed, a heavier arrow h-hat leaves Z-hat by an arc labeled i, a filled triangle marks the ascending node, labeled as where the planet moves toward the observer, with the periapsis diamond still on it, and an open triangle marks the descending node. Right, titled R_Z(omega-p), omega-p = 70 degrees, in the same oblique view: the orbit has turned within its tilted plane, an arc labeled omega-p runs from the node line to periapsis, marked by a diamond, and both nodes are labeled.",
+      "params": {
+        "orbit": {
+          "a": 1.0,
+          "e": 0.35,
+          "i_deg": 55.0,
+          "Omega_deg": 130.0,
+          "omega_deg": 70.0
+        },
+        "side": {
+          "r": 1.0,
+          "beta_deg": 55.0
+        },
+        "oblique_view": [
+          15.0,
+          15.0
+        ],
+        "step_fractions": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0,
+            1.0
+          ]
+        ]
+      },
+      "outputs": [
+        {
+          "file": "docs/conventions/figures/explainer-d02-three-rotations-light.png",
+          "sha256": "e1b3adf8ea294144db37ca9932ed632e8699dad2779902b10b09240e04bf1bf1",
+          "bytes": 192932
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d02-three-rotations-light.pdf",
+          "sha256": "c9f060e1eaa6fdeb03b49bfb16ec91249a95358cd80a8d8367a5aa484d7ed092",
+          "bytes": 59202
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d02-three-rotations-dark.png",
+          "sha256": "c6849fc7d45c9b8fa20b08c86cb952400161d3b6042dea6ff6771c81f904f85f",
+          "bytes": 189323
+        },
+        {
+          "file": "docs/conventions/figures/explainer-d02-three-rotations-dark.pdf",
+          "sha256": "a238cd0f80bb4504322cec085af1dbd258bd44d5b2a01d33984a12006f8aa08b",
+          "bytes": 59181
+        },
+        {
+          "file": "talks/stills/d02-three-rotations.png",
+          "sha256": "f9d2e7cd0c8023df895048bc629392d7aea5eb5ff10cb55102d3759f65ba2c97",
+          "bytes": 259730
+        },
+        {
+          "file": "talks/stills/d02-three-rotations.pdf",
+          "sha256": "29291afd52e0306fa3f833e3a09837b69ebeeb2d350ea1f8e7b72bc641c4f5a4",
+          "bytes": 62904
         }
       ]
     }
@@ -264,24 +341,24 @@
         "talk": 126
       },
       "revision": {
-        "commit": "6c3d11b",
+        "commit": "ddaab96",
         "dirty": true
       },
       "outputs": [
         {
           "file": "docs/_static/explainers/explainer-d02-viewpoint-sweep-light.mp4",
-          "sha256": "699a35633673c2863c8983d5d2ff0fbdc4c9eb8430c681be8e6af42de418c8fa",
-          "bytes": 179532
+          "sha256": "2ea4f152a00467836b4436005e493a209e88ebec68158bd59abba75f64a16d60",
+          "bytes": 179530
         },
         {
           "file": "docs/_static/explainers/explainer-d02-viewpoint-sweep-dark.mp4",
-          "sha256": "0163a048d3b6cf7b3c8359b1d4628664b262bc0a12262c454f51c4330fa9b5f0",
-          "bytes": 183516
+          "sha256": "2474384580d2496358bd0baf6df2577a7defdd6b5b8b4c8a0b614e197cfe3cc9",
+          "bytes": 183522
         },
         {
           "file": "talks/animations/d02-viewpoint-sweep.mp4",
-          "sha256": "1989f595c9b14e7819b61ade885cad57e2e3bd87767d271eae35e48f761e20a2",
-          "bytes": 568144
+          "sha256": "4f3e5a5a8748f3470c480373b9efe85f1bf8615021cf7aad31b27aa0cd25b6dd",
+          "bytes": 568371
         }
       ]
     },
@@ -314,24 +391,169 @@
         "talk": 230
       },
       "revision": {
-        "commit": "6c3d11b",
+        "commit": "ddaab96",
         "dirty": true
       },
       "outputs": [
         {
           "file": "docs/_static/explainers/explainer-d02-orbit-clock-light.mp4",
-          "sha256": "5f621f25a400f980c347534d3b99fb50cc5cd23f475dfb19e33894420fdd6713",
-          "bytes": 90030
+          "sha256": "fd5afb786c829fa336a67dcbed87f26e0b5c25a174edbe61304be8d016e9ebde",
+          "bytes": 90011
         },
         {
           "file": "docs/_static/explainers/explainer-d02-orbit-clock-dark.mp4",
-          "sha256": "290828166152f4bed1619d416314f64090f907a606d244dc29cf490bfcfad0bf",
-          "bytes": 93728
+          "sha256": "1168d688175bf2c97980d8ef06bf473df4ff1414de866d765620c044a44f18ee",
+          "bytes": 93705
         },
         {
           "file": "talks/animations/d02-orbit-clock.mp4",
-          "sha256": "5a1a490c4a3003cfbc471a4b38334ed19ed75edc87531b17ebe48234694dcdfe",
-          "bytes": 382046
+          "sha256": "4190e85561d50985e7530da1688690d86ab4adbdc6a95a614b266c3d48aa78d4",
+          "bytes": 382409
+        }
+      ]
+    }
+  ],
+  "manim": [
+    {
+      "slug": "d02-three-rotations-clip",
+      "still": "d02-three-rotations",
+      "status": "proposed observer profile (pending); orbit to scale, observer distance not drawn",
+      "ground": "narration",
+      "caption": "The construction of the three-rotation figure played as motion, in the proposed observer profile ({ref}`geometry-observer-basis`), which is pending. The orbit turns by $\\Omega$ about $+\\hat{\\mathbf Z}$ in the observer's view, the camera turns to the oblique view, the orbit tilts by $i$ about the node line, and it turns by $\\omega_p$ about $\\hat{\\mathbf h}$; the factor being applied is underlined in $\\mathbf r=R_Z(\\Omega)R_X(i)R_Z(\\omega_p)[r\\cos\\nu,\\ r\\sin\\nu,\\ 0]^{\\mathsf T}$. The clip ends on the geometry of the orbit-elements figure. Every frame is the chapter's formula with the angles partly applied, drawn with the projection of the stills. Orbit to scale; the observer distance is not drawn.",
+      "alt": "Animation. A cyan eccentric orbit around a star turns about the line of sight in the observer's view, north up and east left, while an arc from north grows to 130 degrees. The view then turns to an oblique camera, the orbit tilts by 55 degrees about the node line while an arrow h-hat leaves the Z-hat axis, and the orbit finally turns by 70 degrees within its tilted plane, carrying periapsis away from the ascending node. Beside it, the equation r = R_Z(Omega) R_X(i) R_Z(omega-p) times the perifocal position underlines each factor as it is applied, and the three angle values appear one by one.",
+      "params": {
+        "orbit": {
+          "a": 1.0,
+          "e": 0.35,
+          "i_deg": 55.0,
+          "Omega_deg": 130.0,
+          "omega_deg": 70.0
+        },
+        "side": {
+          "r": 1.0,
+          "beta_deg": 55.0
+        },
+        "oblique_view": [
+          15.0,
+          15.0
+        ],
+        "pace": {
+          "doc": 0.6,
+          "slide": 1.0
+        },
+        "turn_s": {
+          "doc": 2.6,
+          "slide": 3.2
+        },
+        "final_s": {
+          "doc": 3.2,
+          "slide": 3.5
+        }
+      },
+      "fps": {
+        "doc": 15,
+        "slide": 30
+      },
+      "frames": {
+        "doc": 237,
+        "talk": 621
+      },
+      "source_hash": "510ca4ad719d",
+      "source_sha256": {
+        "tools/explainers/d02_orbit_geometry.py": "b6470a6191fd729c202b98e7c0aeaf31769a73856b84b6a0c5e7981f7b40104e",
+        "tools/explainers/__init__.py": "323944bf88f59b37bbd08fa69b7687479ba31d6f1542dfa8a57eedcd57a6019b",
+        "tools/explainers/_common.py": "cb9145b79228f8da32f5bf4c97b68e54877c58bf1795c5098b051915acc83a98",
+        "tools/explainers/_export.py": "b62dc95b9442fd3062fe8b1446626b4aea0e896263564843ab38c84fcf3e1dfc",
+        "tools/explainers/_manim.py": "3a42490d6ef3673e69a18269c7c28447103e289587d930fd415e0bfd418f9f19"
+      },
+      "revision": {
+        "commit": "ddaab96",
+        "dirty": true
+      },
+      "renderer": "manim (Cairo), frames piped to ffmpeg",
+      "versions": {
+        "manim": "0.21.0",
+        "manimpango": "0.6.1",
+        "pango": "1.56.4",
+        "pycairo": "1.29.1",
+        "cairo": "1.17.6",
+        "eyepiece": "0.4.1.dev22+g05e03c0b7",
+        "matplotlib": "3.11.0",
+        "ffmpeg": "ffmpeg version 4.4.6 Copyright (c) 2000-2025 the FFmpeg developers"
+      },
+      "font": {
+        "family": "Inter",
+        "file": "Inter-Regular.ttf",
+        "sha256": "40d692fce188e4471e2b3cba937be967878f631ad3ebbbdcd587687c7ebe0c82"
+      },
+      "readability": {
+        "doc-light": {
+          "omega": {
+            "passed": true,
+            "min_text_pt": 8.5,
+            "min_stroke_pt": 0.72
+          },
+          "inclination": {
+            "passed": true,
+            "min_text_pt": 8.5,
+            "min_stroke_pt": 0.72
+          },
+          "periapsis": {
+            "passed": true,
+            "min_text_pt": 8.5,
+            "min_stroke_pt": 0.72
+          }
+        },
+        "doc-dark": {
+          "omega": {
+            "passed": true,
+            "min_text_pt": 8.5,
+            "min_stroke_pt": 0.72
+          },
+          "inclination": {
+            "passed": true,
+            "min_text_pt": 8.5,
+            "min_stroke_pt": 0.72
+          },
+          "periapsis": {
+            "passed": true,
+            "min_text_pt": 8.5,
+            "min_stroke_pt": 0.72
+          }
+        },
+        "slide-dark": {
+          "omega": {
+            "passed": true,
+            "min_text_pt": 16.0,
+            "min_stroke_pt": 1.44
+          },
+          "inclination": {
+            "passed": true,
+            "min_text_pt": 16.0,
+            "min_stroke_pt": 1.44
+          },
+          "periapsis": {
+            "passed": true,
+            "min_text_pt": 16.0,
+            "min_stroke_pt": 1.44
+          }
+        }
+      },
+      "outputs": [
+        {
+          "file": "docs/_static/explainers/explainer-d02-three-rotations-clip-light.mp4",
+          "sha256": "938a9f1e3832b18c04ab0b331b1b14ab87534f57039040d3ab6da7c4997e1b82",
+          "bytes": 360536
+        },
+        {
+          "file": "docs/_static/explainers/explainer-d02-three-rotations-clip-dark.mp4",
+          "sha256": "20e8ee047cba0c7a34db451feb553559b365cc723fb82af690bd859c35cf421b",
+          "bytes": 368794
+        },
+        {
+          "file": "talks/animations/d02-three-rotations-clip.mp4",
+          "sha256": "01d355bec2ccb64920275b1bd9ac2931c23c6e3559db08d77e3343b18250f366",
+          "bytes": 1092922
         }
       ]
     }

@@ -52,6 +52,11 @@ docs = [
     "jaxedith",
     "photomancy",
 ]
+# Renders the Manim explainer clips (tools/explainers/_manim.py); needs system
+# Cairo, Pango, pkg-config and ffmpeg, and no TeX. The pins match eyepiece's
+# manim extra (Pillow 13 drops an argument manim 0.21 uses); depend on
+# "eyepiece[manim]" instead once a release ships that extra.
+explainers-manim = ["manim>=0.21,<0.22", "pillow<13"]
 
 [tool.ruff.lint]
 select = ["B", "D", "E", "F", "I", "UP", "RUF"]
@@ -76,6 +81,9 @@ packages = ["src/spohnbook"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "manim: renders a Manim clip (needs the explainers-manim extra and system Cairo, Pango and ffmpeg)",
+]
 
 [tool.ineedvalidation]
 library = "spohnbook"

@@ -5,6 +5,7 @@ Run from anywhere:
     python tools/build_explainer_figures.py                 # every module
     python tools/build_explainer_figures.py --only d02 d05  # some modules
     python tools/build_explainer_figures.py --no-anim       # stills only
+    python tools/build_explainer_figures.py --no-manim      # skip Manim clips
     python tools/build_explainer_figures.py --preview       # review PNGs
     python tools/build_explainer_figures.py --cast-sheet    # the vocabulary
 
@@ -16,16 +17,23 @@ docs/conventions/figures/explainer-manifests/. A module writes only files
 named by its own dNN prefix. --preview writes to the ignored
 .explainer-preview/ directory and changes nothing else.
 
+A module may also declare MANIM clips (see tools/explainers/__init__.py).
+They are rendered with Manim to the same video directories and recorded
+under "manim" in the module's manifest; --no-manim (or --no-anim) keeps the
+recorded entries, and --preview writes each clip's section-end frames.
+
 Needs NumPy, Matplotlib, hwostyle, hwoutils and eyepiece; animations also
-need ffmpeg.
+need ffmpeg, and Manim clips need the explainers-manim extra.
 """
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import explainers
 from explainers import _common as ex
 from explainers import _export as exporter
 
@@ -42,6 +50,11 @@ def main(argv=None):
         "--no-anim",
         action="store_true",
         help="skip animations (keeps their manifest entries)",
+    )
+    parser.add_argument(
+        "--no-manim",
+        action="store_true",
+        help="skip Manim clips (keeps their manifest entries)",
     )
     parser.add_argument(
         "--preview",
@@ -71,12 +84,38 @@ def main(argv=None):
         print("no diagram modules found in tools/explainers/")
         return 0
     for name in names:
+        module = exporter.load(name)
+        clips = explainers.manim_specs(module)
+        manifest = exporter.ROOT / exporter.MANIFESTS / f"{name}.json"
+        recorded = []
+        if clips and manifest.exists():
+            recorded = json.loads(manifest.read_text()).get("manim", [])
         written = exporter.build_module(
-            exporter.load(name), animations=not args.no_anim, preview=args.preview
+            module, animations=not args.no_anim, preview=args.preview
         )
+        render = clips and not (args.no_anim or args.no_manim)
+        if render and args.preview:
+            from explainers import _manim
+
+            written += _manim.preview_module(module, clips)
+        elif clips and not args.preview:
+            entries = recorded
+            if render:
+                from explainers import _manim
+
+                paths, entries = _manim.export_module(module, clips)
+                written += paths
+            _record_manim(manifest, entries)
         for rel in written:
             print(rel)
     return 0
+
+
+def _record_manim(manifest, entries):
+    """Add the Manim clip entries to the manifest the module build just wrote."""
+    data = json.loads(manifest.read_text())
+    data["manim"] = entries
+    manifest.write_text(json.dumps(data, indent=2, default=exporter._jsonable) + "\n")
 
 
 if __name__ == "__main__":
