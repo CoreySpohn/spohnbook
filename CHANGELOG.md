@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/CoreySpohn/spohnbook/compare/v0.1.0...v0.1.1) (2026-09-26)
+
+
+### Bug Fixes
+
+* **book:** run explainer tests on released eyepiece and skip the Manim readability test without Manim ([c10b35e](https://github.com/CoreySpohn/spohnbook/commit/c10b35e4009c031b6222fa2503ff5f4b39574f12))
+
 ## [0.1.0](https://github.com/CoreySpohn/spohnbook/compare/v0.0.2...v0.1.0) (2026-09-25)
 
 
